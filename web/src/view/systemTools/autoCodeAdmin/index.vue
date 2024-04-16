@@ -76,12 +76,12 @@
         >
           <template #default="scope">
             <div>
-              <el-button
-                type="primary"
-                link
-                :disabled="scope.row.flag === 1"
-                @click="rollbackFunc(scope.row,true)"
-              >回滚(删表)</el-button>
+<!--              <el-button-->
+<!--                type="primary"-->
+<!--                link-->
+<!--                :disabled="scope.row.flag === 1"-->
+<!--                @click="rollbackFunc(scope.row,true)"-->
+<!--              >回滚(删表)</el-button>-->
               <el-button
                 type="primary"
                 link
