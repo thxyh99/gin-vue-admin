@@ -125,8 +125,8 @@ mysql:
     config: charset=utf8mb4&parseTime=True&loc=Local
     db-name: hr
     username: root
-    password: root
-    path: 127.0.0.1
+    password: $RongdA!0611
+    path: 112.74.22.24
     engine: ""
     log-mode: error
     max-idle-conns: 10
