@@ -1,10 +1,6 @@
 <template>
   <div>
     <div class="gva-search-box">
-      <div class="gva-btn-list justify-end mt-4">
-        <ExportExcel template-id="AchTest" />
-        <ImportExcel template-id="AchTest" />
-      </div>
       <el-form ref="elSearchFormRef" :inline="true" :model="searchInfo" class="demo-form-inline" :rules="searchRule" @keyup.enter="onSubmit">
       <el-form-item label="创建日期" prop="createdAt">
       <template #label>
@@ -28,8 +24,10 @@
     </div>
     <div class="gva-table-box">
         <div class="gva-btn-list">
-            <el-button type="primary" icon="plus" @click="openDialog">新增</el-button>
-            <el-button icon="delete" style="margin-left: 10px;" :disabled="!multipleSelection.length" @click="onDelete">删除</el-button>
+          <ExportExcel template-id="AchTest" />
+          <ImportExcel template-id="AchTest" />
+          <el-button type="primary" icon="plus" @click="openDialog">新增</el-button>
+          <el-button icon="delete" style="margin-left: 10px;" :disabled="!multipleSelection.length" @click="onDelete">删除</el-button>
         </div>
         <el-table
         ref="multipleTable"
