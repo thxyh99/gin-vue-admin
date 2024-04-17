@@ -269,12 +269,16 @@ func (sysExportTemplateService *SysExportTemplateService) ExportTemplate(templat
 		return
 	}
 	var templateInfoMap = make(map[string]string)
+	columns, err := utils.GetJSONKeys(template.TemplateInfo)
+	if err != nil {
+		return nil, "", err
+	}
 	err = json.Unmarshal([]byte(template.TemplateInfo), &templateInfoMap)
 	if err != nil {
 		return nil, "", err
 	}
 	var tableTitle []string
-	for key := range templateInfoMap {
+	for _, key := range columns {
 		tableTitle = append(tableTitle, templateInfoMap[key])
 	}
 	for i := range tableTitle {

@@ -24,6 +24,7 @@
     </div>
     <div class="gva-table-box">
         <div class="gva-btn-list">
+          <ExportTemplate template-id="AchTest" />
           <ExportExcel template-id="AchTest" />
           <ImportExcel template-id="AchTest" />
           <el-button type="primary" icon="plus" @click="openDialog">新增</el-button>
@@ -135,6 +136,7 @@ import {
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
+import ExportTemplate from '@/components/exportExcel/exportTemplate.vue'
 import ExportExcel from '@/components/exportExcel/exportExcel.vue'
 import ImportExcel from '@/components/exportExcel/importExcel.vue'
 
