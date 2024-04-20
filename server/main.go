@@ -1,12 +1,12 @@
 package main
 
 import (
-	_ "go.uber.org/automaxprocs"
-	"go.uber.org/zap"
-
 	"github.com/flipped-aurora/gin-vue-admin/server/core"
+	"github.com/flipped-aurora/gin-vue-admin/server/crontab"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/initialize"
+	_ "go.uber.org/automaxprocs"
+	"go.uber.org/zap"
 )
 
 //go:generate go env -w GO111MODULE=on
@@ -35,5 +35,6 @@ func main() {
 		db, _ := global.GVA_DB.DB()
 		defer db.Close()
 	}
+	crontab.Module{}.Run()
 	core.RunWindowsServer()
 }
