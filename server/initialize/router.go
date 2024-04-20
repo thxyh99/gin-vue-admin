@@ -79,10 +79,6 @@ func Routers() *gin.Engine {
 		exampleRouter.InitFileUploadAndDownloadRouter(PrivateGroup)
 
 	}
-	{
-		achRouter := router.RouterGroupApp.Ach
-		achRouter.InitAchTestRouter(PrivateGroup, PublicGroup)
-	}
 
 	global.GVA_LOG.Info("router register success")
 	return Router
