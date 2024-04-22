@@ -2,19 +2,24 @@ package weChat
 
 import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
-    "github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
-    weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
-    "github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
-    "github.com/flipped-aurora/gin-vue-admin/server/service"
-    "github.com/gin-gonic/gin"
-    "go.uber.org/zap"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
+	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/service"
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 type WcDepartmentApi struct {
 }
 
-var wcDepartmentService = service.ServiceGroupApp.WeChatServiceGroup.WcDepartmentService
+type SyncWcDepartmentParams struct {
+	DepartmentID int `json:"department_id"`
+	ParentID     int `json:"parent_id"`
+	Order        int `json:"order"`
+}
 
+var wcDepartmentService = service.ServiceGroupApp.WeChatServiceGroup.WcDepartmentService
 
 // CreateWcDepartment 创建wcDepartment表
 // @Tags WcDepartment
@@ -34,7 +39,7 @@ func (wcDepartmentApi *WcDepartmentApi) CreateWcDepartment(c *gin.Context) {
 	}
 
 	if err := wcDepartmentService.CreateWcDepartment(&wcDepartment); err != nil {
-        global.GVA_LOG.Error("创建失败!", zap.Error(err))
+		global.GVA_LOG.Error("创建失败!", zap.Error(err))
 		response.FailWithMessage("创建失败", c)
 	} else {
 		response.OkWithMessage("创建成功", c)
@@ -53,7 +58,7 @@ func (wcDepartmentApi *WcDepartmentApi) CreateWcDepartment(c *gin.Context) {
 func (wcDepartmentApi *WcDepartmentApi) DeleteWcDepartment(c *gin.Context) {
 	ID := c.Query("ID")
 	if err := wcDepartmentService.DeleteWcDepartment(ID); err != nil {
-        global.GVA_LOG.Error("删除失败!", zap.Error(err))
+		global.GVA_LOG.Error("删除失败!", zap.Error(err))
 		response.FailWithMessage("删除失败", c)
 	} else {
 		response.OkWithMessage("删除成功", c)
@@ -71,7 +76,7 @@ func (wcDepartmentApi *WcDepartmentApi) DeleteWcDepartment(c *gin.Context) {
 func (wcDepartmentApi *WcDepartmentApi) DeleteWcDepartmentByIds(c *gin.Context) {
 	IDs := c.QueryArray("IDs[]")
 	if err := wcDepartmentService.DeleteWcDepartmentByIds(IDs); err != nil {
-        global.GVA_LOG.Error("批量删除失败!", zap.Error(err))
+		global.GVA_LOG.Error("批量删除失败!", zap.Error(err))
 		response.FailWithMessage("批量删除失败", c)
 	} else {
 		response.OkWithMessage("批量删除成功", c)
@@ -96,7 +101,7 @@ func (wcDepartmentApi *WcDepartmentApi) UpdateWcDepartment(c *gin.Context) {
 	}
 
 	if err := wcDepartmentService.UpdateWcDepartment(wcDepartment); err != nil {
-        global.GVA_LOG.Error("更新失败!", zap.Error(err))
+		global.GVA_LOG.Error("更新失败!", zap.Error(err))
 		response.FailWithMessage("更新失败", c)
 	} else {
 		response.OkWithMessage("更新成功", c)
@@ -115,7 +120,7 @@ func (wcDepartmentApi *WcDepartmentApi) UpdateWcDepartment(c *gin.Context) {
 func (wcDepartmentApi *WcDepartmentApi) FindWcDepartment(c *gin.Context) {
 	ID := c.Query("ID")
 	if rewcDepartment, err := wcDepartmentService.GetWcDepartment(ID); err != nil {
-        global.GVA_LOG.Error("查询失败!", zap.Error(err))
+		global.GVA_LOG.Error("查询失败!", zap.Error(err))
 		response.FailWithMessage("查询失败", c)
 	} else {
 		response.OkWithData(gin.H{"rewcDepartment": rewcDepartment}, c)
@@ -139,16 +144,16 @@ func (wcDepartmentApi *WcDepartmentApi) GetWcDepartmentList(c *gin.Context) {
 		return
 	}
 	if list, total, err := wcDepartmentService.GetWcDepartmentInfoList(pageInfo); err != nil {
-	    global.GVA_LOG.Error("获取失败!", zap.Error(err))
-        response.FailWithMessage("获取失败", c)
-    } else {
-        response.OkWithDetailed(response.PageResult{
-            List:     list,
-            Total:    total,
-            Page:     pageInfo.Page,
-            PageSize: pageInfo.PageSize,
-        }, "获取成功", c)
-    }
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+	} else {
+		response.OkWithDetailed(response.PageResult{
+			List:     list,
+			Total:    total,
+			Page:     pageInfo.Page,
+			PageSize: pageInfo.PageSize,
+		}, "获取成功", c)
+	}
 }
 
 // GetWcDepartmentPublic 不需要鉴权的wcDepartment表接口
@@ -160,9 +165,29 @@ func (wcDepartmentApi *WcDepartmentApi) GetWcDepartmentList(c *gin.Context) {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /wcDepartment/getWcDepartmentList [get]
 func (wcDepartmentApi *WcDepartmentApi) GetWcDepartmentPublic(c *gin.Context) {
-    // 此接口不需要鉴权
-    // 示例为返回了一个固定的消息接口，一般本接口用于C端服务，需要自己实现业务逻辑
-    response.OkWithDetailed(gin.H{
-       "info": "不需要鉴权的wcDepartment表接口信息",
-    }, "获取成功", c)
+	// 此接口不需要鉴权
+	// 示例为返回了一个固定的消息接口，一般本接口用于C端服务，需要自己实现业务逻辑
+	response.OkWithDetailed(gin.H{
+		"info": "不需要鉴权的wcDepartment表接口信息",
+	}, "获取成功", c)
+}
+
+func (wcDepartmentApi *WcDepartmentApi) SyncWcDepartment(c *gin.Context, p *SyncWcDepartmentParams) {
+	var wcDepartment weChat.WcDepartment
+	//err := c.ShouldBindJSON(&wcDepartment)
+	//if err != nil {
+	//	response.FailWithMessage(err.Error(), c)
+	//	return
+	//}
+
+	wcDepartment.DepartmentId = &(p.DepartmentID)
+	wcDepartment.Parentid = &(p.ParentID)
+	wcDepartment.Order = &(p.Order)
+
+	if err := wcDepartmentService.SyncWcDepartment(&wcDepartment); err != nil {
+		global.GVA_LOG.Error("同步失败!", zap.Error(err))
+		response.FailWithMessage("同步失败", c)
+	} else {
+		response.OkWithMessage("同步成功", c)
+	}
 }
