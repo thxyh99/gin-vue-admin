@@ -23,10 +23,10 @@
       </el-form>
     </div>
     <div class="gva-table-box">
-        <div class="gva-btn-list">
-            <el-button type="primary" icon="plus" @click="openDialog">新增</el-button>
-            <el-button icon="delete" style="margin-left: 10px;" :disabled="!multipleSelection.length" @click="onDelete">删除</el-button>
-        </div>
+<!--        <div class="gva-btn-list">-->
+<!--            <el-button type="primary" icon="plus" @click="openDialog">新增</el-button>-->
+<!--            <el-button icon="delete" style="margin-left: 10px;" :disabled="!multipleSelection.length" @click="onDelete">删除</el-button>-->
+<!--        </div>-->
         <el-table
         ref="multipleTable"
         style="width: 100%"
@@ -41,20 +41,20 @@
             <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
         </el-table-column>
         
-        <el-table-column align="left" label="部门ID" prop="departmentId" width="120" />
-        <el-table-column align="left" label="部门名称" prop="name" width="120" />
-        <el-table-column align="left" label="英文名称" prop="nameEn" width="120" />
-        <el-table-column align="left" label="部门负责人" prop="departmentLeader" width="120" />
-        <el-table-column align="left" label="父部门ID" prop="parentid" width="120" />
-        <el-table-column align="left" label="排序" prop="order" width="120" />
+        <el-table-column align="left" label="部门ID" prop="departmentId" width="180" />
+        <el-table-column align="left" label="部门名称" prop="name" width="180" />
+        <el-table-column align="left" label="英文名称" prop="nameEn" width="180" />
+        <el-table-column align="left" label="部门负责人" prop="departmentLeader" width="180" />
+        <el-table-column align="left" label="父部门ID" prop="parentid" width="180" />
+        <el-table-column align="left" label="排序" prop="order" width="180" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
                 <el-icon style="margin-right: 5px"><InfoFilled /></el-icon>
                 查看详情
             </el-button>
-            <el-button type="primary" link icon="edit" class="table-button" @click="updateWcDepartmentFunc(scope.row)">变更</el-button>
-            <el-button type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>
+<!--            <el-button type="primary" link icon="edit" class="table-button" @click="updateWcDepartmentFunc(scope.row)">变更</el-button>-->
+<!--            <el-button type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>-->
             </template>
         </el-table-column>
         </el-table>
