@@ -82,6 +82,8 @@ func Routers() *gin.Engine {
 	{
 		weChatRouter := router.RouterGroupApp.WeChat
 		weChatRouter.InitWcDepartmentRouter(PrivateGroup, PublicGroup)
+		weChatRouter.InitWcPositionRouter(PrivateGroup, PublicGroup)
+		weChatRouter.InitWcStaffRouter(PrivateGroup, PublicGroup)
 	}
 
 	global.GVA_LOG.Info("router register success")
