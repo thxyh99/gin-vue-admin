@@ -73,7 +73,7 @@ func (s *Service) SyncDepartment() {
 		id := departmentMap["id"].(float64)
 		parentID := departmentMap["parentid"].(float64)
 		order := departmentMap["order"].(float64)
-		fmt.Printf("ID: %d, ParentID: %d, Order: %d\n", int(id), int(parentID), int(order))
+		fmt.Printf("ID: %d, Parentid: %d, Order: %d\n", int(id), int(parentID), int(order))
 
 		////获取单个部门详情
 		// 从2022年8月15日10点开始，新增IP不能访问了
@@ -116,7 +116,7 @@ func (s *Service) SyncDepartment() {
 		//fmt.Printf("Department Name: %s\n", department.Name)
 		//fmt.Printf("Department Name (EN): %s\n", department.NameEN)
 		//fmt.Printf("Department Leaders: %v\n", department.DepartmentLeader)
-		//fmt.Printf("Department Parent ID: %d\n", department.ParentID)
+		//fmt.Printf("Department Parent ID: %d\n", department.Parentid)
 		//fmt.Printf("Department Order: %d\n", department.Order)
 	}
 

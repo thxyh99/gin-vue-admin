@@ -50,22 +50,21 @@ cors:
           expose-headers: Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type
           allow-credentials: true
 db-list:
-    - type: ""
-      alias-name: ""
+    - type: mysql
+      alias-name: edu
       prefix: ""
-      port: ""
-      config: ""
-      db-name: ""
-      username: ""
-      password: ""
-      path: ""
+      port: "3306"
+      config: charset=utf8mb4&parseTime=True&loc=Local
+      db-name: edu
+      username: root
+      password: $RongdA!0611
+      path: 112.74.22.24
       engine: ""
-      log-mode: ""
+      log-mode: error
       max-idle-conns: 10
       max-open-conns: 100
       singular: false
       log-zap: false
-      disable: true
 email:
     to: xxx@qq.com
     from: xxx@163.com

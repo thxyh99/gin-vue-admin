@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/flipped-aurora/gin-vue-admin/server/core"
-	"github.com/flipped-aurora/gin-vue-admin/server/crontab"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/initialize"
 	_ "go.uber.org/automaxprocs"
@@ -35,6 +34,6 @@ func main() {
 		db, _ := global.GVA_DB.DB()
 		defer db.Close()
 	}
-	crontab.Module{}.Run()
+	//crontab.Module{}.Run()
 	core.RunWindowsServer()
 }
