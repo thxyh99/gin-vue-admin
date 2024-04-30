@@ -26,6 +26,17 @@
         <div class="gva-btn-list">
             <el-button type="primary" icon="plus" @click="openDialog">新增</el-button>
             <el-button icon="delete" style="margin-left: 10px;" :disabled="!multipleSelection.length" @click="onDelete">删除</el-button>
+          <ExportTemplate
+              template-id="staff"
+          />
+          <ExportExcel
+              template-id="staff"
+              :limit="9999"
+          />
+          <ImportExcel
+              template-id="staff"
+              @on-success="getTableData"
+          />
         </div>
         <el-table
         ref="multipleTable"
@@ -37,26 +48,22 @@
         >
         <el-table-column type="selection" width="55" />
         
-        <el-table-column align="left" label="日期" width="180">
-            <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
-        </el-table-column>
+<!--        <el-table-column align="left" label="日期" width="180">-->
+<!--            <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>-->
+<!--        </el-table-column>-->
         
-        <el-table-column align="left" label="用户ID(SSO)" prop="userId" width="120" />
-        <el-table-column align="left" label="企微成员UserID" prop="userid" width="120" />
-        <el-table-column align="left" label="成员名称" prop="name" width="120" />
-        <el-table-column align="left" label="别名" prop="alias" width="120" />
-        <el-table-column align="left" label="职务信息ID" prop="positionId" width="120" />
-        <el-table-column align="left" label="性别(0未知1男2女)" prop="gender" width="120" />
-        <el-table-column align="left" label="是否领导(1:是 0:否)" prop="isLeader" width="120" />
+          <el-table-column align="left" label="成员名称" prop="name" width="120" />
+          <el-table-column align="left" label="员工工号" prop="jobNum" width="120" />
+          <el-table-column align="left" label="企微账号" prop="userid" width="120" />
+        <el-table-column align="left" label="职务信息" prop="position" width="120" />
+        <el-table-column align="left" label="性别" prop="genderText" width="120" />
+        <el-table-column align="left" label="是否领导" prop="isLeaderText" width="120" />
         <el-table-column align="left" label="手机" prop="mobile" width="120" />
         <el-table-column align="left" label="座机" prop="telephone" width="120" />
         <el-table-column align="left" label="个人邮箱" prop="email" width="120" />
         <el-table-column align="left" label="地址" prop="address" width="120" />
         <el-table-column align="left" label="企业邮箱" prop="bizMail" width="120" />
-        <el-table-column align="left" label="视频号" prop="videoId" width="120" />
-        <el-table-column align="left" label="英文名" prop="nameEn" width="120" />
-        <el-table-column align="left" label="激活状态(1已激活，2已禁用，4未激活，5退出企业)" prop="status" width="120" />
-        <el-table-column align="left" label="是否关注微信插件" prop="isAttention" width="120" />
+        <el-table-column align="left" label="状态" prop="statusText" width="120" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -92,11 +99,11 @@
             </template>
 
           <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
-            <el-form-item label="用户ID(SSO):"  prop="userId" >
-              <el-input v-model.number="formData.userId" :clearable="true" placeholder="请输入用户ID(SSO)" />
-            </el-form-item>
-            <el-form-item label="企微成员UserID:"  prop="userid" >
-              <el-input v-model="formData.userid" :clearable="true"  placeholder="请输入企微成员UserID" />
+<!--            <el-form-item label="用户ID(SSO):"  prop="userId" >-->
+<!--              <el-input v-model.number="formData.userId" :clearable="true" placeholder="请输入用户ID(SSO)" />-->
+<!--            </el-form-item>-->
+            <el-form-item label="企微账号:"  prop="userid" >
+              <el-input v-model="formData.userid" :clearable="true"  placeholder="请输入企微账号" />
             </el-form-item>
             <el-form-item label="成员名称:"  prop="name" >
               <el-input v-model="formData.name" :clearable="true"  placeholder="请输入成员名称" />
@@ -104,14 +111,24 @@
             <el-form-item label="别名:"  prop="alias" >
               <el-input v-model="formData.alias" :clearable="true"  placeholder="请输入别名" />
             </el-form-item>
-            <el-form-item label="职务信息ID:"  prop="positionId" >
-              <el-input v-model.number="formData.positionId" :clearable="true" placeholder="请输入职务信息ID" />
+            <el-form-item label="职务信息:" prop="positionId">
+              <el-select v-model="formData.positionId" multiple placeholder="请选择职务信息">
+                <el-option label="职务信息1" value="1"></el-option>
+                <el-option label="职务信息2" value="2"></el-option>
+                <el-option label="职务信息3" value="3"></el-option>
+              </el-select>
             </el-form-item>
-            <el-form-item label="性别(0未知1男2女):"  prop="gender" >
-              <el-input v-model.number="formData.gender" :clearable="true" placeholder="请输入性别(0未知1男2女)" />
+            <el-form-item label="性别:" prop="gender">
+              <el-radio-group v-model="formData.gender">
+                <el-radio label="1">男</el-radio>
+                <el-radio label="2">女</el-radio>
+              </el-radio-group>
             </el-form-item>
-            <el-form-item label="是否领导(1:是 0:否):"  prop="isLeader" >
-              <el-input v-model.number="formData.isLeader" :clearable="true" placeholder="请输入是否领导(1:是 0:否)" />
+            <el-form-item label="是否领导:" prop="isLeader">
+              <el-radio-group v-model="formData.isLeader">
+                <el-radio label="1">是</el-radio>
+                <el-radio label="0">否</el-radio>
+              </el-radio-group>
             </el-form-item>
             <el-form-item label="手机:"  prop="mobile" >
               <el-input v-model="formData.mobile" :clearable="true"  placeholder="请输入手机" />
@@ -128,17 +145,16 @@
             <el-form-item label="企业邮箱:"  prop="bizMail" >
               <el-input v-model="formData.bizMail" :clearable="true"  placeholder="请输入企业邮箱" />
             </el-form-item>
-            <el-form-item label="视频号:"  prop="videoId" >
-              <el-input v-model="formData.videoId" :clearable="true"  placeholder="请输入视频号" />
-            </el-form-item>
             <el-form-item label="英文名:"  prop="nameEn" >
               <el-input v-model="formData.nameEn" :clearable="true"  placeholder="请输入英文名" />
             </el-form-item>
-            <el-form-item label="激活状态(1已激活，2已禁用，4未激活，5退出企业):"  prop="status" >
-              <el-input v-model.number="formData.status" :clearable="true" placeholder="请输入激活状态(1已激活，2已禁用，4未激活，5退出企业)" />
-            </el-form-item>
-            <el-form-item label="是否关注微信插件:"  prop="isAttention" >
-              <el-input v-model.number="formData.isAttention" :clearable="true" placeholder="请输入是否关注微信插件" />
+            <el-form-item label="状态:" prop="status">
+              <el-select v-model="formData.status" placeholder="请选择状态">
+                <el-option label="己激活" value="1"></el-option>
+                <el-option label="已禁用" value="2"></el-option>
+                <el-option label="未激活" value="4"></el-option>
+                <el-option label="退出企业" value="5"></el-option>
+              </el-select>
             </el-form-item>
           </el-form>
     </el-drawer>
@@ -153,7 +169,7 @@
                 <el-descriptions-item label="用户ID(SSO)">
                         {{ formData.userId }}
                 </el-descriptions-item>
-                <el-descriptions-item label="企微成员UserID">
+                <el-descriptions-item label="企微成员">
                         {{ formData.userid }}
                 </el-descriptions-item>
                 <el-descriptions-item label="成员名称">
@@ -162,13 +178,13 @@
                 <el-descriptions-item label="别名">
                         {{ formData.alias }}
                 </el-descriptions-item>
-                <el-descriptions-item label="职务信息ID">
+                <el-descriptions-item label="职务信息">
                         {{ formData.positionId }}
                 </el-descriptions-item>
-                <el-descriptions-item label="性别(0未知1男2女)">
+                <el-descriptions-item label="性别">
                         {{ formData.gender }}
                 </el-descriptions-item>
-                <el-descriptions-item label="是否领导(1:是 0:否)">
+                <el-descriptions-item label="是否领导">
                         {{ formData.isLeader }}
                 </el-descriptions-item>
                 <el-descriptions-item label="手机">
@@ -192,11 +208,8 @@
                 <el-descriptions-item label="英文名">
                         {{ formData.nameEn }}
                 </el-descriptions-item>
-                <el-descriptions-item label="激活状态(1已激活，2已禁用，4未激活，5退出企业)">
+                <el-descriptions-item label="状态">
                         {{ formData.status }}
-                </el-descriptions-item>
-                <el-descriptions-item label="是否关注微信插件">
-                        {{ formData.isAttention }}
                 </el-descriptions-item>
         </el-descriptions>
     </el-drawer>
@@ -217,6 +230,9 @@ import {
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
+import ImportExcel from "@/components/exportExcel/importExcel.vue";
+import ExportExcel from "@/components/exportExcel/exportExcel.vue";
+import ExportTemplate from "@/components/exportExcel/exportTemplate.vue";
 
 defineOptions({
     name: 'WcStaff'
