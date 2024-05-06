@@ -8,10 +8,16 @@ import (
 // 账号信息 结构体  WcStaffResponse
 type WcStaffResponse struct {
 	weChat.WcStaff
-	Position     string `json:"position"`      //职务信息
-	GenderText   string `json:"genderText"`    //性别信息
-	IsLeaderText string `json:"isLeaderText" ` //是否领导信息
-	StatusText   string `json:"statusText"`    //状态信息
+	Position     []WcStaffPositionResult `json:"position"`      //职务信息
+	GenderText   string                  `json:"genderText"`    //性别信息
+	IsLeaderText string                  `json:"isLeaderText" ` //是否领导信息
+	StatusText   string                  `json:"statusText"`    //状态信息
+}
+
+type WcStaffPositionResult struct {
+	Id           *int   `json:"id"`
+	PositionId   *int   `json:"positionId"`
+	PositionName string `json:"positionName"`
 }
 
 func (WcStaffResponse) Assemble(staffs []weChat.WcStaff) (newStaffs []WcStaffResponse) {

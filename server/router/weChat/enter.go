@@ -10,4 +10,6 @@ type RouterGroup struct {
 	WcStaffContactRouter
 	WcStaffMaterialsRouter
 	WcStaffRouter
+	WcStaffPositionRouter
+	WcStaffDepartmentRouter
 }

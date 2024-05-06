@@ -226,9 +226,9 @@ import {
 import {getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile} from '@/utils/format'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {ref, reactive} from 'vue'
-import ImportExcel from "@/components/exportExcel/importExcel.vue";
-import ExportExcel from "@/components/exportExcel/exportExcel.vue";
-import ExportTemplate from "@/components/exportExcel/exportTemplate.vue";
+import ImportExcel from "@/components/exportExcel/wechat/importExcel.vue";
+import ExportExcel from "@/components/exportExcel/wechat/exportExcel.vue";
+import ExportTemplate from "@/components/exportExcel/wechat/exportTemplate.vue";
 
 defineOptions({
   name: 'WcStaff'
@@ -251,7 +251,7 @@ const formData = ref({
   isLeaderText: '',
   name: '',
   alias: '',
-  positionId: 0,
+  position: '',
   gender: 0,
   isLeader: 0,
   mobile: '',
@@ -259,10 +259,8 @@ const formData = ref({
   email: '',
   address: '',
   bizMail: '',
-  videoId: '',
   nameEn: '',
   status: 0,
-  isAttention: 0,
 })
 
 
@@ -514,7 +512,7 @@ const closeDetailShow = () => {
     userid: '',
     name: '',
     alias: '',
-    positionId: 0,
+    position: '',
     gender: 0,
     isLeader: 0,
     mobile: '',
@@ -522,10 +520,8 @@ const closeDetailShow = () => {
     email: '',
     address: '',
     bizMail: '',
-    videoId: '',
     nameEn: '',
     status: 0,
-    isAttention: 0,
   }
 }
 
@@ -544,7 +540,7 @@ const closeDialog = () => {
     userid: '',
     name: '',
     alias: '',
-    positionId: 0,
+    position: '',
     gender: 0,
     isLeader: 0,
     mobile: '',
@@ -552,10 +548,8 @@ const closeDialog = () => {
     email: '',
     address: '',
     bizMail: '',
-    videoId: '',
     nameEn: '',
     status: 0,
-    isAttention: 0,
   }
 }
 // 弹窗确定

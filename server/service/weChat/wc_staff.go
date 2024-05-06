@@ -1,11 +1,16 @@
 package weChat
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
 	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
+	"github.com/xuri/excelize/v2"
+	"gorm.io/gorm"
+	"mime/multipart"
 )
 
 type WcStaffService struct {
@@ -90,4 +95,74 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 	}
 
 	return wcStaffsResponse, total, err
+}
+
+// ImportExcel 导入Excel
+// Author [piexlmax](https://github.com/piexlmax)
+func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multipart.FileHeader) (err error) {
+	var template system.SysExportTemplate
+	err = global.GVA_DB.First(&template, "template_id = ?", templateID).Error
+	if err != nil {
+		return err
+	}
+
+	src, err := file.Open()
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+
+	f, err := excelize.OpenReader(src)
+	if err != nil {
+		return err
+	}
+
+	rows, err := f.GetRows("Sheet1")
+	if err != nil {
+		return err
+	}
+
+	var templateInfoMap = make(map[string]string)
+	err = json.Unmarshal([]byte(template.TemplateInfo), &templateInfoMap)
+	if err != nil {
+		return err
+	}
+
+	var titleKeyMap = make(map[string]string)
+	for key, title := range templateInfoMap {
+		titleKeyMap[title] = key
+	}
+
+	db := global.GVA_DB
+	if template.DBName != "" {
+		db = global.MustGetGlobalDBByDBName(template.DBName)
+	}
+
+	return db.Transaction(func(tx *gorm.DB) error {
+		excelTitle := rows[0]
+		values := rows[1:]
+		items := make([]map[string]interface{}, 0, len(values))
+		for _, row := range values {
+			var item = make(map[string]interface{})
+			for ii, value := range row {
+				key := titleKeyMap[excelTitle[ii]]
+				item[key] = value
+			}
+
+			// 此处需要等待gorm修复HasColumn中的painc问题
+			//needCreated := tx.Migrator().HasColumn(template.TableName, "created_at")
+			//needUpdated := tx.Migrator().HasColumn(template.TableName, "updated_at")
+			//
+			//if item["created_at"] == nil && needCreated {
+			//	item["created_at"] = time.Now()
+			//}
+			//if item["updated_at"] == nil && needUpdated {
+			//	item["updated_at"] = time.Now()
+			//}
+
+			items = append(items, item)
+		}
+		cErr := tx.Table(template.TableName).CreateInBatches(&items, 1000).Error
+		return cErr
+	})
 }

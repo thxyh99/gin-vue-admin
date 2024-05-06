@@ -10,4 +10,6 @@ type ServiceGroup struct {
 	WcStaffContactService
 	WcStaffMaterialsService
 	WcStaffService
+	WcStaffPositionService
+	WcStaffDepartmentService
 }
