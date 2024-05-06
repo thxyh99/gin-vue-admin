@@ -2,15 +2,19 @@ package weChat
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
 	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"github.com/xuri/excelize/v2"
 	"gorm.io/gorm"
 	"mime/multipart"
+	"strconv"
+	"time"
 )
 
 type WcStaffService struct {
@@ -102,6 +106,11 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multipart.FileHeader) (err error) {
 	var template system.SysExportTemplate
 	err = global.GVA_DB.First(&template, "template_id = ?", templateID).Error
+
+	fmt.Println("-----------------------")
+	fmt.Println(template)
+	fmt.Println("-----------------------")
+
 	if err != nil {
 		return err
 	}
@@ -138,6 +147,22 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 		db = global.MustGetGlobalDBByDBName(template.DBName)
 	}
 
+	GenderMap := map[int]string{
+		0: "未知",
+		1: "男",
+		2: "女",
+	}
+	IsLeaderMaps := map[int]string{
+		0: "否",
+		1: "是",
+	}
+	StatusMaps := map[int]string{
+		1: "已激活",
+		2: "已禁用",
+		4: "未激活",
+		5: "退出企业",
+	}
+
 	return db.Transaction(func(tx *gorm.DB) error {
 		excelTitle := rows[0]
 		values := rows[1:]
@@ -146,20 +171,34 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 			var item = make(map[string]interface{})
 			for ii, value := range row {
 				key := titleKeyMap[excelTitle[ii]]
+				if key == "gender" {
+					gender := utils.GetKeyByValue(GenderMap, value)
+					if gender == -1 {
+						return errors.New("性别值异常:" + value)
+					}
+					value = strconv.Itoa(gender)
+				}
+				if key == "is_leader" {
+					isLeader := utils.GetKeyByValue(IsLeaderMaps, value)
+					if isLeader == -1 {
+						return errors.New("是否领导值异常:" + value)
+					}
+					value = strconv.Itoa(isLeader)
+				}
+				if key == "status" {
+					status := utils.GetKeyByValue(StatusMaps, value)
+					if status == -1 {
+						return errors.New("状态值异常:" + value)
+					}
+					value = strconv.Itoa(status)
+				}
 				item[key] = value
+				fmt.Println("key:" + key + " value:" + value)
 			}
 
-			// 此处需要等待gorm修复HasColumn中的painc问题
-			//needCreated := tx.Migrator().HasColumn(template.TableName, "created_at")
-			//needUpdated := tx.Migrator().HasColumn(template.TableName, "updated_at")
-			//
-			//if item["created_at"] == nil && needCreated {
-			//	item["created_at"] = time.Now()
-			//}
-			//if item["updated_at"] == nil && needUpdated {
-			//	item["updated_at"] = time.Now()
-			//}
-
+			now := time.Now().Format("2006-01-02 15:04:05")
+			item["created_at"] = now
+			item["updated_at"] = now
 			items = append(items, item)
 		}
 		cErr := tx.Table(template.TableName).CreateInBatches(&items, 1000).Error

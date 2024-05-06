@@ -21,7 +21,7 @@ func (s *WcStaffRouter) InitWcStaffRouter(Router *gin.RouterGroup, PublicRouter 
 		wcStaffRouter.DELETE("deleteWcStaff", wcStaffApi.DeleteWcStaff)           // 删除账号信息
 		wcStaffRouter.DELETE("deleteWcStaffByIds", wcStaffApi.DeleteWcStaffByIds) // 批量删除账号信息
 		wcStaffRouter.PUT("updateWcStaff", wcStaffApi.UpdateWcStaff)              // 更新账号信息
-		wcStaffRouter.POST("importExcel", wcStaffApi.ImportExcel)                 // 更新导出模板
+		wcStaffRouter.POST("importExcel", wcStaffApi.ImportExcel)                 // 导入账号信息
 	}
 	{
 		wcStaffRouterWithoutRecord.GET("findWcStaff", wcStaffApi.FindWcStaff)       // 根据ID获取账号信息

@@ -172,7 +172,7 @@ func (wcStaffApi *WcStaffApi) GetWcStaffPublic(c *gin.Context) {
 	}, "获取成功", c)
 }
 
-// ExportExcel 导入表格
+// ImportExcel 导入表格
 // @Tags SysImportTemplate
 // @Summary 导入表格
 // @Security ApiKeyAuth
@@ -191,6 +191,7 @@ func (wcStaffApi *WcStaffApi) ImportExcel(c *gin.Context) {
 		response.FailWithMessage("文件获取失败", c)
 		return
 	}
+	fmt.Println("=======ImportExcel 导入表格=========")
 	if err := wcStaffService.ImportExcel(templateID, file); err != nil {
 		global.GVA_LOG.Error(err.Error(), zap.Error(err))
 		response.FailWithMessage(err.Error(), c)
