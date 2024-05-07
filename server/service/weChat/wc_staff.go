@@ -14,6 +14,7 @@ import (
 	"gorm.io/gorm"
 	"mime/multipart"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -105,6 +106,7 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 // Author [piexlmax](https://github.com/piexlmax)
 func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multipart.FileHeader) (err error) {
 	var template system.SysExportTemplate
+
 	err = global.GVA_DB.First(&template, "template_id = ?", templateID).Error
 
 	fmt.Println("-----------------------")
@@ -162,15 +164,95 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 		4: "未激活",
 		5: "退出企业",
 	}
+	now := time.Now().Format("2006-01-02 15:04:05")
 
 	return db.Transaction(func(tx *gorm.DB) error {
 		excelTitle := rows[0]
 		values := rows[1:]
-		items := make([]map[string]interface{}, 0, len(values))
+		departmentMaps := make(map[string]int)
+		positionMaps := make(map[string]int)
+
 		for _, row := range values {
-			var item = make(map[string]interface{})
 			for ii, value := range row {
 				key := titleKeyMap[excelTitle[ii]]
+				// 更新部门信息
+				if key == "department" && value != "" {
+					departmentsMultiple := strings.Split(value, ";")
+					departmentsParents := make(map[string]string)
+					fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+					fmt.Println("departmentsMultiple", departmentsMultiple)
+					for _, departmentsSingle := range departmentsMultiple {
+						departments := strings.Split(departmentsSingle, "/")
+						fmt.Println("departmentsSingle", departmentsSingle)
+						fmt.Println("departments", departments)
+						fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+						for level, name := range departments {
+							if level > 0 {
+								departmentsParents[name] = departments[level-1]
+							}
+							_, ok := departmentMaps[name]
+							if ok {
+								continue
+							}
+							var parentId int
+							if level > 0 {
+								fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+								fmt.Println("level", level)
+								fmt.Println("departments", departments)
+								fmt.Println("name", departments[level-1])
+								fmt.Println("departmentMaps", departmentMaps)
+								fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+								pId, mapOk := departmentMaps[departments[level-1]]
+								if mapOk {
+									parentId = pId
+								}
+							}
+							var wd weChat.WcDepartment
+							zero := 0
+							wd.Name = name
+							wd.Parentid = &parentId
+							wd.DepartmentId = &zero
+							wd.Order = &zero
+							wd.Parentid = &parentId
+							wd.CreatedAt = time.Now()
+							wd.UpdatedAt = time.Now()
+							tx.Table(wd.TableName()).Create(&wd)
+							departmentMaps[name] = int(wd.ID)
+						}
+					}
+				}
+
+				// 更新职务信息
+				if key == "position" && value != "" {
+					positions := strings.Split(value, ";")
+					for _, name := range positions {
+						_, ok := positionMaps[name]
+						if ok {
+							continue
+						}
+						var wp weChat.WcPosition
+						wp.Name = name
+						wp.CreatedAt = time.Now()
+						wp.UpdatedAt = time.Now()
+						tx.Table(wp.TableName()).Create(&wp)
+						positionMaps[name] = int(wp.ID)
+					}
+				}
+			}
+		}
+
+		for _, row := range values {
+			var item = make(map[string]interface{})
+			var jobNum string
+			var lastDepartments, positions []string
+			var staff weChat.WcStaff
+
+			// 更新员工信息
+			for ii, value := range row {
+				key := titleKeyMap[excelTitle[ii]]
+				if key == "job_num" {
+					jobNum = value
+				}
 				if key == "gender" {
 					gender := utils.GetKeyByValue(GenderMap, value)
 					if gender == -1 {
@@ -192,16 +274,68 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 					}
 					value = strconv.Itoa(status)
 				}
-				item[key] = value
+
+				if key != "department" && key != "position" {
+					item[key] = value
+				}
+				if key == "department" {
+					parts := strings.Split(value, "/")
+					lastDepartment := parts[len(parts)-1]
+					lastDepartments = append(lastDepartments, lastDepartment)
+				}
+				if key == "position" {
+					positions = strings.Split(value, ";")
+				}
 				fmt.Println("key:" + key + " value:" + value)
 			}
 
-			now := time.Now().Format("2006-01-02 15:04:05")
 			item["created_at"] = now
 			item["updated_at"] = now
-			items = append(items, item)
+
+			// 插入员工
+			cErr := tx.Table(weChat.WcStaff{}.TableName()).Create(&item).Error
+			if cErr != nil {
+				return cErr
+			}
+
+			tx.Table(staff.TableName()).Where("job_num=?", jobNum).First(&staff)
+
+			// 更新员工部门信息
+			if len(lastDepartments) > 0 {
+				for _, lastDepartment := range lastDepartments {
+					var sdItem = make(map[string]interface{})
+					departmentId, ok := departmentMaps[lastDepartment]
+					if ok {
+						sdItem["staff_id"] = staff.ID
+						sdItem["department_id"] = departmentId
+						sdItem["created_at"] = now
+						sdItem["updated_at"] = now
+						sdErr := tx.Table(weChat.WcStaffDepartment{}.TableName()).Create(&sdItem).Error
+						if sdErr != nil {
+							return sdErr
+						}
+					}
+				}
+			}
+
+			// 更新员工职务信息
+			if len(positions) > 0 {
+				for _, pItem := range positions {
+					positionId, ok := positionMaps[pItem]
+					var spItem = make(map[string]interface{})
+					if ok {
+						spItem["staff_id"] = staff.ID
+						spItem["position_id"] = positionId
+						spItem["created_at"] = now
+						spItem["updated_at"] = now
+						spErr := tx.Table(weChat.WcStaffPosition{}.TableName()).Create(&spItem).Error
+						if spErr != nil {
+							return spErr
+						}
+					}
+				}
+			}
 		}
-		cErr := tx.Table(template.TableName).CreateInBatches(&items, 1000).Error
-		return cErr
+		return nil
 	})
 }
