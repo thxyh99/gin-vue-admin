@@ -11,9 +11,9 @@
         <el-form-item label="成员名称:" prop="name">
           <el-input v-model="formData.name" :clearable="true"  placeholder="请输入成员名称" />
        </el-form-item>
-        <el-form-item label="员工工号:" prop="jobNum">
-          <el-input v-model="formData.jobNum" :clearable="true"  placeholder="请输入成员名称" />
-        </el-form-item>
+        <el-form-item label="别名:" prop="alias">
+          <el-input v-model="formData.alias" :clearable="true"  placeholder="请输入别名" />
+       </el-form-item>
         <el-form-item label="职务信息ID:" prop="positionId">
           <el-input v-model.number="formData.positionId" :clearable="true" placeholder="请输入" />
        </el-form-item>
@@ -38,8 +38,17 @@
         <el-form-item label="企业邮箱:" prop="bizMail">
           <el-input v-model="formData.bizMail" :clearable="true"  placeholder="请输入企业邮箱" />
        </el-form-item>
+        <el-form-item label="视频号:" prop="videoId">
+          <el-input v-model="formData.videoId" :clearable="true"  placeholder="请输入视频号" />
+       </el-form-item>
+        <el-form-item label="英文名:" prop="nameEn">
+          <el-input v-model="formData.nameEn" :clearable="true"  placeholder="请输入英文名" />
+       </el-form-item>
         <el-form-item label="激活状态(1已激活，2已禁用，4未激活，5退出企业):" prop="status">
           <el-input v-model.number="formData.status" :clearable="true" placeholder="请输入" />
+       </el-form-item>
+        <el-form-item label="是否关注微信插件:" prop="isAttention">
+          <el-input v-model.number="formData.isAttention" :clearable="true" placeholder="请输入" />
        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="save">保存</el-button>
@@ -74,8 +83,9 @@ const type = ref('')
 const formData = ref({
             userId: 0,
             userid: '',
-            jobNum: '',
             name: '',
+            alias: '',
+            positionId: 0,
             gender: 0,
             isLeader: 0,
             mobile: '',
@@ -83,7 +93,10 @@ const formData = ref({
             email: '',
             address: '',
             bizMail: '',
+            videoId: '',
+            nameEn: '',
             status: 0,
+            isAttention: 0,
         })
 // 验证规则
 const rule = reactive({
