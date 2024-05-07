@@ -60,12 +60,13 @@
         <el-table-column align="left" label="成员名称" prop="name" width="120"/>
         <el-table-column align="left" label="员工工号" prop="jobNum" width="120"/>
         <el-table-column align="left" label="企微账号" prop="userid" width="120"/>
-        <el-table-column align="left" label="职务信息" prop="position" width="120"/>
-        <el-table-column align="left" label="性别" prop="genderText" width="120"/>
-        <el-table-column align="left" label="是否领导" prop="isLeaderText" width="120"/>
+        <el-table-column align="left" label="部门信息" prop="department" width="150"/>
+        <el-table-column align="left" label="职务信息" prop="position" width="140"/>
+        <el-table-column align="left" label="性别" prop="genderText" width="90"/>
+        <el-table-column align="left" label="是否领导" prop="isLeaderText" width="90"/>
         <el-table-column align="left" label="手机" prop="mobile" width="120"/>
         <el-table-column align="left" label="座机" prop="telephone" width="120"/>
-        <el-table-column align="left" label="个人邮箱" prop="email" width="120"/>
+        <el-table-column align="left" label="个人邮箱" prop="email" width="130"/>
         <el-table-column align="left" label="地址" prop="address" width="120"/>
         <el-table-column align="left" label="企业邮箱" prop="bizMail" width="120"/>
         <el-table-column align="left" label="状态" prop="statusText" width="120"/>
@@ -150,9 +151,6 @@
         <el-form-item label="企业邮箱:" prop="bizMail">
           <el-input v-model="formData.bizMail" :clearable="true" placeholder="请输入企业邮箱"/>
         </el-form-item>
-        <el-form-item label="英文名:" prop="nameEn">
-          <el-input v-model="formData.nameEn" :clearable="true" placeholder="请输入英文名"/>
-        </el-form-item>
         <el-form-item label="状态:" prop="status">
           <el-select v-model="formData.status" placeholder="请选择状态">
             <el-option label="己激活" value="1"></el-option>
@@ -180,8 +178,11 @@
         <el-descriptions-item label="企微账号">
           {{ formData.userid }}
         </el-descriptions-item>
+        <el-descriptions-item label="部门信息">
+          {{ formData.department }}
+        </el-descriptions-item>
         <el-descriptions-item label="职务信息">
-          {{ formData.positionId }}
+          {{ formData.position }}
         </el-descriptions-item>
         <el-descriptions-item label="性别">
           {{ formData.genderText }}
@@ -226,9 +227,9 @@ import {
 import {getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile} from '@/utils/format'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {ref, reactive} from 'vue'
-import ImportExcel from "@/components/exportExcel/wechat/importExcel.vue";
-import ExportExcel from "@/components/exportExcel/wechat/exportExcel.vue";
-import ExportTemplate from "@/components/exportExcel/wechat/exportTemplate.vue";
+import ImportExcel from "@/components/exportExcel/importExcel.vue";
+import ExportExcel from "@/components/exportExcel/exportExcel.vue";
+import ExportTemplate from "@/components/exportExcel/exportTemplate.vue";
 
 defineOptions({
   name: 'WcStaff'
@@ -250,7 +251,7 @@ const formData = ref({
   statusText: '',
   isLeaderText: '',
   name: '',
-  alias: '',
+  department: '',
   position: '',
   gender: 0,
   isLeader: 0,
@@ -259,7 +260,6 @@ const formData = ref({
   email: '',
   address: '',
   bizMail: '',
-  nameEn: '',
   status: 0,
 })
 
@@ -511,7 +511,7 @@ const closeDetailShow = () => {
     userId: 0,
     userid: '',
     name: '',
-    alias: '',
+    department: '',
     position: '',
     gender: 0,
     isLeader: 0,
@@ -520,7 +520,6 @@ const closeDetailShow = () => {
     email: '',
     address: '',
     bizMail: '',
-    nameEn: '',
     status: 0,
   }
 }
@@ -539,7 +538,7 @@ const closeDialog = () => {
     userId: 0,
     userid: '',
     name: '',
-    alias: '',
+    department: '',
     position: '',
     gender: 0,
     isLeader: 0,
@@ -548,7 +547,6 @@ const closeDialog = () => {
     email: '',
     address: '',
     bizMail: '',
-    nameEn: '',
     status: 0,
   }
 }
