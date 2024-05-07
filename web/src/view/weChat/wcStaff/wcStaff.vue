@@ -227,9 +227,9 @@ import {
 import {getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile} from '@/utils/format'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {ref, reactive} from 'vue'
-import ImportExcel from "@/components/exportExcel/importExcel.vue";
-import ExportExcel from "@/components/exportExcel/exportExcel.vue";
-import ExportTemplate from "@/components/exportExcel/exportTemplate.vue";
+import ImportExcel from "@/components/exportExcel/wechat/importExcel.vue";
+import ExportExcel from "@/components/exportExcel/wechat/exportExcel.vue";
+import ExportTemplate from "@/components/exportExcel/wechat/exportTemplate.vue";
 
 defineOptions({
   name: 'WcStaff'
