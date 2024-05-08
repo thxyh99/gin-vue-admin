@@ -117,11 +117,16 @@
         <el-form-item label="企微账号:" prop="userid">
           <el-input v-model="formData.userid" :clearable="true" placeholder="请输入企微账号"/>
         </el-form-item>
-        <el-form-item label="职务信息:" prop="positionId">
-          <el-select v-model="formData.positionId" multiple placeholder="请选择职务信息">
-            <el-option label="职务信息1" value="1"></el-option>
-            <el-option label="职务信息2" value="2"></el-option>
-            <el-option label="职务信息3" value="3"></el-option>
+<!--        <el-form-item label="职务信息:" prop="positionId">-->
+<!--          <el-select v-model="formData.position" multiple placeholder="请选择职务信息">-->
+<!--            <el-option label="职务信息1" value="1"></el-option>-->
+<!--            <el-option label="职务信息2" value="2"></el-option>-->
+<!--            <el-option label="职务信息3" value="3"></el-option>-->
+<!--          </el-select>-->
+<!--        </el-form-item>-->
+        <el-form-item label="职务信息:" prop="position">
+          <el-select v-model="formData.position" multiple placeholder="请选择职务信息">
+            <el-option v-for="position in positions" :key="position.value" :label="position.label" :value="position.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="性别:" prop="gender">
@@ -153,10 +158,11 @@
         </el-form-item>
         <el-form-item label="状态:" prop="status">
           <el-select v-model="formData.status" placeholder="请选择状态">
-            <el-option label="己激活" value="1"></el-option>
-            <el-option label="已禁用" value="2"></el-option>
-            <el-option label="未激活" value="4"></el-option>
-            <el-option label="退出企业" value="5"></el-option>
+<!--            <el-option label="己激活" value="1"></el-option>-->
+<!--            <el-option label="已禁用" value="2"></el-option>-->
+<!--            <el-option label="未激活" value="4"></el-option>-->
+<!--            <el-option label="退出企业" value="5"></el-option>-->
+            <el-option v-for="status in statuses" :key="status.value" :label="status.label" :value="status.value"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -235,11 +241,18 @@ defineOptions({
   name: 'WcStaff'
 })
 
-const options = ref([
-  { text: '已激活', value: 1 },
-  { text: '已禁用', value: 2 },
-  { text: '未激活', value: 4 },
-  { text: '退出企业', value: 5 }
+const statuses = ref([
+  { label: '已激活', value: 1 },
+  { label: '已禁用', value: 2 },
+  { label: '未激活', value: 4 },
+  { label: '退出企业', value: 5 }
+])
+
+const positions = ref([
+  { label: '项目经理', value: 1 },
+  { label: '后端开发', value: 2 },
+  { label: '财务经理', value: 3 },
+  { label: '董事长助理', value: 4 }
 ])
 
 // 自动化生成的字典（可能为空）以及字段
@@ -260,7 +273,7 @@ const formData = ref({
   email: '',
   address: '',
   bizMail: '',
-  status: 0,
+  status: 1,
 })
 
 
@@ -273,6 +286,17 @@ const rule = reactive({
   },
   ],
   userid: [{
+    required: true,
+    message: '',
+    trigger: ['input', 'blur'],
+  },
+    {
+      whitespace: true,
+      message: '不能只输入空格',
+      trigger: ['input', 'blur'],
+    }
+  ],
+  jobNum: [{
     required: true,
     message: '',
     trigger: ['input', 'blur'],
@@ -510,6 +534,7 @@ const closeDetailShow = () => {
   formData.value = {
     userId: 0,
     userid: '',
+    jobNum: '',
     name: '',
     department: '',
     position: '',
@@ -520,7 +545,7 @@ const closeDetailShow = () => {
     email: '',
     address: '',
     bizMail: '',
-    status: 0,
+    status: 1,
   }
 }
 
@@ -547,7 +572,7 @@ const closeDialog = () => {
     email: '',
     address: '',
     bizMail: '',
-    status: 0,
+    status: 1,
   }
 }
 // 弹窗确定

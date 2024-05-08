@@ -22,9 +22,49 @@ type WcStaffService struct {
 }
 
 // CreateWcStaff 创建账号信息记录
-func (wcStaffService *WcStaffService) CreateWcStaff(wcStaff *weChat.WcStaff) (err error) {
-	err = global.GVA_DB.Create(wcStaff).Error
-	return err
+func (wcStaffService *WcStaffService) CreateWcStaff(wcStaffRequest *weChat2.WcStaffRequest) (err error) {
+	var wcStaff weChat.WcStaff
+	zero := 0
+	wcStaff.UserId = &zero
+	wcStaff.Userid = wcStaffRequest.Userid
+	wcStaff.JobNum = wcStaffRequest.JobNum
+	wcStaff.Name = wcStaffRequest.Name
+	wcStaff.Gender = wcStaffRequest.Gender
+	wcStaff.IsLeader = wcStaffRequest.IsLeader
+	wcStaff.Mobile = wcStaffRequest.Mobile
+	wcStaff.Telephone = wcStaffRequest.Telephone
+	wcStaff.Email = wcStaffRequest.Email
+	wcStaff.Address = wcStaffRequest.Address
+	wcStaff.BizMail = wcStaffRequest.BizMail
+	wcStaff.Status = wcStaffRequest.Status
+	wcStaff.CreatedAt = time.Now()
+	wcStaff.UpdatedAt = time.Now()
+	err = global.GVA_DB.Create(&wcStaff).Error
+	if err != nil {
+		fmt.Println("err1:", err)
+		return err
+	}
+
+	fmt.Println("staff_id:", wcStaff.ID)
+
+	size := len(wcStaffRequest.Position)
+	if size > 0 {
+		items := make([]map[string]interface{}, 0, size)
+		for _, pId := range wcStaffRequest.Position {
+			var item = make(map[string]interface{})
+			item["staff_id"] = wcStaff.ID
+			item["position_id"] = pId
+			item["created_at"] = time.Now()
+			item["updated_at"] = time.Now()
+			items = append(items, item)
+			fmt.Println("item", item)
+		}
+		cErr := global.GVA_DB.Table(weChat.WcStaffPosition{}.TableName()).CreateInBatches(&items, 1000).Error
+		fmt.Println("err3:", cErr)
+		return cErr
+	}
+
+	return nil
 }
 
 // DeleteWcStaff 删除账号信息记录

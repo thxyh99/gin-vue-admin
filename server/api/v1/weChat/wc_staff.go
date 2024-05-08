@@ -6,6 +6,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
+	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/service"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -26,14 +27,19 @@ var wcStaffService = service.ServiceGroupApp.WeChatServiceGroup.WcStaffService
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"创建成功"}"
 // @Router /wcStaff/createWcStaff [post]
 func (wcStaffApi *WcStaffApi) CreateWcStaff(c *gin.Context) {
-	var wcStaff weChat.WcStaff
-	err := c.ShouldBindJSON(&wcStaff)
+	var wcStaffRequest weChat2.WcStaffRequest
+	err := c.ShouldBindJSON(&wcStaffRequest)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
 
-	if err := wcStaffService.CreateWcStaff(&wcStaff); err != nil {
+	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	fmt.Println("wcStaffRequest:", wcStaffRequest)
+	fmt.Println("wcStaffRequestPosition:", wcStaffRequest.Position)
+	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+	if err := wcStaffService.CreateWcStaff(&wcStaffRequest); err != nil {
 		global.GVA_LOG.Error("创建失败!", zap.Error(err))
 		response.FailWithMessage("创建失败", c)
 	} else {
