@@ -117,17 +117,13 @@
         <el-form-item label="企微账号:" prop="userid">
           <el-input v-model="formData.userid" :clearable="true" placeholder="请输入企微账号"/>
         </el-form-item>
-<!--        <el-form-item label="职务信息:" prop="positionId">-->
-<!--          <el-select v-model="formData.position" multiple placeholder="请选择职务信息">-->
-<!--            <el-option label="职务信息1" value="1"></el-option>-->
-<!--            <el-option label="职务信息2" value="2"></el-option>-->
-<!--            <el-option label="职务信息3" value="3"></el-option>-->
+        <el-form-item label="职务信息:" prop="positionIds">
+          <SelectPosition v-model="formData.positionIds">
+
+          </SelectPosition>
+<!--          <el-select v-model="formData.positionIds" multiple placeholder="请选择职务信息">-->
+<!--            <el-option v-for="position in positions" :key="position.value" :label="position.label" :value="position.value"></el-option>-->
 <!--          </el-select>-->
-<!--        </el-form-item>-->
-        <el-form-item label="职务信息:" prop="position">
-          <el-select v-model="formData.position" multiple placeholder="请选择职务信息">
-            <el-option v-for="position in positions" :key="position.value" :label="position.label" :value="position.value"></el-option>
-          </el-select>
         </el-form-item>
         <el-form-item label="性别:" prop="gender">
           <el-radio-group  v-model="formData.gender">
@@ -158,10 +154,6 @@
         </el-form-item>
         <el-form-item label="状态:" prop="status">
           <el-select v-model="formData.status" placeholder="请选择状态">
-<!--            <el-option label="己激活" value="1"></el-option>-->
-<!--            <el-option label="已禁用" value="2"></el-option>-->
-<!--            <el-option label="未激活" value="4"></el-option>-->
-<!--            <el-option label="退出企业" value="5"></el-option>-->
             <el-option v-for="status in statuses" :key="status.value" :label="status.label" :value="status.value"></el-option>
           </el-select>
         </el-form-item>
@@ -236,6 +228,7 @@ import {ref, reactive} from 'vue'
 import ImportExcel from "@/components/exportExcel/wechat/importExcel.vue";
 import ExportExcel from "@/components/exportExcel/wechat/exportExcel.vue";
 import ExportTemplate from "@/components/exportExcel/wechat/exportTemplate.vue";
+import SelectPosition from "@/components/selectPosition/index.vue";
 
 defineOptions({
   name: 'WcStaff'
@@ -260,12 +253,9 @@ const formData = ref({
   userId: 0,
   userid: '',
   jobNum: '',
-  genderText: '',
-  statusText: '',
-  isLeaderText: '',
   name: '',
   department: '',
-  position: '',
+  positionIds: [],
   gender: 0,
   isLeader: 0,
   mobile: '',

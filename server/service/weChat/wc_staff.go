@@ -23,22 +23,22 @@ type WcStaffService struct {
 
 // CreateWcStaff 创建账号信息记录
 func (wcStaffService *WcStaffService) CreateWcStaff(wcStaffRequest *weChat2.WcStaffRequest) (err error) {
-	var wcStaff weChat.WcStaff
 	zero := 0
-	wcStaff.UserId = &zero
-	wcStaff.Userid = wcStaffRequest.Userid
-	wcStaff.JobNum = wcStaffRequest.JobNum
-	wcStaff.Name = wcStaffRequest.Name
-	wcStaff.Gender = wcStaffRequest.Gender
-	wcStaff.IsLeader = wcStaffRequest.IsLeader
-	wcStaff.Mobile = wcStaffRequest.Mobile
-	wcStaff.Telephone = wcStaffRequest.Telephone
-	wcStaff.Email = wcStaffRequest.Email
-	wcStaff.Address = wcStaffRequest.Address
-	wcStaff.BizMail = wcStaffRequest.BizMail
-	wcStaff.Status = wcStaffRequest.Status
-	wcStaff.CreatedAt = time.Now()
-	wcStaff.UpdatedAt = time.Now()
+	wcStaff := weChat.WcStaff{
+		UserId:    &zero,
+		Userid:    wcStaffRequest.Userid,
+		JobNum:    wcStaffRequest.JobNum,
+		Name:      wcStaffRequest.Name,
+		Gender:    wcStaffRequest.Gender,
+		IsLeader:  wcStaffRequest.IsLeader,
+		Mobile:    wcStaffRequest.Mobile,
+		Telephone: wcStaffRequest.Telephone,
+		Email:     wcStaffRequest.Email,
+		Address:   wcStaffRequest.Address,
+		BizMail:   wcStaffRequest.BizMail,
+		Status:    wcStaffRequest.Status,
+	}
+
 	err = global.GVA_DB.Create(&wcStaff).Error
 	if err != nil {
 		fmt.Println("err1:", err)
@@ -47,10 +47,10 @@ func (wcStaffService *WcStaffService) CreateWcStaff(wcStaffRequest *weChat2.WcSt
 
 	fmt.Println("staff_id:", wcStaff.ID)
 
-	size := len(wcStaffRequest.Position)
+	size := len(wcStaffRequest.PositionIds)
 	if size > 0 {
 		items := make([]map[string]interface{}, 0, size)
-		for _, pId := range wcStaffRequest.Position {
+		for _, pId := range wcStaffRequest.PositionIds {
 			var item = make(map[string]interface{})
 			item["staff_id"] = wcStaff.ID
 			item["position_id"] = pId

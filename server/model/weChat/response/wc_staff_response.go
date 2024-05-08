@@ -10,7 +10,7 @@ import (
 // 账号信息 结构体  WcStaffRequest
 type WcStaffRequest struct {
 	weChat.WcStaff
-	Position []int `json:"position"` //职务信息
+	PositionIds []int `json:"positionIds"` //职务信息
 	//Department []int `json:"department"` //部门信息
 }
 
