@@ -67,7 +67,6 @@ func (wcStaffService *WcStaffService) GetWcStaff(ID string) (wcStaffResponse weC
 }
 
 // GetWcStaffInfoList 分页获取账号信息记录
-// Author [piexlmax](https://github.com/piexlmax)
 func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffSearch) (list []weChat2.WcStaffResponse, total int64, err error) {
 
 	limit := info.PageSize
@@ -93,17 +92,10 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 	var wcStaffsResponse []weChat2.WcStaffResponse
 	wcStaffsResponse = weChat2.WcStaffResponse{}.Assemble(wcStaffs)
 
-	fmt.Println("total:", total)
-
-	for _, item := range wcStaffs {
-		fmt.Println(item)
-	}
-
 	return wcStaffsResponse, total, err
 }
 
 // ImportExcel 导入Excel
-// Author [piexlmax](https://github.com/piexlmax)
 func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multipart.FileHeader) (err error) {
 	var template system.SysExportTemplate
 
@@ -171,10 +163,26 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 		values := rows[1:]
 		departmentMaps := make(map[string]int)
 		positionMaps := make(map[string]int)
+		var ds []weChat.WcDepartment
+		var ps []weChat.WcPosition
+
+		tx.Table(weChat.WcDepartment{}.TableName()).Select("id,name").Find(&ds)
+		for _, dsItem := range ds {
+			departmentMaps[dsItem.Name] = int(dsItem.ID)
+		}
+
+		tx.Table(weChat.WcPosition{}.TableName()).Select("id,name").Find(&ps)
+		for _, psItem := range ps {
+			positionMaps[psItem.Name] = int(psItem.ID)
+		}
 
 		for _, row := range values {
 			for ii, value := range row {
 				key := titleKeyMap[excelTitle[ii]]
+				err = wcStaffService.checkImportParam(key, value)
+				if err != nil {
+					return err
+				}
 				// 更新部门信息
 				if key == "department" && value != "" {
 					departmentsMultiple := strings.Split(value, ";")
@@ -243,15 +251,18 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 
 		for _, row := range values {
 			var item = make(map[string]interface{})
-			var jobNum string
+			var name, jobNum string
 			var lastDepartments, positions []string
-			var staff weChat.WcStaff
+			var staffExist, staff weChat.WcStaff
 
 			// 更新员工信息
 			for ii, value := range row {
 				key := titleKeyMap[excelTitle[ii]]
 				if key == "job_num" {
 					jobNum = value
+				}
+				if key == "name" {
+					name = value
 				}
 				if key == "gender" {
 					gender := utils.GetKeyByValue(GenderMap, value)
@@ -279,32 +290,50 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 					item[key] = value
 				}
 				if key == "department" {
-					parts := strings.Split(value, "/")
-					lastDepartment := parts[len(parts)-1]
-					lastDepartments = append(lastDepartments, lastDepartment)
+					departmentMany := strings.Split(value, ";")
+					for _, departmentOne := range departmentMany {
+						departmentOneItems := strings.Split(departmentOne, "/")
+						lastDepartment := departmentOneItems[len(departmentOneItems)-1]
+						lastDepartments = append(lastDepartments, lastDepartment)
+					}
 				}
 				if key == "position" {
 					positions = strings.Split(value, ";")
 				}
-				fmt.Println("key:" + key + " value:" + value)
+				//fmt.Println("key:" + key + " value:" + value)
 			}
 
 			item["created_at"] = now
 			item["updated_at"] = now
 
-			// 插入员工
-			cErr := tx.Table(weChat.WcStaff{}.TableName()).Create(&item).Error
-			if cErr != nil {
-				return cErr
+			tx.Table(staff.TableName()).Where("name=?", name).First(&staffExist)
+			if staffExist.ID == 0 {
+				// 新增员工
+				cErr := tx.Table(staff.TableName()).Create(&item).Error
+				if cErr != nil {
+					return cErr
+				}
+			} else {
+				// 更新员工
+				cErr := tx.Table(staff.TableName()).Omit("name,created_at").Where("id=?", staffExist.ID).Updates(item).Error
+				if cErr != nil {
+					return cErr
+				}
 			}
 
 			tx.Table(staff.TableName()).Where("job_num=?", jobNum).First(&staff)
 
 			// 更新员工部门信息
 			if len(lastDepartments) > 0 {
+				tx.Where("staff_id=?", staff.ID).Unscoped().Delete(&weChat.WcStaffDepartment{})
+				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+				fmt.Println("lastDepartments", lastDepartments)
 				for _, lastDepartment := range lastDepartments {
 					var sdItem = make(map[string]interface{})
 					departmentId, ok := departmentMaps[lastDepartment]
+					fmt.Println("lastDepartment", lastDepartment)
+					fmt.Println("departmentId", departmentId)
+					fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 					if ok {
 						sdItem["staff_id"] = staff.ID
 						sdItem["department_id"] = departmentId
@@ -320,6 +349,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 
 			// 更新员工职务信息
 			if len(positions) > 0 {
+				tx.Where("staff_id=?", staff.ID).Unscoped().Delete(&weChat.WcStaffPosition{})
 				for _, pItem := range positions {
 					positionId, ok := positionMaps[pItem]
 					var spItem = make(map[string]interface{})
@@ -338,4 +368,33 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 		}
 		return nil
 	})
+}
+
+// checkImportParam 参数校验
+func (wcStaffService *WcStaffService) checkImportParam(key, value string) error {
+	if key == "name" && value == "" {
+		return errors.New("成员名称不能为空")
+	}
+
+	if key == "job_num" && value == "" {
+		return errors.New("员工工号不能为空")
+	}
+
+	var genderItems = []string{"未知", "男", "女"}
+	var isLeaderItems = []string{"否", "是"}
+	var statusItems = []string{"已激活", "已禁用", "未激活", "退出企业"}
+
+	if key == "gender" && !utils.InArray(genderItems, value) {
+		return errors.New("性别异常:" + value)
+	}
+
+	if key == "is_leader" && !utils.InArray(isLeaderItems, value) {
+		return errors.New("是否领导异常:" + value)
+	}
+
+	if key == "status" && !utils.InArray(statusItems, value) {
+		return errors.New("状态异常:" + value)
+	}
+
+	return nil
 }

@@ -57,18 +57,18 @@
         <!--            <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>-->
         <!--        </el-table-column>-->
 
-        <el-table-column align="left" label="成员名称" prop="name" width="120"/>
-        <el-table-column align="left" label="员工工号" prop="jobNum" width="120"/>
-        <el-table-column align="left" label="企微账号" prop="userid" width="120"/>
-        <el-table-column align="left" label="部门信息" prop="department" width="150"/>
-        <el-table-column align="left" label="职务信息" prop="position" width="140"/>
+        <el-table-column align="left" label="成员名称" prop="name" width="180"/>
+        <el-table-column align="left" label="员工工号" prop="jobNum" width="150"/>
+        <el-table-column align="left" label="企微账号" prop="userid" width="150"/>
+        <el-table-column align="left" label="部门信息" prop="department" width="200"/>
+        <el-table-column align="left" label="职务信息" prop="position" width="200"/>
         <el-table-column align="left" label="性别" prop="genderText" width="90"/>
         <el-table-column align="left" label="是否领导" prop="isLeaderText" width="90"/>
-        <el-table-column align="left" label="手机" prop="mobile" width="120"/>
-        <el-table-column align="left" label="座机" prop="telephone" width="120"/>
-        <el-table-column align="left" label="个人邮箱" prop="email" width="130"/>
-        <el-table-column align="left" label="地址" prop="address" width="120"/>
-        <el-table-column align="left" label="企业邮箱" prop="bizMail" width="120"/>
+        <el-table-column align="left" label="手机" prop="mobile" width="150"/>
+<!--        <el-table-column align="left" label="座机" prop="telephone" width="120"/>-->
+<!--        <el-table-column align="left" label="个人邮箱" prop="email" width="130"/>-->
+<!--        <el-table-column align="left" label="地址" prop="address" width="120"/>-->
+<!--        <el-table-column align="left" label="企业邮箱" prop="bizMail" width="120"/>-->
         <el-table-column align="left" label="状态" prop="statusText" width="120"/>
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
           <template #default="scope">
