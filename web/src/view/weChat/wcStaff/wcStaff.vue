@@ -119,11 +119,7 @@
         </el-form-item>
         <el-form-item label="职务信息:" prop="positionIds">
           <SelectPosition v-model="formData.positionIds">
-
           </SelectPosition>
-<!--          <el-select v-model="formData.positionIds" multiple placeholder="请选择职务信息">-->
-<!--            <el-option v-for="position in positions" :key="position.value" :label="position.label" :value="position.value"></el-option>-->
-<!--          </el-select>-->
         </el-form-item>
         <el-form-item label="性别:" prop="gender">
           <el-radio-group  v-model="formData.gender">
@@ -239,13 +235,6 @@ const statuses = ref([
   { label: '已禁用', value: 2 },
   { label: '未激活', value: 4 },
   { label: '退出企业', value: 5 }
-])
-
-const positions = ref([
-  { label: '项目经理', value: 1 },
-  { label: '后端开发', value: 2 },
-  { label: '财务经理', value: 3 },
-  { label: '董事长助理', value: 4 }
 ])
 
 // 自动化生成的字典（可能为空）以及字段
