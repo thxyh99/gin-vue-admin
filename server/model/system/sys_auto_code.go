@@ -42,7 +42,7 @@ func (a *AutoCodeStruct) Pretreatment() {
 }
 
 // KeyWord 是go关键字的处理加上 _ ，防止编译报错
-// Author [SliverHorn](https://github.com/SliverHorn)
+
 func (a *AutoCodeStruct) KeyWord() {
 	if token.IsKeyword(a.Abbreviation) {
 		a.Abbreviation = a.Abbreviation + "_"
@@ -50,7 +50,7 @@ func (a *AutoCodeStruct) KeyWord() {
 }
 
 // SuffixTest 处理_test 后缀
-// Author [SliverHorn](https://github.com/SliverHorn)
+
 func (a *AutoCodeStruct) SuffixTest() {
 	if strings.HasSuffix(a.HumpPackageName, "test") {
 		a.HumpPackageName = a.HumpPackageName + "_"

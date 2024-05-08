@@ -22,35 +22,30 @@ type WcStaffService struct {
 }
 
 // CreateWcStaff 创建账号信息记录
-// Author [piexlmax](https://github.com/piexlmax)
 func (wcStaffService *WcStaffService) CreateWcStaff(wcStaff *weChat.WcStaff) (err error) {
 	err = global.GVA_DB.Create(wcStaff).Error
 	return err
 }
 
 // DeleteWcStaff 删除账号信息记录
-// Author [piexlmax](https://github.com/piexlmax)
 func (wcStaffService *WcStaffService) DeleteWcStaff(ID string) (err error) {
 	err = global.GVA_DB.Delete(&weChat.WcStaff{}, "id = ?", ID).Error
 	return err
 }
 
 // DeleteWcStaffByIds 批量删除账号信息记录
-// Author [piexlmax](https://github.com/piexlmax)
 func (wcStaffService *WcStaffService) DeleteWcStaffByIds(IDs []string) (err error) {
 	err = global.GVA_DB.Delete(&[]weChat.WcStaff{}, "id in ?", IDs).Error
 	return err
 }
 
 // UpdateWcStaff 更新账号信息记录
-// Author [piexlmax](https://github.com/piexlmax)
 func (wcStaffService *WcStaffService) UpdateWcStaff(wcStaff weChat.WcStaff) (err error) {
 	err = global.GVA_DB.Save(&wcStaff).Error
 	return err
 }
 
 // GetWcStaff 根据ID获取账号信息记录
-// Author [piexlmax](https://github.com/piexlmax)
 func (wcStaffService *WcStaffService) GetWcStaff(ID string) (wcStaffResponse weChat2.WcStaffResponse, err error) {
 	var wcStaff weChat.WcStaff
 	err = global.GVA_DB.Where("id = ?", ID).First(&wcStaff).Error
