@@ -47,9 +47,10 @@ func (wcStaffService *WcStaffService) CreateWcStaff(wcStaffRequest *weChatReq.Wc
 
 	fmt.Println("staff_id:", wcStaff.ID)
 
-	size := len(wcStaffRequest.PositionIds)
-	if size > 0 {
-		items := make([]map[string]interface{}, 0, size)
+	// 更新员工职位信息
+	pSize := len(wcStaffRequest.PositionIds)
+	if pSize > 0 {
+		items := make([]map[string]interface{}, 0, pSize)
 		for _, pId := range wcStaffRequest.PositionIds {
 			var item = make(map[string]interface{})
 			item["staff_id"] = wcStaff.ID
@@ -57,14 +58,36 @@ func (wcStaffService *WcStaffService) CreateWcStaff(wcStaffRequest *weChatReq.Wc
 			item["created_at"] = time.Now()
 			item["updated_at"] = time.Now()
 			items = append(items, item)
-			fmt.Println("item", item)
+			fmt.Println("position item", item)
 		}
 		cErr := global.GVA_DB.Table(weChat.WcStaffPosition{}.TableName()).CreateInBatches(&items, 1000).Error
 		fmt.Println("err3:", cErr)
-		return cErr
+		if cErr != nil {
+			return cErr
+		}
 	}
 
-	return nil
+	// 更新员工部门信息
+	dSize := len(wcStaffRequest.DepartmentIds)
+	if dSize > 0 {
+		items := make([]map[string]interface{}, 0, dSize)
+		for _, dId := range wcStaffRequest.DepartmentIds {
+			var item = make(map[string]interface{})
+			item["staff_id"] = wcStaff.ID
+			item["department_id"] = dId
+			item["created_at"] = time.Now()
+			item["updated_at"] = time.Now()
+			items = append(items, item)
+			fmt.Println("department item", item)
+		}
+		cErr := global.GVA_DB.Table(weChat.WcStaffDepartment{}.TableName()).CreateInBatches(&items, 1000).Error
+		fmt.Println("err4:", cErr)
+		if cErr != nil {
+			return cErr
+		}
+	}
+
+	return
 }
 
 // DeleteWcStaff 删除账号信息记录
@@ -101,11 +124,13 @@ func (wcStaffService *WcStaffService) UpdateWcStaff(wcStaffRequest *weChatReq.Wc
 
 	fmt.Println("staff_id:", wcStaffRequest.ID)
 	fmt.Println("position_ids:", wcStaffRequest.PositionIds)
+	fmt.Println("department_ids:", wcStaffRequest.DepartmentIds)
 
-	size := len(wcStaffRequest.PositionIds)
-	if size > 0 {
+	// 更新员工职位信息
+	pSize := len(wcStaffRequest.PositionIds)
+	if pSize > 0 {
 		global.GVA_DB.Table(weChat.WcStaffPosition{}.TableName()).Where("staff_id=?", wcStaffRequest.ID).Unscoped().Delete(&weChat.WcStaffPosition{})
-		items := make([]map[string]interface{}, 0, size)
+		items := make([]map[string]interface{}, 0, pSize)
 		for _, pId := range wcStaffRequest.PositionIds {
 			var item = make(map[string]interface{})
 			item["staff_id"] = wcStaffRequest.ID
@@ -117,21 +142,42 @@ func (wcStaffService *WcStaffService) UpdateWcStaff(wcStaffRequest *weChatReq.Wc
 		}
 		cErr := global.GVA_DB.Table(weChat.WcStaffPosition{}.TableName()).CreateInBatches(&items, 1000).Error
 		fmt.Println("err3:", cErr)
-		return cErr
+		if cErr != nil {
+			return cErr
+		}
 	}
 
-	return nil
+	// 更新员工部门信息
+	dSize := len(wcStaffRequest.DepartmentIds)
+	if dSize > 0 {
+		global.GVA_DB.Table(weChat.WcStaffDepartment{}.TableName()).Where("staff_id=?", wcStaffRequest.ID).Unscoped().Delete(&weChat.WcStaffDepartment{})
+		items := make([]map[string]interface{}, 0, dSize)
+		for _, dId := range wcStaffRequest.DepartmentIds {
+			var item = make(map[string]interface{})
+			item["staff_id"] = wcStaffRequest.ID
+			item["department_id"] = dId
+			item["created_at"] = time.Now()
+			item["updated_at"] = time.Now()
+			items = append(items, item)
+			fmt.Println("item", item)
+		}
+		cErr := global.GVA_DB.Table(weChat.WcStaffDepartment{}.TableName()).CreateInBatches(&items, 1000).Error
+		fmt.Println("err4:", cErr)
+		if cErr != nil {
+			return cErr
+		}
+	}
+
+	return
 }
 
 // GetWcStaff 根据ID获取账号信息记录
 func (wcStaffService *WcStaffService) GetWcStaff(ID string) (wcStaffResponse weChat2.WcStaffResponse, err error) {
 	var wcStaff weChat.WcStaff
 	err = global.GVA_DB.Where("id = ?", ID).First(&wcStaff).Error
-
 	if err != nil {
 		return
 	}
-
 	wcStaffResponse = weChat2.WcStaffResponse{}.AssembleItem(wcStaff)
 
 	fmt.Println(wcStaffResponse)

@@ -35,6 +35,7 @@ func (wcStaffApi *WcStaffApi) CreateWcStaff(c *gin.Context) {
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	fmt.Println("wcStaffRequest:", wcStaffRequest)
 	fmt.Println("wcStaffRequestPosition:", wcStaffRequest.PositionIds)
+	fmt.Println("wcStaffRequestDepartment:", wcStaffRequest.DepartmentIds)
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
 	if err := wcStaffService.CreateWcStaff(&wcStaffRequest); err != nil {

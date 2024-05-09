@@ -156,6 +156,30 @@ func (wcDepartmentApi *WcDepartmentApi) GetWcDepartmentList(c *gin.Context) {
 	}
 }
 
+// GetAllFullDepartmentList 获取所有全层级部门名称列表
+// @Tags WcDepartment
+// @Summary 分页获取wcDepartment表列表
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Param data query weChatReq.WcDepartmentSearch true "分页获取wcDepartment表列表"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
+// @Router /wcDepartment/getWcDepartmentList [get]
+func (wcDepartmentApi *WcDepartmentApi) GetAllFullDepartmentList(c *gin.Context) {
+	var pageInfo weChatReq.WcDepartmentSearch
+	if list, total, err := wcDepartmentService.GetAllFullDepartmentList(); err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+	} else {
+		response.OkWithDetailed(response.PageResult{
+			List:     list,
+			Total:    total,
+			Page:     pageInfo.Page,
+			PageSize: pageInfo.PageSize,
+		}, "获取成功", c)
+	}
+}
+
 // GetWcDepartmentPublic 不需要鉴权的wcDepartment表接口
 // @Tags WcDepartment
 // @Summary 不需要鉴权的wcDepartment表接口

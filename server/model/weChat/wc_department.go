@@ -16,6 +16,11 @@ type WcDepartment struct {
 	Order            *int   `json:"order" form:"order" gorm:"column:order;comment:排序;size:6;" binding:"required"`                         //排序
 }
 
+type FullDepartment struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+}
+
 // TableName wcDepartment表 WcDepartment自定义表名 wc_department
 func (WcDepartment) TableName() string {
 	return "wc_department"
@@ -29,12 +34,31 @@ func GetFullDepartmentById(ID int) string {
 		return ""
 	}
 	parentId := *wd.Parentid
-	fmt.Println("parentId", parentId)
+	//fmt.Println("parentId", parentId)
 	if parentId == 0 {
 		return wd.Name
 	}
 	parentName := GetFullDepartmentById(parentId)
-	fmt.Println("parentName", parentName)
+	//fmt.Println("parentName", parentName)
 
 	return parentName + "/" + wd.Name
+}
+
+// GetAllFullDepartments 获取全层级部门名称列表
+func GetAllFullDepartments() (list []FullDepartment, err error) {
+	var wds []WcDepartment
+	err = global.GVA_DB.Find(&wds).Error
+	if err != nil {
+		fmt.Println("GetAllFullDepartments Error:", err)
+		return
+	}
+	for _, wd := range wds {
+		id := int(wd.ID)
+		fd := FullDepartment{
+			Id:   id,
+			Name: GetFullDepartmentById(id),
+		}
+		list = append(list, fd)
+	}
+	return
 }

@@ -117,6 +117,10 @@
         <el-form-item label="企微账号:" prop="userid">
           <el-input v-model="formData.userid" :clearable="true" placeholder="请输入企微账号"/>
         </el-form-item>
+        <el-form-item label="部门信息:" prop="departmentIds">
+          <SelectDepartment v-model="formData.departmentIds">
+          </SelectDepartment>
+        </el-form-item>
         <el-form-item label="职务信息:" prop="positionIds">
           <SelectPosition v-model="formData.positionIds">
           </SelectPosition>
@@ -225,6 +229,7 @@ import ImportExcel from "@/components/exportExcel/wechat/importExcel.vue";
 import ExportExcel from "@/components/exportExcel/wechat/exportExcel.vue";
 import ExportTemplate from "@/components/exportExcel/wechat/exportTemplate.vue";
 import SelectPosition from "@/components/selectPosition/index.vue";
+import SelectDepartment from "@/components/SelectDepartment/index.vue";
 
 defineOptions({
   name: 'WcStaff'
@@ -243,7 +248,7 @@ const formData = ref({
   userid: '',
   jobNum: '',
   name: '',
-  department: '',
+  departmentIds: [],
   positionIds: [],
   gender: 0,
   isLeader: 0,

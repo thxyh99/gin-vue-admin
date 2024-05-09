@@ -1,6 +1,7 @@
 package weChat
 
 import (
+	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
@@ -87,4 +88,17 @@ func (wcDepartmentService *WcDepartmentService) SyncWcDepartment(wcDepartment *w
 	}
 
 	return err
+}
+
+// GetAllFullDepartmentList 获取部门列表
+func (wcDepartmentService *WcDepartmentService) GetAllFullDepartmentList() (list []weChat.FullDepartment, total int64, err error) {
+	list, err = weChat.GetAllFullDepartments()
+
+	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	fmt.Println("list", list)
+	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+	total = int64(len(list))
+
+	return
 }
