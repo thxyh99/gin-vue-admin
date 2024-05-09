@@ -5,7 +5,6 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
-	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/service"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -26,7 +25,7 @@ var wcStaffService = service.ServiceGroupApp.WeChatServiceGroup.WcStaffService
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"创建成功"}"
 // @Router /wcStaff/createWcStaff [post]
 func (wcStaffApi *WcStaffApi) CreateWcStaff(c *gin.Context) {
-	var wcStaffRequest weChat2.WcStaffRequest
+	var wcStaffRequest weChatReq.WcStaffRequest
 	err := c.ShouldBindJSON(&wcStaffRequest)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
@@ -93,7 +92,7 @@ func (wcStaffApi *WcStaffApi) DeleteWcStaffByIds(c *gin.Context) {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"更新成功"}"
 // @Router /wcStaff/updateWcStaff [put]
 func (wcStaffApi *WcStaffApi) UpdateWcStaff(c *gin.Context) {
-	var wcStaffRequest weChat2.WcStaffRequest
+	var wcStaffRequest weChatReq.WcStaffRequest
 	err := c.ShouldBindJSON(&wcStaffRequest)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)

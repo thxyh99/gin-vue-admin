@@ -22,7 +22,7 @@ type WcStaffService struct {
 }
 
 // CreateWcStaff 创建账号信息记录
-func (wcStaffService *WcStaffService) CreateWcStaff(wcStaffRequest *weChat2.WcStaffRequest) (err error) {
+func (wcStaffService *WcStaffService) CreateWcStaff(wcStaffRequest *weChatReq.WcStaffRequest) (err error) {
 	zero := 0
 	wcStaff := weChat.WcStaff{
 		UserId:    &zero,
@@ -80,7 +80,7 @@ func (wcStaffService *WcStaffService) DeleteWcStaffByIds(IDs []string) (err erro
 }
 
 // UpdateWcStaff 更新账号信息记录
-func (wcStaffService *WcStaffService) UpdateWcStaff(wcStaffRequest *weChat2.WcStaffRequest) (err error) {
+func (wcStaffService *WcStaffService) UpdateWcStaff(wcStaffRequest *weChatReq.WcStaffRequest) (err error) {
 	wcStaff := weChat.WcStaff{
 		Userid:    wcStaffRequest.Userid,
 		JobNum:    wcStaffRequest.JobNum,

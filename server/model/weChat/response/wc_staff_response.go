@@ -7,13 +7,6 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 )
 
-// WcStaffRequest 账号信息 结构体
-type WcStaffRequest struct {
-	weChat.WcStaff
-	PositionIds   []int `json:"positionIds"`   //职务信息
-	DepartmentIds []int `json:"departmentIds"` //部门信息
-}
-
 // WcStaffResponse 账号信息 结构体
 type WcStaffResponse struct {
 	weChat.WcStaff
@@ -82,23 +75,24 @@ func (WcStaffResponse) Assemble(staffs []weChat.WcStaff) (newStaffs []WcStaffRes
 		var sDepartment weChat.WcStaffDepartment
 		var departmentIds []int
 		var departmentText string
-		dRows, err := global.GVA_DB.Table(sDepartment.TableName()+" as sd").Select("d.id,d.name").
-			Joins("left join wc_department as d on d.id = sd.department_id").Where("sd.staff_id=?", item.ID).Rows()
+		//dRows, err := global.GVA_DB.Table(sDepartment.TableName()+" as sd").Select("d.id").
+		//	Joins("left join wc_department as d on d.id = sd.department_id").Where("sd.staff_id=?", item.ID).Rows()
+		dRows, err := global.GVA_DB.Table(sDepartment.TableName()).Select("department_id").Where("staff_id=?", item.ID).Rows()
 		if err != nil {
 			fmt.Println("department1 err:", err)
 		} else {
 			for dRows.Next() {
-				var id int
-				var name string
-				err = dRows.Scan(&id, &name)
+				var departmentId int
+				err = dRows.Scan(&departmentId)
+				fullName := weChat.GetFullDepartmentById(departmentId)
 				if err != nil {
 					fmt.Println("department2 err:", err)
 				} else {
-					departmentIds = append(departmentIds, id)
+					departmentIds = append(departmentIds, departmentId)
 					if departmentText != "" {
-						departmentText += ";" + name
+						departmentText += ";" + fullName
 					} else {
-						departmentText = name
+						departmentText = fullName
 					}
 				}
 			}
@@ -166,23 +160,28 @@ func (WcStaffResponse) AssembleItem(staff weChat.WcStaff) (wcStaffResponse WcSta
 	var sDepartment weChat.WcStaffDepartment
 	var departmentIds []int
 	var departmentText string
-	dRows, err := global.GVA_DB.Table(sDepartment.TableName()+" as sd").Select("d.id,d.name").
-		Joins("left join wc_department as d on d.id = sd.department_id").Where("sd.staff_id=?", staff.ID).Rows()
+	//dRows, err := global.GVA_DB.Table(sDepartment.TableName()+" as sd").Select("d.id").
+	//	Joins("left join wc_department as d on d.id = sd.department_id").Where("sd.staff_id=?", staff.ID).Rows()
+	dRows, err := global.GVA_DB.Table(sDepartment.TableName()).Select("department_id").Where("staff_id=?", staff.ID).Rows()
 	if err != nil {
 		fmt.Println("department1 err:", err)
 	} else {
 		for dRows.Next() {
-			var id int
-			var name string
-			err = dRows.Scan(&id, &name)
+			var departmentId int
+			err = dRows.Scan(&departmentId)
 			if err != nil {
 				fmt.Println("department2 err:", err)
 			} else {
-				departmentIds = append(departmentIds, id)
+				departmentIds = append(departmentIds, departmentId)
+				fullName := weChat.GetFullDepartmentById(departmentId)
+				fmt.Println("fullName", fullName)
+				if err != nil {
+					fmt.Println("GetFullDepartmentById err:", err)
+				}
 				if departmentText != "" {
-					departmentText += ";" + name
+					departmentText += ";" + fullName
 				} else {
-					departmentText = name
+					departmentText = fullName
 				}
 			}
 		}

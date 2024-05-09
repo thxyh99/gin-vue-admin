@@ -2,6 +2,7 @@
 package weChat
 
 import (
+	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 )
 
@@ -18,4 +19,22 @@ type WcDepartment struct {
 // TableName wcDepartment表 WcDepartment自定义表名 wc_department
 func (WcDepartment) TableName() string {
 	return "wc_department"
+}
+
+// GetFullDepartmentById 通过ID获取员工具体部门信息
+func GetFullDepartmentById(ID int) string {
+	var wd WcDepartment
+	err := global.GVA_DB.Where("id = ?", ID).First(&wd).Error
+	if err != nil {
+		return ""
+	}
+	parentId := *wd.Parentid
+	fmt.Println("parentId", parentId)
+	if parentId == 0 {
+		return wd.Name
+	}
+	parentName := GetFullDepartmentById(parentId)
+	fmt.Println("parentName", parentName)
+
+	return parentName + "/" + wd.Name
 }

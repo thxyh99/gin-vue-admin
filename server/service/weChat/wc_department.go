@@ -11,42 +11,36 @@ type WcDepartmentService struct {
 }
 
 // CreateWcDepartment 创建wcDepartment表记录
-
 func (wcDepartmentService *WcDepartmentService) CreateWcDepartment(wcDepartment *weChat.WcDepartment) (err error) {
 	err = global.GVA_DB.Create(wcDepartment).Error
 	return err
 }
 
 // DeleteWcDepartment 删除wcDepartment表记录
-
 func (wcDepartmentService *WcDepartmentService) DeleteWcDepartment(ID string) (err error) {
 	err = global.GVA_DB.Delete(&weChat.WcDepartment{}, "id = ?", ID).Error
 	return err
 }
 
 // DeleteWcDepartmentByIds 批量删除wcDepartment表记录
-
 func (wcDepartmentService *WcDepartmentService) DeleteWcDepartmentByIds(IDs []string) (err error) {
 	err = global.GVA_DB.Delete(&[]weChat.WcDepartment{}, "id in ?", IDs).Error
 	return err
 }
 
 // UpdateWcDepartment 更新wcDepartment表记录
-
 func (wcDepartmentService *WcDepartmentService) UpdateWcDepartment(wcDepartment weChat.WcDepartment) (err error) {
 	err = global.GVA_DB.Save(&wcDepartment).Error
 	return err
 }
 
 // GetWcDepartment 根据ID获取wcDepartment表记录
-
 func (wcDepartmentService *WcDepartmentService) GetWcDepartment(ID string) (wcDepartment weChat.WcDepartment, err error) {
 	err = global.GVA_DB.Where("id = ?", ID).First(&wcDepartment).Error
 	return
 }
 
 // GetWcDepartmentInfoList 分页获取wcDepartment表记录
-
 func (wcDepartmentService *WcDepartmentService) GetWcDepartmentInfoList(info weChatReq.WcDepartmentSearch) (list []weChat.WcDepartment, total int64, err error) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
