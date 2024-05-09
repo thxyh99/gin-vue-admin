@@ -3,8 +3,10 @@ package weChat
 
 import (
 	"fmt"
+	"github.com/flipped-aurora/gin-vue-admin/server/config"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
+	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 )
 
 // WcStaffResponse 账号信息 结构体
@@ -20,28 +22,16 @@ type WcStaffResponse struct {
 }
 
 func (WcStaffResponse) Assemble(staffs []weChat.WcStaff) (newStaffs []WcStaffResponse) {
-	var GenderMap = map[int]string{
-		0: "未知",
-		1: "男",
-		2: "女",
-	}
-	var IsLeaderMaps = map[int]string{
-		0: "否",
-		1: "是",
-	}
-	var StatusMaps = map[int]string{
-		1: "已激活",
-		2: "已禁用",
-		4: "未激活",
-		5: "退出企业",
-	}
-
 	var newStaff WcStaffResponse
+	configInfo := config.GetConfigInfo()
 	for _, item := range staffs {
 		newStaff.WcStaff = item
-		newStaff.GenderText = GenderMap[*item.Gender]
-		newStaff.IsLeaderText = IsLeaderMaps[*item.IsLeader]
-		newStaff.StatusText = StatusMaps[*item.Status]
+		gender, _ := utils.Find(configInfo.StaffGender, *item.Gender)
+		newStaff.GenderText = gender
+		isLeader, _ := utils.Find(configInfo.StaffIsLeader, *item.IsLeader)
+		newStaff.IsLeaderText = isLeader
+		status, _ := utils.Find(configInfo.StaffStatus, *item.Status)
+		newStaff.StatusText = status
 
 		//拼接员工职位信息
 		var sPosition weChat.WcStaffPosition
@@ -107,25 +97,13 @@ func (WcStaffResponse) Assemble(staffs []weChat.WcStaff) (newStaffs []WcStaffRes
 }
 
 func (WcStaffResponse) AssembleItem(staff weChat.WcStaff) (wcStaffResponse WcStaffResponse) {
-	var GenderMap = map[int]string{
-		0: "未知",
-		1: "男",
-		2: "女",
-	}
-	var IsLeaderMaps = map[int]string{
-		0: "否",
-		1: "是",
-	}
-	var StatusMaps = map[int]string{
-		1: "已激活",
-		2: "已禁用",
-		4: "未激活",
-		5: "退出企业",
-	}
-
-	wcStaffResponse.GenderText = GenderMap[*staff.Gender]
-	wcStaffResponse.IsLeaderText = IsLeaderMaps[*staff.IsLeader]
-	wcStaffResponse.StatusText = StatusMaps[*staff.Status]
+	configInfo := config.GetConfigInfo()
+	gender, _ := utils.Find(configInfo.StaffGender, *staff.Gender)
+	wcStaffResponse.GenderText = gender
+	isLeader, _ := utils.Find(configInfo.StaffIsLeader, *staff.IsLeader)
+	wcStaffResponse.IsLeaderText = isLeader
+	status, _ := utils.Find(configInfo.StaffStatus, *staff.Status)
+	wcStaffResponse.StatusText = status
 	wcStaffResponse.WcStaff = staff
 
 	//拼接员工职位信息

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/flipped-aurora/gin-vue-admin/server/config"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
@@ -260,21 +261,23 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 		db = global.MustGetGlobalDBByDBName(template.DBName)
 	}
 
-	GenderMap := map[int]string{
-		0: "未知",
-		1: "男",
-		2: "女",
-	}
-	IsLeaderMaps := map[int]string{
-		0: "否",
-		1: "是",
-	}
-	StatusMaps := map[int]string{
-		1: "已激活",
-		2: "已禁用",
-		4: "未激活",
-		5: "退出企业",
-	}
+	configInfo := config.GetConfigInfo()
+
+	//GenderMap := map[int]string{
+	//	0: "未知",
+	//	1: "男",
+	//	2: "女",
+	//}
+	//IsLeaderMaps := map[int]string{
+	//	0: "否",
+	//	1: "是",
+	//}
+	//StatusMaps := map[int]string{
+	//	1: "已激活",
+	//	2: "已禁用",
+	//	4: "未激活",
+	//	5: "退出企业",
+	//}
 	now := time.Now().Format("2006-01-02 15:04:05")
 
 	return db.Transaction(func(tx *gorm.DB) error {
@@ -384,25 +387,25 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 					name = value
 				}
 				if key == "gender" {
-					gender := utils.GetKeyByValue(GenderMap, value)
-					if gender == -1 {
+					if gender, ok := utils.FindStringValueKey(configInfo.StaffGender, value); ok {
+						value = strconv.Itoa(gender)
+					} else {
 						return errors.New("性别值异常:" + value)
 					}
-					value = strconv.Itoa(gender)
 				}
 				if key == "is_leader" {
-					isLeader := utils.GetKeyByValue(IsLeaderMaps, value)
-					if isLeader == -1 {
+					if isLeader, ok := utils.FindStringValueKey(configInfo.StaffIsLeader, value); ok {
+						value = strconv.Itoa(isLeader)
+					} else {
 						return errors.New("是否领导值异常:" + value)
 					}
-					value = strconv.Itoa(isLeader)
 				}
 				if key == "status" {
-					status := utils.GetKeyByValue(StatusMaps, value)
-					if status == -1 {
+					if status, ok := utils.FindStringValueKey(configInfo.StaffStatus, value); ok {
+						value = strconv.Itoa(status)
+					} else {
 						return errors.New("状态值异常:" + value)
 					}
-					value = strconv.Itoa(status)
 				}
 
 				if key != "department" && key != "position" {
@@ -419,7 +422,6 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 				if key == "position" {
 					positions = strings.Split(value, ";")
 				}
-				//fmt.Println("key:" + key + " value:" + value)
 			}
 
 			item["created_at"] = now
@@ -499,19 +501,16 @@ func (wcStaffService *WcStaffService) checkImportParam(key, value string) error 
 		return errors.New("员工工号不能为空")
 	}
 
-	var genderItems = []string{"未知", "男", "女"}
-	var isLeaderItems = []string{"否", "是"}
-	var statusItems = []string{"已激活", "已禁用", "未激活", "退出企业"}
-
-	if key == "gender" && !utils.InArray(genderItems, value) {
+	configInfo := config.GetConfigInfo()
+	if key == "gender" && !utils.InArray(configInfo.StaffGender, value) {
 		return errors.New("性别异常:" + value)
 	}
 
-	if key == "is_leader" && !utils.InArray(isLeaderItems, value) {
+	if key == "is_leader" && !utils.InArray(configInfo.StaffIsLeader, value) {
 		return errors.New("是否领导异常:" + value)
 	}
 
-	if key == "status" && !utils.InArray(statusItems, value) {
+	if key == "status" && !utils.InArray(configInfo.StaffStatus, value) {
 		return errors.New("状态异常:" + value)
 	}
 
