@@ -25,3 +25,33 @@ func InArray(items []string, target string) bool {
 	}
 	return false
 }
+
+// Find 检测切片是否存在key值
+func Find(slice []string, index int) (string, bool) {
+	for i, item := range slice {
+		if i == index {
+			return item, true
+		}
+	}
+	return "", false
+}
+
+// FindStringValue 检测切片是否存在value值
+func FindStringValue(slice []string, value string) (string, bool) {
+	for _, item := range slice {
+		if value == item {
+			return item, true
+		}
+	}
+	return "", false
+}
+
+// FindIntValue 检测切片是否存在value值
+func FindIntValue(slice []int64, value int) (int, bool) {
+	for _, item := range slice {
+		if value == int(item) {
+			return value, true
+		}
+	}
+	return 0, false
+}

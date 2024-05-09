@@ -36,16 +36,11 @@
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
-        
-        <el-table-column align="left" label="日期" width="180">
-            <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
-        </el-table-column>
-        
-        <el-table-column align="left" label="用户ID(SSO)" prop="userId" width="120" />
-        <el-table-column align="left" label="企微成员UserID" prop="userid" width="120" />
+        <el-table-column align="left" label="成员名称" prop="name" width="180"/>
+        <el-table-column align="left" label="员工工号" prop="jobNum" width="150"/>
         <el-table-column align="left" label="身份证号" prop="idNumber" width="120" />
         <el-table-column align="left" label="身份证地址" prop="idAddress" width="120" />
-        <el-table-column align="left" label="户籍类型(1:本地城镇 2:本地农村 3:外地城镇[省内] 4:外地农村[省内] 5:外地城镇[省外] 6:外地农村[省外])" prop="householdType" width="120" />
+        <el-table-column align="left" label="户籍类型" prop="householdType" width="120" />
          <el-table-column align="left" label="出生日期" width="180">
             <template #default="scope">{{ formatDate(scope.row.birthday) }}</template>
          </el-table-column>
@@ -53,8 +48,8 @@
         <el-table-column align="left" label="民族" prop="nationality" width="120" />
         <el-table-column align="left" label="身高" prop="height" width="120" />
         <el-table-column align="left" label="体重" prop="weight" width="120" />
-        <el-table-column align="left" label="婚否(1:已婚 2:未婚 3:其他)" prop="marriage" width="120" />
-        <el-table-column align="left" label="政治面貌(1:团员 2:党员 3:群众 0:其他)" prop="politicalOutlook" width="120" />
+        <el-table-column align="left" label="婚否" prop="marriage" width="120" />
+        <el-table-column align="left" label="政治面貌" prop="politicalOutlook" width="120" />
         <el-table-column align="left" label="常住地址" prop="address" width="120" />
         <el-table-column align="left" label="社保电脑号" prop="socialNumber" width="120" />
         <el-table-column align="left" label="公积金账号" prop="accountNumber" width="120" />
@@ -94,12 +89,6 @@
             </template>
 
           <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
-            <el-form-item label="用户ID(SSO):"  prop="userId" >
-              <el-input v-model.number="formData.userId" :clearable="true" placeholder="请输入用户ID(SSO)" />
-            </el-form-item>
-            <el-form-item label="企微成员UserID:"  prop="userid" >
-              <el-input v-model="formData.userid" :clearable="true"  placeholder="请输入企微成员UserID" />
-            </el-form-item>
             <el-form-item label="身份证号:"  prop="idNumber" >
               <el-input v-model="formData.idNumber" :clearable="true"  placeholder="请输入身份证号" />
             </el-form-item>
@@ -152,11 +141,11 @@
              </div>
          </template>
         <el-descriptions :column="1" border>
-                <el-descriptions-item label="用户ID(SSO)">
-                        {{ formData.userId }}
+                <el-descriptions-item label="成员名称">
+                        {{ formData.name }}
                 </el-descriptions-item>
-                <el-descriptions-item label="企微成员UserID">
-                        {{ formData.userid }}
+                <el-descriptions-item label="员工工号">
+                        {{ formData.jobNum }}
                 </el-descriptions-item>
                 <el-descriptions-item label="身份证号">
                         {{ formData.idNumber }}
@@ -226,8 +215,6 @@ defineOptions({
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
-        userId: 0,
-        userid: '',
         idNumber: '',
         idAddress: '',
         householdType: 0,
@@ -247,23 +234,6 @@ const formData = ref({
 
 // 验证规则
 const rule = reactive({
-               userId : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-              ],
-               userid : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
-              ],
                idNumber : [{
                    required: true,
                    message: '',
@@ -543,8 +513,6 @@ const getDetails = async (row) => {
 const closeDetailShow = () => {
   detailShow.value = false
   formData.value = {
-          userId: 0,
-          userid: '',
           idNumber: '',
           idAddress: '',
           householdType: 0,
@@ -573,8 +541,6 @@ const openDialog = () => {
 const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
-        userId: 0,
-        userid: '',
         idNumber: '',
         idAddress: '',
         householdType: 0,

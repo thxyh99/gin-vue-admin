@@ -10,13 +10,14 @@ import (
 type WcStaffInfo struct {
 	global.GVA_MODEL
 	StaffId          *int       `json:"staffId" form:"staffId" gorm:"column:staff_id;comment:员工ID;size:11;" binding:"required"`                                                                             //员工ID
+	Type             *int       `json:"type" form:"type" gorm:"column:type;comment:员工考勤类型(1:内勤2:市场);size:1;" binding:"required"`                                                                            //员工ID
 	Rank             *int       `json:"rank" form:"rank" gorm:"column:rank;comment:员工职级;size:2;" binding:"required"`                                                                                        //员工ID
 	IdNumber         string     `json:"idNumber" form:"idNumber" gorm:"column:id_number;comment:身份证号;size:100;" binding:"required"`                                                                         //身份证号
 	IdAddress        string     `json:"idAddress" form:"idAddress" gorm:"column:id_address;comment:身份证地址;size:255;" binding:"required"`                                                                     //身份证地址
 	HouseholdType    *int       `json:"householdType" form:"householdType" gorm:"column:household_type;comment:户籍类型(1:本地城镇 2:本地农村 3:外地城镇[省内] 4:外地农村[省内] 5:外地城镇[省外] 6:外地农村[省外]);size:1;" binding:"required"` //户籍类型(1:本地城镇 2:本地农村 3:外地城镇[省内] 4:外地农村[省内] 5:外地城镇[省外] 6:外地农村[省外])
 	Birthday         *time.Time `json:"birthday" form:"birthday" gorm:"column:birthday;comment:出生日期;" binding:"required"`                                                                                   //出生日期
 	NativePlace      string     `json:"nativePlace" form:"nativePlace" gorm:"column:native_place;comment:籍贯;size:255;" binding:"required"`                                                                  //籍贯
-	Nationality      string     `json:"nationality" form:"nationality" gorm:"column:nationality;comment:民族;size:50;" binding:"required"`                                                                    //民族
+	Nation           *int       `json:"nation" form:"nation" gorm:"column:nation;comment:民族;size:2;" binding:"required"`                                                                                    //民族
 	Height           *float64   `json:"height" form:"height" gorm:"column:height;comment:身高;size:4;" binding:"required"`                                                                                    //身高
 	Weight           *float64   `json:"weight" form:"weight" gorm:"column:weight;comment:体重;size:4;" binding:"required"`                                                                                    //体重
 	Marriage         *int       `json:"marriage" form:"marriage" gorm:"column:marriage;comment:婚否(1:已婚 2:未婚 3:其他);size:1;" binding:"required"`                                                              //婚否(1:已婚 2:未婚 3:其他)
