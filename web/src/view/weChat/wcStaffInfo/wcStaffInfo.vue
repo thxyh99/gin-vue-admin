@@ -36,24 +36,26 @@
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
-        <el-table-column align="left" label="成员名称" prop="name" width="180"/>
-        <el-table-column align="left" label="员工工号" prop="jobNum" width="150"/>
+        <el-table-column align="left" label="成员名称" prop="name" width="120"/>
+        <el-table-column align="left" label="员工工号" prop="jobNum" width="120"/>
+        <el-table-column align="left" label="员工考勤类型" prop="typeText" width="120"/>
+        <el-table-column align="left" label="员工职级" prop="rankText" width="120"/>
         <el-table-column align="left" label="身份证号" prop="idNumber" width="120" />
         <el-table-column align="left" label="身份证地址" prop="idAddress" width="120" />
-        <el-table-column align="left" label="户籍类型" prop="householdType" width="120" />
+        <el-table-column align="left" label="户籍类型" prop="householdTypeText" width="120" />
          <el-table-column align="left" label="出生日期" width="180">
             <template #default="scope">{{ formatDate(scope.row.birthday) }}</template>
          </el-table-column>
         <el-table-column align="left" label="籍贯" prop="nativePlace" width="120" />
-        <el-table-column align="left" label="民族" prop="nationality" width="120" />
-        <el-table-column align="left" label="身高" prop="height" width="120" />
-        <el-table-column align="left" label="体重" prop="weight" width="120" />
-        <el-table-column align="left" label="婚否" prop="marriage" width="120" />
-        <el-table-column align="left" label="政治面貌" prop="politicalOutlook" width="120" />
+        <el-table-column align="left" label="民族" prop="nationText" width="120" />
+        <el-table-column align="left" label="身高(cm)" prop="height" width="120" />
+        <el-table-column align="left" label="体重(kg)" prop="weight" width="120" />
+        <el-table-column align="left" label="婚否" prop="marriageText" width="120" />
+        <el-table-column align="left" label="政治面貌" prop="politicalOutlookText" width="120" />
         <el-table-column align="left" label="常住地址" prop="address" width="120" />
         <el-table-column align="left" label="社保电脑号" prop="socialNumber" width="120" />
         <el-table-column align="left" label="公积金账号" prop="accountNumber" width="120" />
-        <el-table-column align="left" label="社保公积金缴纳地" prop="paymentPlace" width="120" />
+        <el-table-column align="left" label="社保公积金缴纳地" prop="paymentPlace" width="150" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -89,6 +91,10 @@
             </template>
 
           <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
+            <el-form-item label="选择员工:" prop="staffId">
+              <SelectStaff v-model="formData.staffId">
+              </SelectStaff>
+            </el-form-item>
             <el-form-item label="身份证号:"  prop="idNumber" >
               <el-input v-model="formData.idNumber" :clearable="true"  placeholder="请输入身份证号" />
             </el-form-item>
@@ -147,6 +153,12 @@
                 <el-descriptions-item label="员工工号">
                         {{ formData.jobNum }}
                 </el-descriptions-item>
+                <el-descriptions-item label="员工考勤类型">
+                        {{ formData.typeText }}
+                </el-descriptions-item>
+                <el-descriptions-item label="员工职级">
+                        {{ formData.rankText }}
+                </el-descriptions-item>
                 <el-descriptions-item label="身份证号">
                         {{ formData.idNumber }}
                 </el-descriptions-item>
@@ -154,7 +166,7 @@
                         {{ formData.idAddress }}
                 </el-descriptions-item>
                 <el-descriptions-item label="户籍类型(1:本地城镇 2:本地农村 3:外地城镇[省内] 4:外地农村[省内] 5:外地城镇[省外] 6:外地农村[省外])">
-                        {{ formData.householdType }}
+                        {{ formData.householdTypeText }}
                 </el-descriptions-item>
                 <el-descriptions-item label="出生日期">
                       {{ formatDate(formData.birthday) }}
@@ -163,7 +175,7 @@
                         {{ formData.nativePlace }}
                 </el-descriptions-item>
                 <el-descriptions-item label="民族">
-                        {{ formData.nationality }}
+                        {{ formData.nationText }}
                 </el-descriptions-item>
                 <el-descriptions-item label="身高">
                         {{ formData.height }}
@@ -172,10 +184,10 @@
                         {{ formData.weight }}
                 </el-descriptions-item>
                 <el-descriptions-item label="婚否(1:已婚 2:未婚 3:其他)">
-                        {{ formData.marriage }}
+                        {{ formData.marriageText }}
                 </el-descriptions-item>
                 <el-descriptions-item label="政治面貌(1:团员 2:党员 3:群众 0:其他)">
-                        {{ formData.politicalOutlook }}
+                        {{ formData.politicalOutlookText }}
                 </el-descriptions-item>
                 <el-descriptions-item label="常住地址">
                         {{ formData.address }}
@@ -208,6 +220,8 @@ import {
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
+import SelectStaff from "@/components/selectStaff/index.vue";
+
 
 defineOptions({
     name: 'WcStaffInfo'
@@ -215,12 +229,15 @@ defineOptions({
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
+        staffId: 0,
+        type: 0,
+        rank: 0,
         idNumber: '',
         idAddress: '',
         householdType: 0,
         birthday: new Date(),
         nativePlace: '',
-        nationality: '',
+        nation: 0,
         height: 0,
         weight: 0,
         marriage: 0,
@@ -234,6 +251,24 @@ const formData = ref({
 
 // 验证规则
 const rule = reactive({
+               staffId : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               ],
+               type : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               ],
+               rank : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               ],
                idNumber : [{
                    required: true,
                    message: '',
@@ -279,16 +314,11 @@ const rule = reactive({
                    trigger: ['input', 'blur'],
               }
               ],
-               nationality : [{
+               nation : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
-               },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
+               }
               ],
                height : [{
                    required: true,
@@ -513,6 +543,9 @@ const getDetails = async (row) => {
 const closeDetailShow = () => {
   detailShow.value = false
   formData.value = {
+          staffId: 0,
+          type: 0,
+          rank: 0,
           idNumber: '',
           idAddress: '',
           householdType: 0,
@@ -541,6 +574,9 @@ const openDialog = () => {
 const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
+        staffId: 0,
+        type: 0,
+        rank: 0,
         idNumber: '',
         idAddress: '',
         householdType: 0,

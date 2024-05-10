@@ -2,8 +2,11 @@
 package weChat
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	"time"
 )
 
 // wcDepartment表 结构体  WcDepartment
@@ -28,37 +31,82 @@ func (WcDepartment) TableName() string {
 
 // GetFullDepartmentById 通过ID获取员工具体部门信息
 func GetFullDepartmentById(ID int) string {
-	var wd WcDepartment
-	err := global.GVA_DB.Where("id = ?", ID).First(&wd).Error
+	cacheKey := fmt.Sprintf("GetFullDepartmentById:%d", ID)
+	cacheValue, err := global.GVA_REDIS.Get(context.Background(), cacheKey).Result()
 	if err != nil {
-		return ""
+		//global.GVA_LOG.Error("RedisStoreGetError!", zap.Error(err))
+		fmt.Println("RedisStoreGetError:", err)
 	}
-	parentId := *wd.Parentid
-	//fmt.Println("parentId", parentId)
-	if parentId == 0 {
-		return wd.Name
-	}
-	parentName := GetFullDepartmentById(parentId)
-	//fmt.Println("parentName", parentName)
+	if cacheValue != "" {
+		fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+		fmt.Println("ID:", ID)
+		fmt.Println("cacheValue:", cacheValue)
+		fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+		return cacheValue
+	} else {
+		var wd WcDepartment
+		err = global.GVA_DB.Where("id = ?", ID).First(&wd).Error
+		if err != nil {
+			return ""
+		}
+		parentId := *wd.Parentid
+		if parentId == 0 {
+			err = global.GVA_REDIS.Set(context.Background(), cacheKey, wd.Name, time.Hour*24).Err()
+			if err != nil {
+				//global.GVA_LOG.Error("RedisStoreSetError!", zap.Error(err))
+				fmt.Println("RedisStoreSetError:", err)
+				return ""
+			}
+			return wd.Name
+		}
+		parentName := GetFullDepartmentById(parentId)
 
-	return parentName + "/" + wd.Name
+		fullName := parentName + "/" + wd.Name
+
+		err = global.GVA_REDIS.Set(context.Background(), cacheKey, fullName, time.Hour*24).Err()
+		if err != nil {
+			//global.GVA_LOG.Error("RedisStoreSetError!", zap.Error(err))
+			fmt.Println("RedisStoreSetError:", err)
+			return ""
+		}
+		return fullName
+	}
 }
 
 // GetAllFullDepartments 获取全层级部门名称列表
 func GetAllFullDepartments() (list []FullDepartment, err error) {
-	var wds []WcDepartment
-	err = global.GVA_DB.Find(&wds).Error
+	cacheKey := fmt.Sprintf("GetAllFullDepartments")
+	cacheValue, err := global.GVA_REDIS.Get(context.Background(), cacheKey).Result()
 	if err != nil {
-		fmt.Println("GetAllFullDepartments Error:", err)
-		return
+		//global.GVA_LOG.Error("RedisStoreGetError!", zap.Error(err))
+		fmt.Println("RedisStoreGetError:", err)
 	}
-	for _, wd := range wds {
-		id := int(wd.ID)
-		fd := FullDepartment{
-			Id:   id,
-			Name: GetFullDepartmentById(id),
+	if cacheValue != "" {
+		err = json.Unmarshal([]byte(cacheValue), &list)
+	} else {
+		var wds []WcDepartment
+		err = global.GVA_DB.Find(&wds).Error
+		if err != nil {
+			fmt.Println("GetAllFullDepartments Error:", err)
+			return list, err
 		}
-		list = append(list, fd)
+		for _, wd := range wds {
+			id := int(wd.ID)
+			fd := FullDepartment{
+				Id:   id,
+				Name: GetFullDepartmentById(id),
+			}
+			list = append(list, fd)
+		}
+
+		cacheByte, err := json.Marshal(&list)
+		cacheValue = string(cacheByte)
+		err = global.GVA_REDIS.Set(context.Background(), cacheKey, cacheValue, time.Hour*24).Err()
+		if err != nil {
+			//global.GVA_LOG.Error("RedisStoreSetError!", zap.Error(err))
+			fmt.Println("RedisStoreSetError:", err)
+			return list, err
+		}
 	}
 	return
 }

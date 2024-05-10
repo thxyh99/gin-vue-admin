@@ -249,6 +249,11 @@ const formData = ref({
   address: '',
   bizMail: '',
   status: 1,
+  department:'',
+  position:'',
+  genderText:'',
+  isLeaderText:'',
+  statusText:'',
 })
 
 

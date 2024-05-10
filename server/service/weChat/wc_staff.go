@@ -209,6 +209,10 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 
 	err = db.Find(&wcStaffs).Error
 
+	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	fmt.Println("GetWcStaffInfoList err", err)
+	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
 	var wcStaffsResponse []weChat2.WcStaffResponse
 	wcStaffsResponse = weChat2.WcStaffResponse{}.Assemble(wcStaffs)
 
@@ -262,22 +266,6 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 	}
 
 	configInfo := config.GetConfigInfo()
-
-	//GenderMap := map[int]string{
-	//	0: "未知",
-	//	1: "男",
-	//	2: "女",
-	//}
-	//IsLeaderMaps := map[int]string{
-	//	0: "否",
-	//	1: "是",
-	//}
-	//StatusMaps := map[int]string{
-	//	1: "已激活",
-	//	2: "已禁用",
-	//	4: "未激活",
-	//	5: "退出企业",
-	//}
 	now := time.Now().Format("2006-01-02 15:04:05")
 
 	return db.Transaction(func(tx *gorm.DB) error {
