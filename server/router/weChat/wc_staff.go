@@ -24,8 +24,9 @@ func (s *WcStaffRouter) InitWcStaffRouter(Router *gin.RouterGroup, PublicRouter 
 		wcStaffRouter.POST("importExcel", wcStaffApi.ImportExcel)                 // 导入账号信息
 	}
 	{
-		wcStaffRouterWithoutRecord.GET("findWcStaff", wcStaffApi.FindWcStaff)       // 根据ID获取账号信息
-		wcStaffRouterWithoutRecord.GET("getWcStaffList", wcStaffApi.GetWcStaffList) // 获取账号信息列表
+		wcStaffRouterWithoutRecord.GET("findWcStaff", wcStaffApi.FindWcStaff)               // 根据ID获取账号信息
+		wcStaffRouterWithoutRecord.GET("getWcStaffList", wcStaffApi.GetWcStaffList)         // 获取账号信息列表
+		wcStaffRouterWithoutRecord.GET("getSimpleStaffList", wcStaffApi.GetSimpleStaffList) // 获取账号信息列表
 	}
 	{
 		wcStaffRouterWithoutAuth.GET("getWcStaffPublic", wcStaffApi.GetWcStaffPublic) // 获取账号信息列表

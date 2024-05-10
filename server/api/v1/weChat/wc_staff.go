@@ -160,6 +160,35 @@ func (wcStaffApi *WcStaffApi) GetWcStaffList(c *gin.Context) {
 	}
 }
 
+// GetSimpleStaffList 分页获取账号信息列表
+// @Tags WcStaff
+// @Summary 分页获取账号信息列表
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Param data query weChatReq.WcStaffSearch true "分页获取账号信息列表"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
+// @Router /wcStaff/getSimpleStaffList [get]
+func (wcStaffApi *WcStaffApi) GetSimpleStaffList(c *gin.Context) {
+	var pageInfo weChatReq.WcStaffSearch
+	err := c.ShouldBindQuery(&pageInfo)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if list, total, err := wcStaffService.GetSimpleStaffInfoList(pageInfo); err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+	} else {
+		response.OkWithDetailed(response.PageResult{
+			List:     list,
+			Total:    total,
+			Page:     pageInfo.Page,
+			PageSize: pageInfo.PageSize,
+		}, "获取成功", c)
+	}
+}
+
 // GetWcStaffPublic 不需要鉴权的账号信息接口
 // @Tags WcStaff
 // @Summary 不需要鉴权的账号信息接口

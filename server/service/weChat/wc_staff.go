@@ -219,6 +219,36 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 	return wcStaffsResponse, total, err
 }
 
+// GetSimpleStaffInfoList 分页获取账号信息记录
+func (wcStaffService *WcStaffService) GetSimpleStaffInfoList(info weChatReq.WcStaffSearch) (list []weChat.WcStaff, total int64, err error) {
+
+	limit := info.PageSize
+	offset := info.PageSize * (info.Page - 1)
+	// 创建db
+	db := global.GVA_DB.Model(&weChat.WcStaff{})
+	var wcStaffs []weChat.WcStaff
+	// 如果有条件搜索 下方会自动创建搜索语句
+	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
+		db = db.Where("created_at BETWEEN ? AND ?", info.StartCreatedAt, info.EndCreatedAt)
+	}
+	err = db.Count(&total).Error
+	if err != nil {
+		return
+	}
+
+	if limit != 0 {
+		db = db.Limit(limit).Offset(offset)
+	}
+
+	err = db.Find(&wcStaffs).Error
+
+	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	fmt.Println("GetSimpleStaffInfoList err", err)
+	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+	return wcStaffs, total, err
+}
+
 // ImportExcel 导入Excel
 func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multipart.FileHeader) (err error) {
 	var template system.SysExportTemplate

@@ -12,7 +12,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import {getWcStaffList} from "@/api/weChat/wcStaff";
+import {getSimpleStaffList} from "@/api/weChat/wcStaff";
 const page = ref(1)
 const pageSize = ref(10000)
 const searchInfo = ref({})
@@ -28,7 +28,7 @@ const props = defineProps({
 
 const options = ref([])
 const initSelectOptions = async () => {
-  const table = await getWcStaffList({page: page.value, pageSize: pageSize.value, ...searchInfo.value})
+  const table = await getSimpleStaffList({page: page.value, pageSize: pageSize.value, ...searchInfo.value})
   if (table.code === 0) {
     table.data.list.forEach(item => {
         options.value.push({
