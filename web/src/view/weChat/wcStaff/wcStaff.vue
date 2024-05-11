@@ -117,19 +117,22 @@
           </SelectPosition>
         </el-form-item>
         <el-form-item label="性别:" prop="gender">
-          <el-radio-group  v-model="formData.gender">
-            <el-radio :label=1>男</el-radio>
-            <el-radio :label=2>女</el-radio>
-          </el-radio-group>
+          <el-select v-model="formData.gender" placeholder="选择性别">
+            <el-option v-for="gender in genders" :key="gender.value" :label="gender.label" :value="gender.value"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="是否领导:" prop="isLeader">
-          <el-radio-group v-model="formData.isLeader">
-            <el-radio :label=1>是</el-radio>
-            <el-radio :label=0>否</el-radio>
-          </el-radio-group>
+          <el-select v-model="formData.isLeader" placeholder="选择是否领导">
+            <el-option v-for="isLeader in isLeaders" :key="isLeader.value" :label="isLeader.label" :value="isLeader.value"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="手机:" prop="mobile">
           <el-input v-model="formData.mobile" :clearable="true" placeholder="请输入手机"/>
+        </el-form-item>
+        <el-form-item label="状态:" prop="status">
+          <el-select v-model="formData.status" placeholder="请选择状态">
+            <el-option v-for="status in statuses" :key="status.value" :label="status.label" :value="status.value"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="座机:" prop="telephone">
           <el-input v-model="formData.telephone" :clearable="true" placeholder="请输入座机"/>
@@ -142,11 +145,6 @@
         </el-form-item>
         <el-form-item label="企业邮箱:" prop="bizMail">
           <el-input v-model="formData.bizMail" :clearable="true" placeholder="请输入企业邮箱"/>
-        </el-form-item>
-        <el-form-item label="状态:" prop="status">
-          <el-select v-model="formData.status" placeholder="请选择状态">
-            <el-option v-for="status in statuses" :key="status.value" :label="status.label" :value="status.value"></el-option>
-          </el-select>
         </el-form-item>
       </el-form>
     </el-drawer>
@@ -182,6 +180,9 @@
         <el-descriptions-item label="手机">
           {{ formData.mobile }}
         </el-descriptions-item>
+        <el-descriptions-item label="状态">
+          {{ formData.statusText }}
+        </el-descriptions-item>
         <el-descriptions-item label="座机">
           {{ formData.telephone }}
         </el-descriptions-item>
@@ -193,9 +194,6 @@
         </el-descriptions-item>
         <el-descriptions-item label="企业邮箱">
           {{ formData.bizMail }}
-        </el-descriptions-item>
-        <el-descriptions-item label="状态">
-          {{ formData.statusText }}
         </el-descriptions-item>
       </el-descriptions>
     </el-drawer>
@@ -221,6 +219,7 @@ import ExportExcel from "@/components/exportExcel/wechat/exportExcel.vue";
 import ExportTemplate from "@/components/exportExcel/wechat/exportTemplate.vue";
 import SelectPosition from "@/components/selectPosition/index.vue";
 import SelectDepartment from "@/components/SelectDepartment/index.vue";
+import {InfoFilled, QuestionFilled} from "@element-plus/icons-vue";
 
 defineOptions({
   name: 'WcStaff'
@@ -233,6 +232,17 @@ const statuses = ref([
   { label: '退出企业', value: 5 }
 ])
 
+const genders = ref([
+  { label: '未知', value: 0 },
+  { label: '男', value: 1 },
+  { label: '女', value: 2 },
+])
+
+const isLeaders = ref([
+  { label: '否', value: 0 },
+  { label: '是', value: 1 },
+])
+
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
   userId: 0,
@@ -241,14 +251,14 @@ const formData = ref({
   name: '',
   departmentIds: [],
   positionIds: [],
-  gender: 0,
-  isLeader: 0,
+  gender: '',
+  isLeader: '',
   mobile: '',
   telephone: '',
   email: '',
   address: '',
   bizMail: '',
-  status: 1,
+  status: '',
   department:'',
   position:'',
   genderText:'',
@@ -305,6 +315,12 @@ const rule = reactive({
   },
   ],
   isLeader: [{
+    required: true,
+    message: '',
+    trigger: ['input', 'blur'],
+  },
+  ],
+  status: [{
     required: true,
     message: '',
     trigger: ['input', 'blur'],
@@ -516,16 +532,21 @@ const closeDetailShow = () => {
     userid: '',
     jobNum: '',
     name: '',
-    department: '',
-    position: '',
-    gender: 0,
-    isLeader: 0,
+    departmentIds: [],
+    positionIds: [],
+    gender: '',
+    isLeader: '',
     mobile: '',
     telephone: '',
     email: '',
     address: '',
     bizMail: '',
-    status: 1,
+    status: '',
+    department:'',
+    position:'',
+    genderText:'',
+    isLeaderText:'',
+    statusText:'',
   }
 }
 
@@ -542,17 +563,23 @@ const closeDialog = () => {
   formData.value = {
     userId: 0,
     userid: '',
+    jobNum: '',
     name: '',
-    department: '',
-    position: '',
-    gender: 0,
-    isLeader: 0,
+    departmentIds: [],
+    positionIds: [],
+    gender: '',
+    isLeader: '',
     mobile: '',
     telephone: '',
     email: '',
     address: '',
     bizMail: '',
-    status: 1,
+    status: '',
+    department:'',
+    position:'',
+    genderText:'',
+    isLeaderText:'',
+    statusText:'',
   }
 }
 // 弹窗确定
