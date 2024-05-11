@@ -467,14 +467,18 @@ const getDetails = async (row) => {
 const closeDetailShow = () => {
   detailShow.value = false
   formData.value = {
-          userId: 0,
-          userid: '',
-          type: 0,
-          status: 0,
-          tryPeriod: 0,
-          employmentDate: new Date(),
-          formalDate: new Date(),
-          name: '',
+            staffId: '',
+            type: '',
+            status: '',
+            tryPeriod: '',
+            employmentDate: new Date(),
+            formalDate: new Date(),
+            name: '',
+            staffName:'',
+            jobNum: '',
+            typeText:'',
+            statusText:'',
+            tryPeriodText:'',
           }
 }
 
@@ -489,14 +493,18 @@ const openDialog = () => {
 const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
-        userId: 0,
-        userid: '',
-        type: 0,
-        status: 0,
-        tryPeriod: 0,
-        employmentDate: new Date(),
-        formalDate: new Date(),
-        name: '',
+          staffId: '',
+          type: '',
+          status: '',
+          tryPeriod: '',
+          employmentDate: new Date(),
+          formalDate: new Date(),
+          name: '',
+          staffName:'',
+          jobNum: '',
+          typeText:'',
+          statusText:'',
+          tryPeriodText:'',
         }
 }
 // 弹窗确定
