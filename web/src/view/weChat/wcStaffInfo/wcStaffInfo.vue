@@ -92,7 +92,7 @@
 
           <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
             <el-form-item label="选择员工:" prop="staffId">
-              <SelectStaff v-model="formData.staffId">
+              <SelectStaff v-model="formData.staffId" :disabled="type==='update'?'disabled':false">
               </SelectStaff>
             </el-form-item>
             <el-form-item label="考勤类型:" prop="type">
@@ -385,19 +385,19 @@ const nations = ref([
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
-        staffId: 0,
-        type: 0,
-        rank: 0,
+        staffId: '',
+        type: '',
+        rank: '',
         idNumber: '',
         idAddress: '',
-        householdType: 0,
+        householdType: '',
         birthday: new Date(),
         nativePlace: '',
-        nation: 0,
+        nation: '',
         height: 0,
         weight: 0,
-        marriage: 0,
-        politicalOutlook: 0,
+        marriage: '',
+        politicalOutlook: '',
         address: '',
         socialNumber: '',
         accountNumber: '',
