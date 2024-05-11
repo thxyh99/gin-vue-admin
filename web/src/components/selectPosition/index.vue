@@ -1,5 +1,5 @@
 <template>
-    <el-select multiple
+    <el-select multiple filterable
     >
       <el-option
         v-for="item in options"

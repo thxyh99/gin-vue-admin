@@ -95,14 +95,26 @@
               <SelectStaff v-model="formData.staffId">
               </SelectStaff>
             </el-form-item>
+            <el-form-item label="考勤类型:" prop="type">
+              <el-select v-model="formData.type" placeholder="选择考勤类型" :on-change="handleTypeChange()">
+                <el-option v-for="type in types" :key="type.value" :label="type.label" :value="type.value"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="员工职级:" prop="rank">
+              <el-select v-model="formData.rank" placeholder="选择员工职级" filterable>
+                <el-option v-for="rank in rankList" :key="rank.value" :label="rank.label" :value="rank.value"></el-option>
+              </el-select>
+            </el-form-item>
             <el-form-item label="身份证号:"  prop="idNumber" >
               <el-input v-model="formData.idNumber" :clearable="true"  placeholder="请输入身份证号" />
             </el-form-item>
             <el-form-item label="身份证地址:"  prop="idAddress" >
               <el-input v-model="formData.idAddress" :clearable="true"  placeholder="请输入身份证地址" />
             </el-form-item>
-            <el-form-item label="户籍类型(1:本地城镇 2:本地农村 3:外地城镇[省内] 4:外地农村[省内] 5:外地城镇[省外] 6:外地农村[省外]):"  prop="householdType" >
-              <el-input v-model.number="formData.householdType" :clearable="true" placeholder="请输入户籍类型(1:本地城镇 2:本地农村 3:外地城镇[省内] 4:外地农村[省内] 5:外地城镇[省外] 6:外地农村[省外])" />
+            <el-form-item label="户籍类型:"  prop="householdType" >
+              <el-select v-model="formData.householdType" placeholder="选择户籍类型">
+                <el-option v-for="householdType in householdTypes" :key="householdType.value" :label="householdType.label" :value="householdType.value"></el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="出生日期:"  prop="birthday" >
               <el-date-picker v-model="formData.birthday" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
@@ -110,20 +122,26 @@
             <el-form-item label="籍贯:"  prop="nativePlace" >
               <el-input v-model="formData.nativePlace" :clearable="true"  placeholder="请输入籍贯" />
             </el-form-item>
-            <el-form-item label="民族:"  prop="nationality" >
-              <el-input v-model="formData.nationality" :clearable="true"  placeholder="请输入民族" />
+            <el-form-item label="民族:"  prop="nation" >
+              <el-select v-model="formData.nation" placeholder="选择民族" filterable>
+                <el-option v-for="nation in nations" :key="nation.value" :label="nation.label" :value="nation.value"></el-option>
+              </el-select>
             </el-form-item>
-            <el-form-item label="身高:"  prop="height" >
+            <el-form-item label="身高(cm):"  prop="height" >
               <el-input-number v-model="formData.height"  style="width:100%" :precision="2" :clearable="true"  />
             </el-form-item>
-            <el-form-item label="体重:"  prop="weight" >
+            <el-form-item label="体重(kg):"  prop="weight" >
               <el-input-number v-model="formData.weight"  style="width:100%" :precision="2" :clearable="true"  />
             </el-form-item>
-            <el-form-item label="婚否(1:已婚 2:未婚 3:其他):"  prop="marriage" >
-              <el-input v-model.number="formData.marriage" :clearable="true" placeholder="请输入婚否(1:已婚 2:未婚 3:其他)" />
+            <el-form-item label="婚否:"  prop="marriage" >
+              <el-select v-model="formData.marriage" placeholder="选择婚否">
+                <el-option v-for="marriage in marriages" :key="marriage.value" :label="marriage.label" :value="marriage.value"></el-option>
+              </el-select>
             </el-form-item>
-            <el-form-item label="政治面貌(1:团员 2:党员 3:群众 0:其他):"  prop="politicalOutlook" >
-              <el-input v-model.number="formData.politicalOutlook" :clearable="true" placeholder="请输入政治面貌(1:团员 2:党员 3:群众 0:其他)" />
+            <el-form-item label="政治面貌:"  prop="politicalOutlook" >
+              <el-select v-model="formData.politicalOutlook" placeholder="选择政治面貌">
+                <el-option v-for="politicalOutlook in politicalOutlooks" :key="politicalOutlook.value" :label="politicalOutlook.label" :value="politicalOutlook.value"></el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="常住地址:"  prop="address" >
               <el-input v-model="formData.address" :clearable="true"  placeholder="请输入常住地址" />
@@ -165,7 +183,7 @@
                 <el-descriptions-item label="身份证地址">
                         {{ formData.idAddress }}
                 </el-descriptions-item>
-                <el-descriptions-item label="户籍类型(1:本地城镇 2:本地农村 3:外地城镇[省内] 4:外地农村[省内] 5:外地城镇[省外] 6:外地农村[省外])">
+                <el-descriptions-item label="户籍类型">
                         {{ formData.householdTypeText }}
                 </el-descriptions-item>
                 <el-descriptions-item label="出生日期">
@@ -183,10 +201,10 @@
                 <el-descriptions-item label="体重">
                         {{ formData.weight }}
                 </el-descriptions-item>
-                <el-descriptions-item label="婚否(1:已婚 2:未婚 3:其他)">
+                <el-descriptions-item label="婚否">
                         {{ formData.marriageText }}
                 </el-descriptions-item>
-                <el-descriptions-item label="政治面貌(1:团员 2:党员 3:群众 0:其他)">
+                <el-descriptions-item label="政治面貌">
                         {{ formData.politicalOutlookText }}
                 </el-descriptions-item>
                 <el-descriptions-item label="常住地址">
@@ -226,6 +244,143 @@ import SelectStaff from "@/components/selectStaff/index.vue";
 defineOptions({
     name: 'WcStaffInfo'
 })
+
+const types = ref([
+  { label: '内勤', value: 1 },
+  { label: '市场', value: 2 },
+])
+
+const officeRanks = ref([
+  { label: '实习生', value: 1 },
+  { label: '职员5级', value: 2 },
+  { label: '职员4级', value: 3 },
+  { label: '职员3级', value: 4 },
+  { label: '职员2级', value: 5 },
+  { label: '职员1级', value: 6 },
+  { label: '专员3级', value: 7 },
+  { label: '专员2级', value: 8 },
+  { label: '专员1级', value: 9 },
+  { label: '主管3级', value: 10 },
+  { label: '主管2级', value: 11 },
+  { label: '主管1级', value: 12 },
+  { label: '资深专员3级', value: 13 },
+  { label: '资深专员2级', value: 14 },
+  { label: '资深专员1级', value: 15 },
+  { label: '资深主管3级', value: 16 },
+  { label: '资深主管2级', value: 17 },
+  { label: '资深主管1级', value: 18 },
+  { label: '专业副经理3级', value: 19 },
+  { label: '专业副经理2级', value: 20 },
+  { label: '专业副经理1级', value: 21 },
+  { label: '专业经理3级', value: 22 },
+  { label: '专业经理2级', value: 23 },
+  { label: '专业经理1级', value: 24 },
+  { label: '副经理3级', value: 25 },
+  { label: '副经理2级', value: 26 },
+  { label: '副经理1级', value: 27 },
+  { label: '经理3级', value: 28 },
+  { label: '经理2级', value: 29 },
+  { label: '经理1级', value: 30 },
+  { label: '副监3级', value: 31 },
+  { label: '副监2级', value: 32 },
+  { label: '副监1级', value: 33 },
+  { label: '总监3级', value: 34 },
+  { label: '总监2级', value: 35 },
+  { label: '总监1级', value: 36 },
+  { label: '副总3级', value: 37 },
+  { label: '副总2级', value: 38 },
+  { label: '副总1级', value: 39 },
+  { label: '总经理3级', value: 40 },
+  { label: '总经理2级', value: 41 },
+  { label: '总经理1级', value: 42 },
+])
+
+const marketRanks  = ref([
+  { label: '市场3级', value: 1 },
+  { label: '市场2级', value: 2 },
+  { label: '市场1级', value: 3 },
+])
+
+const householdTypes = ref([
+  { label: '本地城镇', value: 1 },
+  { label: '本地农村', value: 2 },
+  { label: '外地城镇[省内]', value: 3 },
+  { label: '外地农村[省内]', value: 4 },
+  { label: '外地城镇[省外]', value: 5 },
+  { label: '外地农村[省外]', value: 6 },
+])
+
+const marriages = ref([
+  { label: '已婚', value: 1 },
+  { label: '未婚', value: 2 },
+  { label: '其他', value: 3 },
+])
+
+const politicalOutlooks = ref([
+  { label: '其他', value: 0 },
+  { label: '团员', value: 1 },
+  { label: '党员', value: 2 },
+  { label: '群众', value: 3 },
+])
+
+const nations = ref([
+  { label: '汉族', value: 1 },
+  { label: '蒙古族', value: 2 },
+  { label: '回族', value: 3 },
+  { label: '藏族', value: 4 },
+  { label: '维吾尔族', value: 5 },
+  { label: '苗族', value: 6 },
+  { label: '彝族', value: 7 },
+  { label: '壮族', value: 8 },
+  { label: '布依族', value: 9 },
+  { label: '朝鲜族', value: 10 },
+  { label: '满族', value: 11 },
+  { label: '侗族', value: 12 },
+  { label: '瑶族', value: 13 },
+  { label: '白族', value: 14 },
+  { label: '土家族', value: 15 },
+  { label: '哈尼族', value: 16 },
+  { label: '哈萨克族', value: 17 },
+  { label: '傣族', value: 18 },
+  { label: '黎族', value: 19 },
+  { label: '傈僳族', value: 20 },
+  { label: '佤族', value: 21 },
+  { label: '畲族', value: 22 },
+  { label: '高山族', value: 23 },
+  { label: '拉祜族', value: 24 },
+  { label: '水族', value: 25 },
+  { label: '东乡族', value: 26 },
+  { label: '纳西族', value: 27 },
+  { label: '景颇族', value: 28 },
+  { label: '柯尔克孜族', value: 29 },
+  { label: '土族', value: 30 },
+  { label: '达斡尔族', value: 31 },
+  { label: '仫佬族', value: 32 },
+  { label: '羌族', value: 33 },
+  { label: '布朗族', value: 34 },
+  { label: '撒拉族', value: 35 },
+  { label: '毛南族', value: 36 },
+  { label: '仡佬族', value: 37 },
+  { label: '锡伯族', value: 38 },
+  { label: '阿昌族', value: 39 },
+  { label: '普米族', value: 40 },
+  { label: '塔吉克族', value: 41 },
+  { label: '怒族', value: 42 },
+  { label: '乌孜别克族', value: 43 },
+  { label: '俄罗斯族', value: 44 },
+  { label: '鄂温克族', value: 45 },
+  { label: '崩龙族', value: 46 },
+  { label: '保安族', value: 47 },
+  { label: '裕固族', value: 48 },
+  { label: '京族', value: 49 },
+  { label: '塔塔尔族', value: 50 },
+  { label: '独龙族', value: 51 },
+  { label: '鄂伦春族', value: 52 },
+  { label: '赫哲族', value: 53 },
+  { label: '门巴族', value: 54 },
+  { label: '珞巴族', value: 55 },
+  { label: '基诺族', value: 56 },
+])
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
@@ -382,11 +537,21 @@ const total = ref(0)
 const pageSize = ref(10)
 const tableData = ref([])
 const searchInfo = ref({})
+const rankList = ref({})
 
 // 重置
 const onReset = () => {
   searchInfo.value = {}
   getTableData()
+}
+
+const handleTypeChange = () => {
+  formData.value.rank = ""
+  if (formData.value.type === 1) {
+    rankList.value = officeRanks.value
+  } else if (formData.value.type === 2) {
+    rankList.value = marketRanks.value
+  }
 }
 
 // 搜索

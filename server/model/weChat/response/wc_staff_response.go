@@ -1,4 +1,3 @@
-// 自动生成模板WcStaff
 package weChat
 
 import (
@@ -22,7 +21,7 @@ type WcStaffResponse struct {
 	StatusText    string `json:"statusText"`    //状态信息
 }
 
-func (WcStaffResponse) Assemble(staffs []weChat.WcStaff) (newStaffs []WcStaffResponse) {
+func (WcStaffResponse) AssembleStaffList(staffs []weChat.WcStaff) (newStaffs []WcStaffResponse, err error) {
 	var newStaff WcStaffResponse
 	configInfo := config.GetConfigInfo()
 
@@ -47,14 +46,16 @@ func (WcStaffResponse) Assemble(staffs []weChat.WcStaff) (newStaffs []WcStaffRes
 			pRows, err := global.GVA_DB.Table(sPosition.TableName()+" as sp").Select("p.id,p.name").
 				Joins("left join wc_position as p on p.id = sp.position_id").Where("sp.staff_id=?", item.ID).Rows()
 			if err != nil {
-				fmt.Println("position1 err:", err)
+				fmt.Println("AssembleStaffList Position1 Err:", err)
+				return
 			} else {
 				for pRows.Next() {
 					var id int
 					var name string
 					err = pRows.Scan(&id, &name)
 					if err != nil {
-						fmt.Println("position2 err:", err)
+						fmt.Println("AssembleStaffList Position2 Err:", err)
+						return
 					} else {
 						positionIds = append(positionIds, id)
 						if positionText != "" {
@@ -78,20 +79,27 @@ func (WcStaffResponse) Assemble(staffs []weChat.WcStaff) (newStaffs []WcStaffRes
 			var departmentText string
 			dRows, err := global.GVA_DB.Table(sDepartment.TableName()).Select("department_id").Where("staff_id=?", item.ID).Rows()
 			if err != nil {
-				fmt.Println("department1 err:", err)
+				fmt.Println("AssembleStaffList Department1 Err:", err)
+				return
 			} else {
 				for dRows.Next() {
 					var departmentId int
 					err = dRows.Scan(&departmentId)
-					fullName := weChat.GetFullDepartmentById(departmentId)
 					if err != nil {
-						fmt.Println("department2 err:", err)
+						fmt.Println("AssembleStaffList Department2 Err:", err)
+						return
 					} else {
-						departmentIds = append(departmentIds, departmentId)
-						if departmentText != "" {
-							departmentText += ";" + fullName
+						fullName := weChat.GetFullDepartmentById(departmentId)
+						if err != nil {
+							fmt.Println("AssembleStaffList Department3 Err:", err)
+							return
 						} else {
-							departmentText = fullName
+							departmentIds = append(departmentIds, departmentId)
+							if departmentText != "" {
+								departmentText += ";" + fullName
+							} else {
+								departmentText = fullName
+							}
 						}
 					}
 				}
@@ -106,15 +114,15 @@ func (WcStaffResponse) Assemble(staffs []weChat.WcStaff) (newStaffs []WcStaffRes
 	return
 }
 
-func (WcStaffResponse) AssembleItem(staff weChat.WcStaff) (wcStaffResponse WcStaffResponse) {
+func (WcStaffResponse) AssembleStaff(staff weChat.WcStaff) (newStaff WcStaffResponse, err error) {
 	configInfo := config.GetConfigInfo()
 	gender, _ := utils.Find(configInfo.StaffGender, *staff.Gender)
-	wcStaffResponse.GenderText = gender
+	newStaff.GenderText = gender
 	isLeader, _ := utils.Find(configInfo.StaffIsLeader, *staff.IsLeader)
-	wcStaffResponse.IsLeaderText = isLeader
+	newStaff.IsLeaderText = isLeader
 	status, _ := utils.Find(configInfo.StaffStatus, *staff.Status)
-	wcStaffResponse.StatusText = status
-	wcStaffResponse.WcStaff = staff
+	newStaff.StatusText = status
+	newStaff.WcStaff = staff
 
 	//拼接员工职位信息
 	var sPosition weChat.WcStaffPosition
@@ -123,14 +131,16 @@ func (WcStaffResponse) AssembleItem(staff weChat.WcStaff) (wcStaffResponse WcSta
 	pRows, err := global.GVA_DB.Table(sPosition.TableName()+" as sp").Select("p.id,p.name").
 		Joins("left join wc_position as p on p.id = sp.position_id").Where("sp.staff_id=?", staff.ID).Rows()
 	if err != nil {
-		fmt.Println("position1 err:", err)
+		fmt.Println("AssembleStaff Position1 Err:", err)
+		return
 	} else {
 		for pRows.Next() {
 			var id int
 			var name string
 			err = pRows.Scan(&id, &name)
 			if err != nil {
-				fmt.Println("position2 err:", err)
+				fmt.Println("AssembleStaff Position2 Err:", err)
+				return
 			} else {
 				positionIds = append(positionIds, id)
 				if positionText != "" {
@@ -141,8 +151,8 @@ func (WcStaffResponse) AssembleItem(staff weChat.WcStaff) (wcStaffResponse WcSta
 			}
 		}
 	}
-	wcStaffResponse.PositionIds = positionIds
-	wcStaffResponse.Position = positionText
+	newStaff.PositionIds = positionIds
+	newStaff.Position = positionText
 
 	//拼接员工部门信息
 	var sDepartment weChat.WcStaffDepartment
@@ -152,19 +162,21 @@ func (WcStaffResponse) AssembleItem(staff weChat.WcStaff) (wcStaffResponse WcSta
 	//	Joins("left join wc_department as d on d.id = sd.department_id").Where("sd.staff_id=?", staff.ID).Rows()
 	dRows, err := global.GVA_DB.Table(sDepartment.TableName()).Select("department_id").Where("staff_id=?", staff.ID).Rows()
 	if err != nil {
-		fmt.Println("department1 err:", err)
+		fmt.Println("AssembleStaff Department1 Err:", err)
+		return
 	} else {
 		for dRows.Next() {
 			var departmentId int
 			err = dRows.Scan(&departmentId)
 			if err != nil {
-				fmt.Println("department2 err:", err)
+				fmt.Println("AssembleStaff Department2 Err:", err)
+				return
 			} else {
 				departmentIds = append(departmentIds, departmentId)
 				fullName := weChat.GetFullDepartmentById(departmentId)
-				fmt.Println("fullName", fullName)
 				if err != nil {
-					fmt.Println("GetFullDepartmentById err:", err)
+					fmt.Println("AssembleStaff Department3 Err:", err)
+					return
 				}
 				if departmentText != "" {
 					departmentText += ";" + fullName
@@ -174,8 +186,8 @@ func (WcStaffResponse) AssembleItem(staff weChat.WcStaff) (wcStaffResponse WcSta
 			}
 		}
 	}
-	wcStaffResponse.DepartmentIds = departmentIds
-	wcStaffResponse.Department = departmentText
+	newStaff.DepartmentIds = departmentIds
+	newStaff.Department = departmentText
 
 	return
 }

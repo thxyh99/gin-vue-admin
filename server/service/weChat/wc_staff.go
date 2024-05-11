@@ -179,15 +179,13 @@ func (wcStaffService *WcStaffService) GetWcStaff(ID string) (wcStaffResponse weC
 	if err != nil {
 		return
 	}
-	wcStaffResponse = weChat2.WcStaffResponse{}.AssembleItem(wcStaff)
-
-	fmt.Println(wcStaffResponse)
+	wcStaffResponse, err = weChat2.WcStaffResponse{}.AssembleStaff(wcStaff)
 
 	return
 }
 
 // GetWcStaffInfoList 分页获取账号信息记录
-func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffSearch) (list []weChat2.WcStaffResponse, total int64, err error) {
+func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffSearch) (wcStaffResponse []weChat2.WcStaffResponse, total int64, err error) {
 
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
@@ -213,10 +211,9 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 	fmt.Println("GetWcStaffInfoList err", err)
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-	var wcStaffsResponse []weChat2.WcStaffResponse
-	wcStaffsResponse = weChat2.WcStaffResponse{}.Assemble(wcStaffs)
+	wcStaffResponse, err = weChat2.WcStaffResponse{}.AssembleStaffList(wcStaffs)
 
-	return wcStaffsResponse, total, err
+	return
 }
 
 // GetSimpleStaffInfoList 分页获取账号信息记录
