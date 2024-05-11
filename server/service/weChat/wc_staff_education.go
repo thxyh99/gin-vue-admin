@@ -4,49 +4,50 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
+	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
 )
 
 type WcStaffEducationService struct {
 }
 
 // CreateWcStaffEducation 创建学历信息记录
-
 func (wcStaffEducationService *WcStaffEducationService) CreateWcStaffEducation(wcStaffEducation *weChat.WcStaffEducation) (err error) {
 	err = global.GVA_DB.Create(wcStaffEducation).Error
 	return err
 }
 
 // DeleteWcStaffEducation 删除学历信息记录
-
 func (wcStaffEducationService *WcStaffEducationService) DeleteWcStaffEducation(ID string) (err error) {
 	err = global.GVA_DB.Delete(&weChat.WcStaffEducation{}, "id = ?", ID).Error
 	return err
 }
 
 // DeleteWcStaffEducationByIds 批量删除学历信息记录
-
 func (wcStaffEducationService *WcStaffEducationService) DeleteWcStaffEducationByIds(IDs []string) (err error) {
 	err = global.GVA_DB.Delete(&[]weChat.WcStaffEducation{}, "id in ?", IDs).Error
 	return err
 }
 
 // UpdateWcStaffEducation 更新学历信息记录
-
 func (wcStaffEducationService *WcStaffEducationService) UpdateWcStaffEducation(wcStaffEducation weChat.WcStaffEducation) (err error) {
 	err = global.GVA_DB.Save(&wcStaffEducation).Error
 	return err
 }
 
 // GetWcStaffEducation 根据ID获取学历信息记录
+func (wcStaffEducationService *WcStaffEducationService) GetWcStaffEducation(ID string) (newStaffEducation weChat2.WcStaffEducationResponse, err error) {
+	var staffEducation weChat.WcStaffEducation
+	err = global.GVA_DB.Where("id = ?", ID).First(&staffEducation).Error
+	if err != nil {
+		return
+	}
 
-func (wcStaffEducationService *WcStaffEducationService) GetWcStaffEducation(ID string) (wcStaffEducation weChat.WcStaffEducation, err error) {
-	err = global.GVA_DB.Where("id = ?", ID).First(&wcStaffEducation).Error
+	newStaffEducation, err = weChat2.WcStaffEducationResponse{}.AssembleStaffEducation(staffEducation)
 	return
 }
 
 // GetWcStaffEducationInfoList 分页获取学历信息记录
-
-func (wcStaffEducationService *WcStaffEducationService) GetWcStaffEducationInfoList(info weChatReq.WcStaffEducationSearch) (list []weChat.WcStaffEducation, total int64, err error) {
+func (wcStaffEducationService *WcStaffEducationService) GetWcStaffEducationInfoList(info weChatReq.WcStaffEducationSearch) (list []weChat2.WcStaffEducationResponse, total int64, err error) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
@@ -66,5 +67,10 @@ func (wcStaffEducationService *WcStaffEducationService) GetWcStaffEducationInfoL
 	}
 
 	err = db.Find(&wcStaffEducations).Error
-	return wcStaffEducations, total, err
+	if err != nil {
+		return
+	}
+
+	list, err = weChat2.WcStaffEducationResponse{}.AssembleStaffEducationList(wcStaffEducations)
+	return
 }

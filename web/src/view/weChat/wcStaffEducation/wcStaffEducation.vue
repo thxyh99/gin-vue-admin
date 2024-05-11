@@ -36,20 +36,15 @@
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
-        
-        <el-table-column align="left" label="日期" width="180">
-            <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
-        </el-table-column>
-        
-        <el-table-column align="left" label="用户ID(SSO)" prop="userId" width="120" />
-        <el-table-column align="left" label="企微成员UserID" prop="userid" width="120" />
-        <el-table-column align="left" label="学历(1:小学 2:初中 3:高中 4:中专 5:大专 6:本科 7:硕士 8:博士 0:其他)" prop="education" width="120" />
+        <el-table-column align="left" label="成员名称" prop="staffName" width="120"/>
+        <el-table-column align="left" label="员工工号" prop="jobNum" width="120"/>
+        <el-table-column align="left" label="学历" prop="educationText" width="120" />
         <el-table-column align="left" label="毕业院校" prop="school" width="120" />
          <el-table-column align="left" label="毕业日期" width="180">
             <template #default="scope">{{ formatDate(scope.row.date) }}</template>
          </el-table-column>
         <el-table-column align="left" label="专业" prop="major" width="120" />
-        <el-table-column align="left" label="职称/技能证书" prop="certificate" width="120" />
+        <el-table-column align="left" label="职称/技能证书" prop="certificate" width="200" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -85,14 +80,14 @@
             </template>
 
           <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
-            <el-form-item label="用户ID(SSO):"  prop="userId" >
-              <el-input v-model.number="formData.userId" :clearable="true" placeholder="请输入用户ID(SSO)" />
+            <el-form-item label="选择员工:" prop="staffId">
+              <SelectStaff v-model="formData.staffId" :disabled="type==='update'?'disabled':false">
+              </SelectStaff>
             </el-form-item>
-            <el-form-item label="企微成员UserID:"  prop="userid" >
-              <el-input v-model="formData.userid" :clearable="true"  placeholder="请输入企微成员UserID" />
-            </el-form-item>
-            <el-form-item label="学历(1:小学 2:初中 3:高中 4:中专 5:大专 6:本科 7:硕士 8:博士 0:其他):"  prop="education" >
-              <el-input v-model.number="formData.education" :clearable="true" placeholder="请输入学历(1:小学 2:初中 3:高中 4:中专 5:大专 6:本科 7:硕士 8:博士 0:其他)" />
+            <el-form-item label="学历:"  prop="education" >
+              <el-select v-model="formData.education" placeholder="选择学历">
+                <el-option v-for="education in educations" :key="education.value" :label="education.label" :value="education.value"></el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="毕业院校:"  prop="school" >
               <el-input v-model="formData.school" :clearable="true"  placeholder="请输入毕业院校" />
@@ -116,14 +111,14 @@
              </div>
          </template>
         <el-descriptions :column="1" border>
-                <el-descriptions-item label="用户ID(SSO)">
-                        {{ formData.userId }}
+                <el-descriptions-item label="成员名称">
+                        {{ formData.staffName }}
                 </el-descriptions-item>
-                <el-descriptions-item label="企微成员UserID">
-                        {{ formData.userid }}
+                <el-descriptions-item label="员工工号">
+                        {{ formData.jobNum }}
                 </el-descriptions-item>
-                <el-descriptions-item label="学历(1:小学 2:初中 3:高中 4:中专 5:大专 6:本科 7:硕士 8:博士 0:其他)">
-                        {{ formData.education }}
+                <el-descriptions-item label="学历">
+                        {{ formData.educationText }}
                 </el-descriptions-item>
                 <el-descriptions-item label="毕业院校">
                         {{ formData.school }}
@@ -156,20 +151,36 @@ import {
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
+import {InfoFilled, QuestionFilled} from "@element-plus/icons-vue";
+import SelectStaff from "@/components/selectStaff/index.vue";
 
 defineOptions({
     name: 'WcStaffEducation'
 })
 
+const educations = ref([
+  { label: '其他', value: 0 },
+  { label: '小学', value: 1 },
+  { label: '初中', value: 2 },
+  { label: '高中', value: 3 },
+  { label: '中专', value: 4 },
+  { label: '大专', value: 5 },
+  { label: '本科', value: 6 },
+  { label: '硕士', value: 7 },
+  { label: '博士', value: 8 },
+])
+
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
-        userId: 0,
-        userid: '',
-        education: 0,
-        school: '',
-        date: new Date(),
-        major: '',
-        certificate: '',
+          staffId: '',
+          education: '',
+          school: '',
+          date: new Date(),
+          major: '',
+          certificate: '',
+          staffName:'',
+          jobNum: '',
+          educationText:'',
         })
 
 
@@ -414,13 +425,15 @@ const getDetails = async (row) => {
 const closeDetailShow = () => {
   detailShow.value = false
   formData.value = {
-          userId: 0,
-          userid: '',
-          education: 0,
-          school: '',
-          date: new Date(),
-          major: '',
-          certificate: '',
+            staffId: '',
+            education: '',
+            school: '',
+            date: new Date(),
+            major: '',
+            certificate: '',
+            staffName:'',
+            jobNum: '',
+            educationText:'',
           }
 }
 
@@ -435,13 +448,15 @@ const openDialog = () => {
 const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
-        userId: 0,
-        userid: '',
-        education: 0,
-        school: '',
-        date: new Date(),
-        major: '',
-        certificate: '',
+          staffId: '',
+          education: '',
+          school: '',
+          date: new Date(),
+          major: '',
+          certificate: '',
+          staffName:'',
+          jobNum: '',
+          educationText:'',
         }
 }
 // 弹窗确定
