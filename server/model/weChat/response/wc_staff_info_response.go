@@ -57,6 +57,7 @@ func (WcStaffInfoResponse) AssembleStaffInfoList(staffInfos []weChat.WcStaffInfo
 
 func (WcStaffInfoResponse) AssembleStaffInfo(staffInfo weChat.WcStaffInfo) (newStaffInfo WcStaffInfoResponse, err error) {
 	configInfo := config.GetConfigInfo()
+	newStaffInfo.WcStaffInfo = staffInfo
 	staffInfoTypeText, _ := utils.Find(configInfo.StaffInfoType, *staffInfo.Type)
 	newStaffInfo.TypeText = staffInfoTypeText
 	staffOfficeRankText, _ := utils.Find(configInfo.StaffOfficeRank, *staffInfo.Rank)

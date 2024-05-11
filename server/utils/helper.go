@@ -65,3 +65,14 @@ func FindIntValue(slice []int64, value int) (int, bool) {
 	}
 	return 0, false
 }
+
+// HideIdNumber 身份证打马赛克
+func HideIdNumber(idNumber string) string {
+	// 假设身份证号的生日部分是从第7位到第14位
+	if len(idNumber) < 14 {
+		return "Invalid ID Number"
+	}
+
+	hiddenIdNumber := idNumber[:6] + "********" + idNumber[14:]
+	return hiddenIdNumber
+}

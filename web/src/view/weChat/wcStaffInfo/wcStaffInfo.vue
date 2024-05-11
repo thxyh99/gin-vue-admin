@@ -36,13 +36,13 @@
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
-        <el-table-column align="left" label="成员名称" prop="name" width="120"/>
+        <el-table-column align="left" label="成员名称" prop="staffName" width="120"/>
         <el-table-column align="left" label="员工工号" prop="jobNum" width="120"/>
         <el-table-column align="left" label="员工考勤类型" prop="typeText" width="120"/>
         <el-table-column align="left" label="员工职级" prop="rankText" width="120"/>
-        <el-table-column align="left" label="身份证号" prop="idNumber" width="120" />
-        <el-table-column align="left" label="身份证地址" prop="idAddress" width="120" />
-        <el-table-column align="left" label="户籍类型" prop="householdTypeText" width="120" />
+<!--        <el-table-column align="left" label="身份证号" prop="idNumber" width="120" />-->
+<!--        <el-table-column align="left" label="身份证地址" prop="idAddress" width="120" />-->
+<!--        <el-table-column align="left" label="户籍类型" prop="householdTypeText" width="120" />-->
          <el-table-column align="left" label="出生日期" width="180">
             <template #default="scope">{{ formatDate(scope.row.birthday) }}</template>
          </el-table-column>
@@ -51,11 +51,11 @@
         <el-table-column align="left" label="身高(cm)" prop="height" width="120" />
         <el-table-column align="left" label="体重(kg)" prop="weight" width="120" />
         <el-table-column align="left" label="婚否" prop="marriageText" width="120" />
-        <el-table-column align="left" label="政治面貌" prop="politicalOutlookText" width="120" />
-        <el-table-column align="left" label="常住地址" prop="address" width="120" />
-        <el-table-column align="left" label="社保电脑号" prop="socialNumber" width="120" />
-        <el-table-column align="left" label="公积金账号" prop="accountNumber" width="120" />
-        <el-table-column align="left" label="社保公积金缴纳地" prop="paymentPlace" width="150" />
+<!--        <el-table-column align="left" label="政治面貌" prop="politicalOutlookText" width="120" />-->
+<!--        <el-table-column align="left" label="常住地址" prop="address" width="120" />-->
+<!--        <el-table-column align="left" label="社保电脑号" prop="socialNumber" width="120" />-->
+<!--        <el-table-column align="left" label="公积金账号" prop="accountNumber" width="120" />-->
+<!--        <el-table-column align="left" label="社保公积金缴纳地" prop="paymentPlace" width="150" />-->
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -166,7 +166,7 @@
          </template>
         <el-descriptions :column="1" border>
                 <el-descriptions-item label="成员名称">
-                        {{ formData.name }}
+                        {{ formData.staffName }}
                 </el-descriptions-item>
                 <el-descriptions-item label="员工工号">
                         {{ formData.jobNum }}
@@ -195,10 +195,10 @@
                 <el-descriptions-item label="民族">
                         {{ formData.nationText }}
                 </el-descriptions-item>
-                <el-descriptions-item label="身高">
+                <el-descriptions-item label="身高(cm)">
                         {{ formData.height }}
                 </el-descriptions-item>
-                <el-descriptions-item label="体重">
+                <el-descriptions-item label="体重(kg)">
                         {{ formData.weight }}
                 </el-descriptions-item>
                 <el-descriptions-item label="婚否">
@@ -239,6 +239,7 @@ import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDow
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
 import SelectStaff from "@/components/selectStaff/index.vue";
+import {InfoFilled} from "@element-plus/icons-vue";
 
 
 defineOptions({
@@ -401,6 +402,13 @@ const formData = ref({
         socialNumber: '',
         accountNumber: '',
         paymentPlace: '',
+        staffName: '',
+        typeText:'',
+        rankText:'',
+        householdTypeText:'',
+        nationText:'',
+        marriageText:'',
+        politicalOutlookText:'',
         })
 
 
@@ -546,7 +554,6 @@ const onReset = () => {
 }
 
 const handleTypeChange = () => {
-  formData.value.rank = ""
   if (formData.value.type === 1) {
     rankList.value = officeRanks.value
   } else if (formData.value.type === 2) {

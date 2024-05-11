@@ -1,9 +1,11 @@
 package weChat
 
 import (
+	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
+	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
 )
 
 type WcStaffInfoService struct {
@@ -34,13 +36,21 @@ func (wcStaffInfoService *WcStaffInfoService) UpdateWcStaffInfo(wcStaffInfo weCh
 }
 
 // GetWcStaffInfo 根据ID获取个人信息记录
-func (wcStaffInfoService *WcStaffInfoService) GetWcStaffInfo(ID string) (wcStaffInfo weChat.WcStaffInfo, err error) {
-	err = global.GVA_DB.Where("id = ?", ID).First(&wcStaffInfo).Error
+func (wcStaffInfoService *WcStaffInfoService) GetWcStaffInfo(ID string) (newStaffInfo weChat2.WcStaffInfoResponse, err error) {
+	var staffInfo weChat.WcStaffInfo
+	err = global.GVA_DB.Where("id = ?", ID).First(&staffInfo).Error
+	if err != nil {
+		fmt.Println("GetWcStaffInfo Err:", err)
+		return
+	}
+	newStaffInfo, err = weChat2.WcStaffInfoResponse{}.AssembleStaffInfo(staffInfo)
+
+	fmt.Println("newStaffInfo:", newStaffInfo)
 	return
 }
 
 // GetWcStaffInfoInfoList 分页获取个人信息记录
-func (wcStaffInfoService *WcStaffInfoService) GetWcStaffInfoInfoList(info weChatReq.WcStaffInfoSearch) (list []weChat.WcStaffInfo, total int64, err error) {
+func (wcStaffInfoService *WcStaffInfoService) GetWcStaffInfoInfoList(info weChatReq.WcStaffInfoSearch) (list []weChat2.WcStaffInfoResponse, total int64, err error) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
@@ -60,5 +70,11 @@ func (wcStaffInfoService *WcStaffInfoService) GetWcStaffInfoInfoList(info weChat
 	}
 
 	err = db.Find(&wcStaffInfos).Error
-	return wcStaffInfos, total, err
+	if err != nil {
+		fmt.Println("GetWcStaffInfoInfoList Err:", err)
+		return
+	}
+
+	list, err = weChat2.WcStaffInfoResponse{}.AssembleStaffInfoList(wcStaffInfos)
+	return
 }
