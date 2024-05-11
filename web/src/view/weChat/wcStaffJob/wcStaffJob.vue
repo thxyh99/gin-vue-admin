@@ -221,23 +221,12 @@ const formData = ref({
 
 // 验证规则
 const rule = reactive({
-               userId : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-              ],
-               userid : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
-              ],
+                staffId : [{
+                  required: true,
+                  message: '',
+                  trigger: ['input','blur'],
+                },
+                ],
                type : [{
                    required: true,
                    message: '',

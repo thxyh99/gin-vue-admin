@@ -4,49 +4,50 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
+	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
 )
 
 type WcStaffContactService struct {
 }
 
 // CreateWcStaffContact 创建紧急联系人记录
-
 func (wcStaffContactService *WcStaffContactService) CreateWcStaffContact(wcStaffContact *weChat.WcStaffContact) (err error) {
 	err = global.GVA_DB.Create(wcStaffContact).Error
 	return err
 }
 
 // DeleteWcStaffContact 删除紧急联系人记录
-
 func (wcStaffContactService *WcStaffContactService) DeleteWcStaffContact(ID string) (err error) {
 	err = global.GVA_DB.Delete(&weChat.WcStaffContact{}, "id = ?", ID).Error
 	return err
 }
 
 // DeleteWcStaffContactByIds 批量删除紧急联系人记录
-
 func (wcStaffContactService *WcStaffContactService) DeleteWcStaffContactByIds(IDs []string) (err error) {
 	err = global.GVA_DB.Delete(&[]weChat.WcStaffContact{}, "id in ?", IDs).Error
 	return err
 }
 
 // UpdateWcStaffContact 更新紧急联系人记录
-
 func (wcStaffContactService *WcStaffContactService) UpdateWcStaffContact(wcStaffContact weChat.WcStaffContact) (err error) {
 	err = global.GVA_DB.Save(&wcStaffContact).Error
 	return err
 }
 
 // GetWcStaffContact 根据ID获取紧急联系人记录
+func (wcStaffContactService *WcStaffContactService) GetWcStaffContact(ID string) (newStaffContact weChat2.WcStaffContactResponse, err error) {
+	var staffContact weChat.WcStaffContact
+	err = global.GVA_DB.Where("id = ?", ID).First(&staffContact).Error
+	if err != nil {
+		return
+	}
 
-func (wcStaffContactService *WcStaffContactService) GetWcStaffContact(ID string) (wcStaffContact weChat.WcStaffContact, err error) {
-	err = global.GVA_DB.Where("id = ?", ID).First(&wcStaffContact).Error
+	newStaffContact, err = weChat2.WcStaffContactResponse{}.AssembleStaffContact(staffContact)
 	return
 }
 
 // GetWcStaffContactInfoList 分页获取紧急联系人记录
-
-func (wcStaffContactService *WcStaffContactService) GetWcStaffContactInfoList(info weChatReq.WcStaffContactSearch) (list []weChat.WcStaffContact, total int64, err error) {
+func (wcStaffContactService *WcStaffContactService) GetWcStaffContactInfoList(info weChatReq.WcStaffContactSearch) (list []weChat2.WcStaffContactResponse, total int64, err error) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
@@ -66,5 +67,10 @@ func (wcStaffContactService *WcStaffContactService) GetWcStaffContactInfoList(in
 	}
 
 	err = db.Find(&wcStaffContacts).Error
-	return wcStaffContacts, total, err
+	if err != nil {
+		return
+	}
+
+	list, err = weChat2.WcStaffContactResponse{}.AssembleStaffContactList(wcStaffContacts)
+	return
 }

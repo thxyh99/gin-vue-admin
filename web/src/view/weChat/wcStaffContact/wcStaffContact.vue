@@ -36,17 +36,12 @@
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
-        
-        <el-table-column align="left" label="日期" width="180">
-            <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
-        </el-table-column>
-        
-        <el-table-column align="left" label="用户ID(SSO)" prop="userId" width="120" />
-        <el-table-column align="left" label="企微成员UserID" prop="userid" width="120" />
-        <el-table-column align="left" label="紧急联系人姓名" prop="name" width="120" />
-        <el-table-column align="left" label="联系人关系(1:父母 2:配偶 3:子女 0:其他)" prop="relationship" width="120" />
-        <el-table-column align="left" label="联系人电话" prop="mobile" width="120" />
-        <el-table-column align="left" label="联系人常住地址" prop="address" width="120" />
+        <el-table-column align="left" label="成员名称" prop="staffName" width="150"/>
+        <el-table-column align="left" label="员工工号" prop="jobNum" width="150"/>
+        <el-table-column align="left" label="紧急联系人姓名" prop="name" width="150" />
+        <el-table-column align="left" label="联系人关系" prop="relationshipText" width="150" />
+        <el-table-column align="left" label="联系人电话" prop="mobile" width="180" />
+        <el-table-column align="left" label="联系人常住地址" prop="address" width="260" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -82,17 +77,17 @@
             </template>
 
           <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
-            <el-form-item label="用户ID(SSO):"  prop="userId" >
-              <el-input v-model.number="formData.userId" :clearable="true" placeholder="请输入用户ID(SSO)" />
-            </el-form-item>
-            <el-form-item label="企微成员UserID:"  prop="userid" >
-              <el-input v-model="formData.userid" :clearable="true"  placeholder="请输入企微成员UserID" />
+            <el-form-item label="选择员工:" prop="staffId">
+              <SelectStaff v-model="formData.staffId" :disabled="type==='update'?'disabled':false">
+              </SelectStaff>
             </el-form-item>
             <el-form-item label="紧急联系人姓名:"  prop="name" >
               <el-input v-model="formData.name" :clearable="true"  placeholder="请输入紧急联系人姓名" />
             </el-form-item>
-            <el-form-item label="联系人关系(1:父母 2:配偶 3:子女 0:其他):"  prop="relationship" >
-              <el-input v-model.number="formData.relationship" :clearable="true" placeholder="请输入联系人关系(1:父母 2:配偶 3:子女 0:其他)" />
+            <el-form-item label="联系人关系:"  prop="relationship" >
+              <el-select v-model="formData.relationship" placeholder="选择联系人关系">
+                <el-option v-for="relationship in relationships" :key="relationship.value" :label="relationship.label" :value="relationship.value"></el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="联系人电话:"  prop="mobile" >
               <el-input v-model="formData.mobile" :clearable="true"  placeholder="请输入联系人电话" />
@@ -110,17 +105,17 @@
              </div>
          </template>
         <el-descriptions :column="1" border>
-                <el-descriptions-item label="用户ID(SSO)">
-                        {{ formData.userId }}
+                <el-descriptions-item label="成员名称">
+                        {{ formData.staffName }}
                 </el-descriptions-item>
-                <el-descriptions-item label="企微成员UserID">
-                        {{ formData.userid }}
+                <el-descriptions-item label="员工工号">
+                        {{ formData.jobNum }}
                 </el-descriptions-item>
                 <el-descriptions-item label="紧急联系人姓名">
                         {{ formData.name }}
                 </el-descriptions-item>
-                <el-descriptions-item label="联系人关系(1:父母 2:配偶 3:子女 0:其他)">
-                        {{ formData.relationship }}
+                <el-descriptions-item label="联系人关系">
+                        {{ formData.relationshipText }}
                 </el-descriptions-item>
                 <el-descriptions-item label="联系人电话">
                         {{ formData.mobile }}
@@ -147,41 +142,39 @@ import {
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
+import {InfoFilled, QuestionFilled} from "@element-plus/icons-vue";
+import SelectStaff from "@/components/selectStaff/index.vue";
 
 defineOptions({
     name: 'WcStaffContact'
 })
 
+const relationships = ref([
+  { label: '其他', value: 0 },
+  { label: '父母', value: 1 },
+  { label: '配偶', value: 2 },
+  { label: '子女', value: 3 },
+])
+
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
-        userId: 0,
-        userid: '',
+        staffId: '',
         name: '',
-        relationship: 0,
+        relationship: '',
         mobile: '',
         address: '',
-        })
+        relationshipText: '',
+})
 
 
 // 验证规则
 const rule = reactive({
-               userId : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-              ],
-               userid : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
-              ],
+                staffId : [{
+                  required: true,
+                  message: '',
+                  trigger: ['input','blur'],
+                },
+                ],
                name : [{
                    required: true,
                    message: '',
@@ -398,12 +391,12 @@ const getDetails = async (row) => {
 const closeDetailShow = () => {
   detailShow.value = false
   formData.value = {
-          userId: 0,
-          userid: '',
-          name: '',
-          relationship: 0,
-          mobile: '',
-          address: '',
+            staffId: '',
+            name: '',
+            relationship: '',
+            mobile: '',
+            address: '',
+            relationshipText: '',
           }
 }
 
@@ -418,12 +411,12 @@ const openDialog = () => {
 const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
-        userId: 0,
-        userid: '',
-        name: '',
-        relationship: 0,
-        mobile: '',
-        address: '',
+          staffId: '',
+          name: '',
+          relationship: '',
+          mobile: '',
+          address: '',
+          relationshipText: '',
         }
 }
 // 弹窗确定
