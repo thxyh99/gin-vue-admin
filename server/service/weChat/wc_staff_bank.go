@@ -4,49 +4,50 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
+	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
 )
 
 type WcStaffBankService struct {
 }
 
 // CreateWcStaffBank 创建银行卡信息记录
-
 func (wcStaffBankService *WcStaffBankService) CreateWcStaffBank(wcStaffBank *weChat.WcStaffBank) (err error) {
 	err = global.GVA_DB.Create(wcStaffBank).Error
 	return err
 }
 
 // DeleteWcStaffBank 删除银行卡信息记录
-
 func (wcStaffBankService *WcStaffBankService) DeleteWcStaffBank(ID string) (err error) {
 	err = global.GVA_DB.Delete(&weChat.WcStaffBank{}, "id = ?", ID).Error
 	return err
 }
 
 // DeleteWcStaffBankByIds 批量删除银行卡信息记录
-
 func (wcStaffBankService *WcStaffBankService) DeleteWcStaffBankByIds(IDs []string) (err error) {
 	err = global.GVA_DB.Delete(&[]weChat.WcStaffBank{}, "id in ?", IDs).Error
 	return err
 }
 
 // UpdateWcStaffBank 更新银行卡信息记录
-
 func (wcStaffBankService *WcStaffBankService) UpdateWcStaffBank(wcStaffBank weChat.WcStaffBank) (err error) {
 	err = global.GVA_DB.Save(&wcStaffBank).Error
 	return err
 }
 
 // GetWcStaffBank 根据ID获取银行卡信息记录
+func (wcStaffBankService *WcStaffBankService) GetWcStaffBank(ID string) (newStaffBank weChat2.WcStaffBankResponse, err error) {
+	var staffBank 
+	err = global.GVA_DB.Where("id = ?", ID).First(&newStaffBank).Error
+	if err != nil {
+		return
+	}
 
-func (wcStaffBankService *WcStaffBankService) GetWcStaffBank(ID string) (wcStaffBank weChat.WcStaffBank, err error) {
-	err = global.GVA_DB.Where("id = ?", ID).First(&wcStaffBank).Error
+	newStaffContact, err = weChat2.WcStaffContactResponse{}.AssembleStaffContact(staffContact)
 	return
 }
 
 // GetWcStaffBankInfoList 分页获取银行卡信息记录
-
-func (wcStaffBankService *WcStaffBankService) GetWcStaffBankInfoList(info weChatReq.WcStaffBankSearch) (list []weChat.WcStaffBank, total int64, err error) {
+func (wcStaffBankService *WcStaffBankService) GetWcStaffBankInfoList(info weChatReq.WcStaffBankSearch) (list []weChat2.WcStaffBankResponse, total int64, err error) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
@@ -66,5 +67,10 @@ func (wcStaffBankService *WcStaffBankService) GetWcStaffBankInfoList(info weChat
 	}
 
 	err = db.Find(&wcStaffBanks).Error
-	return wcStaffBanks, total, err
+	if err != nil {
+		return
+	}
+
+	list, err = weChat2.WcStaffBankResponse{}.AssembleStaffBankList(wcStaffBanks)
+	return
 }
