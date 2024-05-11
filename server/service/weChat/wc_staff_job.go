@@ -4,6 +4,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
+	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
 )
 
 type WcStaffJobService struct {
@@ -34,13 +35,18 @@ func (wcStaffJobService *WcStaffJobService) UpdateWcStaffJob(wcStaffJob weChat.W
 }
 
 // GetWcStaffJob 根据ID获取工作信息记录
-func (wcStaffJobService *WcStaffJobService) GetWcStaffJob(ID string) (wcStaffJob weChat.WcStaffJob, err error) {
-	err = global.GVA_DB.Where("id = ?", ID).First(&wcStaffJob).Error
+func (wcStaffJobService *WcStaffJobService) GetWcStaffJob(ID string) (newStaffJob weChat2.WcStaffJobResponse, err error) {
+	var staffJob weChat.WcStaffJob
+	err = global.GVA_DB.Where("id = ?", ID).First(&staffJob).Error
+	if err != nil {
+		return
+	}
+	newStaffJob, err = weChat2.WcStaffJobResponse{}.AssembleStaffJob(staffJob)
 	return
 }
 
 // GetWcStaffJobInfoList 分页获取工作信息记录
-func (wcStaffJobService *WcStaffJobService) GetWcStaffJobInfoList(info weChatReq.WcStaffJobSearch) (list []weChat.WcStaffJob, total int64, err error) {
+func (wcStaffJobService *WcStaffJobService) GetWcStaffJobInfoList(info weChatReq.WcStaffJobSearch) (list []weChat2.WcStaffJobResponse, total int64, err error) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
@@ -60,5 +66,10 @@ func (wcStaffJobService *WcStaffJobService) GetWcStaffJobInfoList(info weChatReq
 	}
 
 	err = db.Find(&wcStaffJobs).Error
-	return wcStaffJobs, total, err
+	if err != nil {
+		return
+	}
+
+	list, err = weChat2.WcStaffJobResponse{}.AssembleStaffJobList(wcStaffJobs)
+	return
 }

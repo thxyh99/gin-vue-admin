@@ -403,6 +403,7 @@ const formData = ref({
         accountNumber: '',
         paymentPlace: '',
         staffName: '',
+        jobNum: '',
         typeText:'',
         rankText:'',
         householdTypeText:'',
