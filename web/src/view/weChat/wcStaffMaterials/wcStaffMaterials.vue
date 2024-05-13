@@ -36,19 +36,33 @@
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
-        
-        <el-table-column align="left" label="日期" width="180">
-            <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
-        </el-table-column>
-        
-        <el-table-column align="left" label="用户ID(SSO)" prop="userId" width="120" />
-        <el-table-column align="left" label="企微成员UserID" prop="userid" width="120" />
-        <el-table-column align="left" label="身份证(人像)" prop="idCardPortrait" width="120" />
-        <el-table-column align="left" label="身份证(国徽)" prop="idCardNational" width="120" />
-        <el-table-column align="left" label="学历证书" prop="educationCertificate" width="120" />
-        <el-table-column align="left" label="学位证书" prop="degreeCertificate" width="120" />
-        <el-table-column align="left" label="前公司离职证明" prop="resignationCertificate" width="120" />
-        <el-table-column align="left" label="入职补充登记表" prop="onboardingForm" width="120" />
+        <el-table-column align="left" label="成员名称" prop="staffName" width="120"/>
+        <el-table-column align="left" label="员工工号" prop="jobNum" width="120"/>
+          <el-table-column align="left" label="身份证(人像)" prop="idCardPortrait" width="180">
+            <template #default="scope">
+              <el-image
+                  :src="scope.row.idCardPortrait"
+                  style=" height: 200px;"
+                  alt="身份证(人像)"
+              />
+            </template>
+          </el-table-column>
+          <el-table-column align="left" label="身份证(国徽)" prop="idCardNational" width="180">
+            <template #default="scope">
+              <el-image
+                  :src="scope.row.idCardNational"
+                  style=" height: 200px;"
+                  alt="身份证(国徽)"
+              />
+            </template>
+          </el-table-column>
+        <el-table-column align="left" label="学历证书" prop="educationCertificate" width="180" />
+        <el-table-column align="left" label="学位证书" prop="degreeCertificate" width="180" />
+        <el-table-column align="left" label="前公司离职证明" prop="resignationCertificate" width="180" />
+        <el-table-column align="left" label="员工入职申请表" prop="onboardingForm" width="180" />
+        <el-table-column align="left" label="试用期管理规定" prop="trialProvide" width="180" />
+        <el-table-column align="left" label="个人简历" prop="personalResume" width="180" />
+        <el-table-column align="left" label="职称/技能证书" prop="skillCertificate" width="180" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -84,11 +98,9 @@
             </template>
 
           <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
-            <el-form-item label="用户ID(SSO):"  prop="userId" >
-              <el-input v-model.number="formData.userId" :clearable="true" placeholder="请输入用户ID(SSO)" />
-            </el-form-item>
-            <el-form-item label="企微成员UserID:"  prop="userid" >
-              <el-input v-model="formData.userid" :clearable="true"  placeholder="请输入企微成员UserID" />
+            <el-form-item label="选择员工:" prop="staffId">
+              <SelectStaff v-model="formData.staffId" :disabled="type==='update'?'disabled':false">
+              </SelectStaff>
             </el-form-item>
             <el-form-item label="身份证(人像):"  prop="idCardPortrait" >
               <el-input v-model="formData.idCardPortrait" :clearable="true"  placeholder="请输入身份证(人像)" />
@@ -105,8 +117,17 @@
             <el-form-item label="前公司离职证明:"  prop="resignationCertificate" >
               <el-input v-model="formData.resignationCertificate" :clearable="true"  placeholder="请输入前公司离职证明" />
             </el-form-item>
-            <el-form-item label="入职补充登记表:"  prop="onboardingForm" >
-              <el-input v-model="formData.onboardingForm" :clearable="true"  placeholder="请输入入职补充登记表" />
+            <el-form-item label="员工入职申请表:"  prop="onboardingForm" >
+              <el-input v-model="formData.onboardingForm" :clearable="true"  placeholder="请输入员工入职申请表" />
+            </el-form-item>
+            <el-form-item label="试用期管理规定:"  prop="trialProvide" >
+              <el-input v-model="formData.trialProvide" :clearable="true"  placeholder="请输入试用期管理规定" />
+            </el-form-item>
+            <el-form-item label="个人简历:"  prop="personalResume" >
+              <el-input v-model="formData.personalResume" :clearable="true"  placeholder="请输入个人简历" />
+            </el-form-item>
+            <el-form-item label="职称/技能证书:"  prop="skillCertificate" >
+              <el-input v-model="formData.skillCertificate" :clearable="true"  placeholder="请输入职称/技能证书" />
             </el-form-item>
           </el-form>
     </el-drawer>
@@ -118,29 +139,62 @@
              </div>
          </template>
         <el-descriptions :column="1" border>
-                <el-descriptions-item label="用户ID(SSO)">
-                        {{ formData.userId }}
+                <el-descriptions-item label="成员名称">
+                        {{ formData.staffName }}
                 </el-descriptions-item>
-                <el-descriptions-item label="企微成员UserID">
-                        {{ formData.userid }}
+                <el-descriptions-item label="员工工号">
+                        {{ formData.jobNum }}
                 </el-descriptions-item>
                 <el-descriptions-item label="身份证(人像)">
-                        {{ formData.idCardPortrait }}
+                      <el-image
+                          :src="formData.idCardPortrait"
+                          :preview-src-list="[formData.idCardPortrait]"
+                          style="height: 200px;"
+                          alt="身份证(人像)"
+                      />
                 </el-descriptions-item>
                 <el-descriptions-item label="身份证(国徽)">
-                        {{ formData.idCardNational }}
+                        <el-image
+                            :src="formData.idCardNational"
+                            :preview-src-list="[formData.idCardNational]"
+                            style="height: 200px;"
+                            alt="身份证(国徽)"
+                        />
                 </el-descriptions-item>
                 <el-descriptions-item label="学历证书">
-                        {{ formData.educationCertificate }}
+                    <a download :href="formData.educationCertificate" target="_blank">
+                      学历证书
+                    </a>
                 </el-descriptions-item>
                 <el-descriptions-item label="学位证书">
-                        {{ formData.degreeCertificate }}
+                    <a download :href="formData.degreeCertificate" target="_blank">
+                      学位证书
+                    </a>
                 </el-descriptions-item>
                 <el-descriptions-item label="前公司离职证明">
-                        {{ formData.resignationCertificate }}
+                    <a download :href="formData.resignationCertificate" target="_blank">
+                      前公司离职证明
+                    </a>
                 </el-descriptions-item>
-                <el-descriptions-item label="入职补充登记表">
-                        {{ formData.onboardingForm }}
+                <el-descriptions-item label="员工入职申请表">
+                    <a download :href="formData.onboardingForm" target="_blank">
+                      员工入职申请表
+                    </a>
+                </el-descriptions-item>
+                <el-descriptions-item label="试用期管理规定">
+                    <a download :href="formData.trialProvide" target="_blank">
+                      试用期管理规定
+                    </a>
+                </el-descriptions-item>
+                <el-descriptions-item label="个人简历">
+                    <a download :href="formData.personalResume" target="_blank">
+                      个人简历
+                    </a>
+                </el-descriptions-item>
+                <el-descriptions-item label="职称/技能证书">
+                    <a download :href="formData.skillCertificate" target="_blank">
+                      职称/技能证书
+                    </a>
                 </el-descriptions-item>
         </el-descriptions>
     </el-drawer>
@@ -161,6 +215,8 @@ import {
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
+import {InfoFilled, QuestionFilled} from "@element-plus/icons-vue";
+import SelectStaff from "@/components/selectStaff/index.vue";
 
 defineOptions({
     name: 'WcStaffMaterials'
@@ -168,35 +224,26 @@ defineOptions({
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
-        userId: 0,
-        userid: '',
+        staffId: '',
         idCardPortrait: '',
         idCardNational: '',
         educationCertificate: '',
         degreeCertificate: '',
         resignationCertificate: '',
         onboardingForm: '',
+        trialProvide: '',
+        personalResume: '',
+        skillCertificate: [],
         })
 
 
 // 验证规则
 const rule = reactive({
-               userId : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-              ],
-               userid : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
+              staffId : [{
+                required: true,
+                message: '',
+                trigger: ['input','blur'],
+              },
               ],
 })
 
@@ -386,14 +433,16 @@ const getDetails = async (row) => {
 const closeDetailShow = () => {
   detailShow.value = false
   formData.value = {
-          userId: 0,
-          userid: '',
+          staffId: '',
           idCardPortrait: '',
           idCardNational: '',
           educationCertificate: '',
           degreeCertificate: '',
           resignationCertificate: '',
           onboardingForm: '',
+          trialProvide: '',
+          personalResume: '',
+          skillCertificate: [],
           }
 }
 
@@ -408,14 +457,16 @@ const openDialog = () => {
 const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
-        userId: 0,
-        userid: '',
+        staffId: '',
         idCardPortrait: '',
         idCardNational: '',
         educationCertificate: '',
         degreeCertificate: '',
         resignationCertificate: '',
         onboardingForm: '',
+        trialProvide: '',
+        personalResume: '',
+        skillCertificate: [],
         }
 }
 // 弹窗确定

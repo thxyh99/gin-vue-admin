@@ -14,7 +14,10 @@ type WcStaffMaterials struct {
 	EducationCertificate   string `json:"educationCertificate" form:"educationCertificate" gorm:"column:education_certificate;comment:学历证书;size:255;"`          //学历证书
 	DegreeCertificate      string `json:"degreeCertificate" form:"degreeCertificate" gorm:"column:degree_certificate;comment:学位证书;size:255;"`                   //学位证书
 	ResignationCertificate string `json:"resignationCertificate" form:"resignationCertificate" gorm:"column:resignation_certificate;comment:前公司离职证明;size:255;"` //前公司离职证明
-	OnboardingForm         string `json:"onboardingForm" form:"onboardingForm" gorm:"column:onboarding_form;comment:入职补充登记表;size:255;"`                         //入职补充登记表
+	OnboardingForm         string `json:"onboardingForm" form:"onboardingForm" gorm:"column:onboarding_form;comment:员工入职申请表;size:255;"`                         //入职补充登记表
+	TrialProvide           string `json:"trialProvide" form:"trialProvide" gorm:"column:trial_provide;comment:试用期管理规定;size:255;"`                               //试用期管理规定
+	PersonalResume         string `json:"personalResume" form:"personalResume" gorm:"column:personal_resume;comment:个人简历;size:255;"`                            //个人简历
+	SkillCertificate       string `json:"skillCertificate" form:"skillCertificate" gorm:"column:skill_certificate;comment:职称/技能证书;size:1000;"`                  //职称/技能证书
 }
 
 // TableName 证件材料 WcStaffMaterials自定义表名 wc_staff_materials

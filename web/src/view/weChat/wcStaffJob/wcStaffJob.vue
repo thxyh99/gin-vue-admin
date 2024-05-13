@@ -36,11 +36,6 @@
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
-        
-<!--        <el-table-column align="left" label="日期" width="180">-->
-<!--            <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>-->
-<!--        </el-table-column>-->
-
         <el-table-column align="left" label="成员名称" prop="staffName" width="120"/>
         <el-table-column align="left" label="员工工号" prop="jobNum" width="120"/>
         <el-table-column align="left" label="员工类型" prop="typeText" width="120" />
