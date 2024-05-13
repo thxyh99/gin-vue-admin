@@ -44,8 +44,10 @@
             <template #default="scope">{{ formatDate(scope.row.date) }}</template>
          </el-table-column>
         <el-table-column align="left" label="专业" prop="major" width="120" />
-        <el-table-column align="left" label="职称/技能证书" prop="certificate" width="200" />
-        <el-table-column align="left" label="操作" fixed="right" min-width="240">
+          <el-table-column align="left" label="学历津贴" prop="educationPay" width="120" />
+          <el-table-column align="left" label="职称技能津贴" prop="skillPay" width="120" />
+          <el-table-column align="left" label="职称/技能证书" prop="certificate" width="200" />
+          <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
                 <el-icon style="margin-right: 5px"><InfoFilled /></el-icon>
@@ -98,6 +100,12 @@
             <el-form-item label="专业:"  prop="major" >
               <el-input v-model="formData.major" :clearable="true"  placeholder="请输入专业" />
             </el-form-item>
+            <el-form-item label="学历津贴:"  prop="educationPay" >
+              <el-input v-model="formData.educationPay" :clearable="true"  placeholder="请输入学历津贴" />
+            </el-form-item>
+            <el-form-item label="职称技能津贴:"  prop="skillPay" >
+              <el-input v-model="formData.skillPay" :clearable="true"  placeholder="请输入职称技能津贴" />
+            </el-form-item>
             <el-form-item label="职称/技能证书:"  prop="certificate" >
               <el-input v-model="formData.certificate" :clearable="true"  placeholder="请输入职称/技能证书" />
             </el-form-item>
@@ -129,6 +137,12 @@
                 <el-descriptions-item label="专业">
                         {{ formData.major }}
                 </el-descriptions-item>
+                <el-descriptions-item label="学历津贴">
+                  {{ formData.educationPay }}
+                </el-descriptions-item>
+                <el-descriptions-item label="职称技能津贴">
+                  {{ formData.skillPay }}
+                </el-descriptions-item>
                 <el-descriptions-item label="职称/技能证书">
                         {{ formData.certificate }}
                 </el-descriptions-item>
@@ -159,14 +173,13 @@ defineOptions({
 })
 
 const educations = ref([
-  { label: '其他', value: 0 },
-  { label: '小学', value: 1 },
-  { label: '初中', value: 2 },
-  { label: '高中', value: 3 },
-  { label: '中专', value: 4 },
-  { label: '大专', value: 5 },
-  { label: '本科', value: 6 },
-  { label: '硕士', value: 7 },
+  { label: '大专以下', value: 1 },
+  { label: '大专', value: 2 },
+  { label: '专升本/自考本科', value: 3 },
+  { label: '本科', value: 4 },
+  { label: '重点本科', value: 5 },
+  { label: '硕士', value: 6 },
+  { label: '重点硕士', value: 7 },
   { label: '博士', value: 8 },
 ])
 
@@ -178,6 +191,8 @@ const formData = ref({
           date: new Date(),
           major: '',
           certificate: '',
+          educationPay:0,
+          skillPay:0,
           staffName:'',
           jobNum: '',
           educationText:'',
@@ -225,6 +240,18 @@ const rule = reactive({
                    message: '不能只输入空格',
                    trigger: ['input', 'blur'],
               }
+              ],
+              educationPay : [{
+                required: true,
+                message: '',
+                trigger: ['input','blur'],
+              },
+              ],
+              skillPay : [{
+                required: true,
+                message: '',
+                trigger: ['input','blur'],
+              },
               ],
 })
 
@@ -420,6 +447,8 @@ const closeDetailShow = () => {
             date: new Date(),
             major: '',
             certificate: '',
+            educationPay:0,
+            skillPay:0,
             staffName:'',
             jobNum: '',
             educationText:'',
@@ -443,6 +472,8 @@ const closeDialog = () => {
           date: new Date(),
           major: '',
           certificate: '',
+          educationPay:0,
+          skillPay:0,
           staffName:'',
           jobNum: '',
           educationText:'',

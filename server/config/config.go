@@ -53,6 +53,7 @@ type CommonConfig struct {
 	StaffJobType      []string //员工工作类型
 	StaffJobStatus    []string //员工状态
 	StaffJobTryPeriod []string //员工试用期
+	ExpenseAccount    []string //费用科目
 }
 
 var config = CommonConfig{
@@ -208,37 +209,40 @@ var config = CommonConfig{
 		3: "子女",
 	},
 	Education: []string{
-		0: "其他",
-		1: "小学",
-		2: "初中",
-		3: "高中",
-		4: "中专",
-		5: "大专",
-		6: "本科",
-		7: "硕士",
+		1: "大专以下",
+		2: "大专",
+		3: "专升本/自考本科",
+		4: "本科",
+		5: "重点本科",
+		6: "硕士",
+		7: "重点硕士",
 		8: "博士",
 	},
 	StaffJobType: []string{
+		0: "其他",
 		1: "全职",
 		2: "兼职",
-		3: "实习",
-		4: "劳务外包",
-		5: "无类型",
+		3: "跟岗实习",
+		4: "顶岗实习",
+		5: "退休返聘",
+		6: "劳务外包",
 	},
 	StaffJobStatus: []string{
-		0: "无状态",
 		1: "试用",
 		2: "正式",
 		3: "待离职",
+		4: "已离职",
 	},
 	StaffJobTryPeriod: []string{
 		0: "其他",
 		1: "无试用期",
-		2: "1个月",
-		3: "2个月",
-		4: "3个月",
-		5: "4个月",
-		6: "5个月",
-		7: "6个月",
+		2: "2个月",
+		3: "6个月",
+	},
+	ExpenseAccount: []string{
+		1: "管理费用",
+		2: "研发费用",
+		3: "生产费用",
+		4: "销售费用",
 	},
 }
