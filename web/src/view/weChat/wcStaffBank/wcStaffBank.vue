@@ -36,15 +36,10 @@
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
-        
-        <el-table-column align="left" label="日期" width="180">
-            <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
-        </el-table-column>
-        
-        <el-table-column align="left" label="用户ID(SSO)" prop="userId" width="120" />
-        <el-table-column align="left" label="企微成员UserID" prop="userid" width="120" />
-        <el-table-column align="left" label="银行卡号" prop="cardNumber" width="120" />
-        <el-table-column align="left" label="开户行" prop="bank" width="120" />
+        <el-table-column align="left" label="成员名称" prop="staffName" width="150"/>
+        <el-table-column align="left" label="员工工号" prop="jobNum" width="150"/>
+        <el-table-column align="left" label="银行卡号" prop="cardNumber" width="240" />
+        <el-table-column align="left" label="开户行" prop="bank" width="300" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -80,11 +75,9 @@
             </template>
 
           <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
-            <el-form-item label="用户ID(SSO):"  prop="userId" >
-              <el-input v-model.number="formData.userId" :clearable="true" placeholder="请输入用户ID(SSO)" />
-            </el-form-item>
-            <el-form-item label="企微成员UserID:"  prop="userid" >
-              <el-input v-model="formData.userid" :clearable="true"  placeholder="请输入企微成员UserID" />
+            <el-form-item label="选择员工:" prop="staffId">
+              <SelectStaff v-model="formData.staffId" :disabled="type==='update'?'disabled':false">
+              </SelectStaff>
             </el-form-item>
             <el-form-item label="银行卡号:"  prop="cardNumber" >
               <el-input v-model="formData.cardNumber" :clearable="true"  placeholder="请输入银行卡号" />
@@ -102,11 +95,11 @@
              </div>
          </template>
         <el-descriptions :column="1" border>
-                <el-descriptions-item label="用户ID(SSO)">
-                        {{ formData.userId }}
+                <el-descriptions-item label="成员名称">
+                        {{ formData.staffName }}
                 </el-descriptions-item>
-                <el-descriptions-item label="企微成员UserID">
-                        {{ formData.userid }}
+                <el-descriptions-item label="员工工号">
+                        {{ formData.jobNum }}
                 </el-descriptions-item>
                 <el-descriptions-item label="银行卡号">
                         {{ formData.cardNumber }}
@@ -133,6 +126,8 @@ import {
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
+import {InfoFilled, QuestionFilled} from "@element-plus/icons-vue";
+import SelectStaff from "@/components/selectStaff/index.vue";
 
 defineOptions({
     name: 'WcStaffBank'
@@ -140,8 +135,7 @@ defineOptions({
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
-        userId: 0,
-        userid: '',
+        staffId: '',
         cardNumber: '',
         bank: '',
         })
@@ -149,23 +143,12 @@ const formData = ref({
 
 // 验证规则
 const rule = reactive({
-               userId : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-              ],
-               userid : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
-              ],
+                staffId : [{
+                  required: true,
+                  message: '',
+                  trigger: ['input','blur'],
+                },
+                ],
                cardNumber : [{
                    required: true,
                    message: '',
@@ -376,8 +359,7 @@ const getDetails = async (row) => {
 const closeDetailShow = () => {
   detailShow.value = false
   formData.value = {
-          userId: 0,
-          userid: '',
+          staffId: '',
           cardNumber: '',
           bank: '',
           }
@@ -394,8 +376,7 @@ const openDialog = () => {
 const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
-        userId: 0,
-        userid: '',
+        staffId: '',
         cardNumber: '',
         bank: '',
         }
