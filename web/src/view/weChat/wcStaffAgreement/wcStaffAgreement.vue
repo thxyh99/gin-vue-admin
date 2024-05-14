@@ -36,22 +36,18 @@
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
-        
-        <el-table-column align="left" label="日期" width="180">
-            <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
-        </el-table-column>
-        
-        <el-table-column align="left" label="员工ID" prop="staffId" width="120" />
-        <el-table-column align="left" label="合同公司" prop="company" width="120" />
-        <el-table-column align="left" label="合同类型(1:固定期限劳动合同2:无固定期限劳动合同3:实习协议4:外包协议5:劳务派遣合同6:返聘协议7:培训协议)" prop="type" width="120" />
-         <el-table-column align="left" label="合同起始日" width="180">
+        <el-table-column align="left" label="成员名称" prop="staffName" width="120"/>
+        <el-table-column align="left" label="员工工号" prop="jobNum" width="120"/>
+        <el-table-column align="left" label="合同公司" prop="company" width="240" />
+        <el-table-column align="left" label="合同类型" prop="typeText" width="180" />
+         <el-table-column align="left" label="合同起始日" width="150">
             <template #default="scope">{{ formatDate(scope.row.startDay) }}</template>
          </el-table-column>
-         <el-table-column align="left" label="合同到期日" width="180">
+         <el-table-column align="left" label="合同到期日" width="150">
             <template #default="scope">{{ formatDate(scope.row.endDay) }}</template>
          </el-table-column>
         <el-table-column align="left" label="续签次数" prop="times" width="120" />
-        <el-table-column align="left" label="合同附件" prop="attachment" width="120" />
+        <el-table-column align="left" label="合同附件" prop="attachment" width="150" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -87,14 +83,17 @@
             </template>
 
           <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
-            <el-form-item label="员工ID:"  prop="staffId" >
-              <el-input v-model.number="formData.staffId" :clearable="true" placeholder="请输入员工ID" />
+            <el-form-item label="选择员工:" prop="staffId">
+              <SelectStaff v-model="formData.staffId" :disabled="type==='update'?'disabled':false">
+              </SelectStaff>
             </el-form-item>
             <el-form-item label="合同公司:"  prop="company" >
               <el-input v-model="formData.company" :clearable="true"  placeholder="请输入合同公司" />
             </el-form-item>
-            <el-form-item label="合同类型(1:固定期限劳动合同2:无固定期限劳动合同3:实习协议4:外包协议5:劳务派遣合同6:返聘协议7:培训协议):"  prop="type" >
-              <el-input v-model.number="formData.type" :clearable="true" placeholder="请输入合同类型(1:固定期限劳动合同2:无固定期限劳动合同3:实习协议4:外包协议5:劳务派遣合同6:返聘协议7:培训协议)" />
+            <el-form-item label="合同类型:"  prop="type" >
+              <el-select v-model="formData.type" placeholder="选择合同类型">
+                <el-option v-for="type in types" :key="type.value" :label="type.label" :value="type.value"></el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="合同起始日:"  prop="startDay" >
               <el-date-picker v-model="formData.startDay" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
@@ -118,14 +117,17 @@
              </div>
          </template>
         <el-descriptions :column="1" border>
-                <el-descriptions-item label="员工ID">
-                        {{ formData.staffId }}
+                <el-descriptions-item label="成员名称">
+                       {{ formData.staffName }}
+                </el-descriptions-item>
+                <el-descriptions-item label="员工工号">
+                        {{ formData.jobNum }}
                 </el-descriptions-item>
                 <el-descriptions-item label="合同公司">
                         {{ formData.company }}
                 </el-descriptions-item>
-                <el-descriptions-item label="合同类型(1:固定期限劳动合同2:无固定期限劳动合同3:实习协议4:外包协议5:劳务派遣合同6:返聘协议7:培训协议)">
-                        {{ formData.type }}
+                <el-descriptions-item label="合同类型">
+                        {{ formData.typeText }}
                 </el-descriptions-item>
                 <el-descriptions-item label="合同起始日">
                       {{ formatDate(formData.startDay) }}
@@ -158,16 +160,29 @@ import {
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
+import {InfoFilled, QuestionFilled} from "@element-plus/icons-vue";
+import SelectStaff from "@/components/selectStaff/index.vue";
 
 defineOptions({
     name: 'WcStaffAgreement'
 })
 
+const types = ref([
+  {label: '固定期限劳动合同', value: 1},
+  {label: '无固定期限劳动合同', value: 2},
+  {label: '实习协议', value: 3},
+  {label: '外包协议', value: 4},
+  {label: '劳务派遣合同', value: 5},
+  {label: '返聘协议', value: 6},
+  {label: '培训协议', value: 7},
+])
+
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
-        staffId: 0,
+        staffId: '',
         company: '',
-        type: 0,
+        type: '',
+        typeText: '',
         startDay: new Date(),
         endDay: new Date(),
         times: 0,
@@ -400,9 +415,10 @@ const getDetails = async (row) => {
 const closeDetailShow = () => {
   detailShow.value = false
   formData.value = {
-          staffId: 0,
+          staffId: '',
           company: '',
-          type: 0,
+          type: '',
+          typeText: '',
           startDay: new Date(),
           endDay: new Date(),
           times: 0,
@@ -421,9 +437,10 @@ const openDialog = () => {
 const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
-        staffId: 0,
+        staffId: '',
         company: '',
-        type: 0,
+        type: '',
+        typeText: '',
         startDay: new Date(),
         endDay: new Date(),
         times: 0,

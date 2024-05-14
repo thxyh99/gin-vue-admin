@@ -16,14 +16,14 @@ type WcStaffContactResponse struct {
 	RelationshipText string `json:"relationshipText"` //联系人关系
 }
 
-func (WcStaffContactResponse) AssembleStaffContactList(staffContacts []weChat.WcStaffContact) (newStaffContact []WcStaffContactResponse, err error) {
-	var newStaffEducation WcStaffContactResponse
+func (WcStaffContactResponse) AssembleStaffContactList(staffContacts []weChat.WcStaffContact) (newStaffContacts []WcStaffContactResponse, err error) {
+	var newStaffContact WcStaffContactResponse
 	configInfo := config.GetConfigInfo()
 
 	for _, staffContact := range staffContacts {
-		newStaffEducation.WcStaffContact = staffContact
+		newStaffContact.WcStaffContact = staffContact
 		relationshipText, _ := utils.Find(configInfo.Relationship, *staffContact.Relationship)
-		newStaffEducation.RelationshipText = relationshipText
+		newStaffContact.RelationshipText = relationshipText
 
 		//获取员工名称工号
 		var staff weChat.WcStaff
@@ -32,10 +32,10 @@ func (WcStaffContactResponse) AssembleStaffContactList(staffContacts []weChat.Wc
 			fmt.Println("AssembleStaffInfoList Err:", err)
 			return
 		}
-		newStaffEducation.StaffName = staff.Name
-		newStaffEducation.JobNum = staff.JobNum
+		newStaffContact.StaffName = staff.Name
+		newStaffContact.JobNum = staff.JobNum
 
-		newStaffContact = append(newStaffContact, newStaffEducation)
+		newStaffContacts = append(newStaffContacts, newStaffContact)
 	}
 	return
 }
