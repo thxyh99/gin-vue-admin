@@ -38,7 +38,7 @@ func (WcStaffJobResponse) AssembleStaffJobList(staffInfos []weChat.WcStaffJob) (
 		var staff weChat.WcStaff
 		err = global.GVA_DB.Table(staff.TableName()).Where("id=?", staffJob.StaffId).First(&staff).Error
 		if err != nil {
-			fmt.Println("AssembleStaffInfoList Err:", err)
+			fmt.Println("AssembleStaffJobList Err:", err)
 			return
 		}
 		newStaffJob.StaffName = staff.Name
@@ -65,7 +65,7 @@ func (WcStaffJobResponse) AssembleStaffJob(staffJob weChat.WcStaffJob) (newStaff
 	var staff weChat.WcStaff
 	err = global.GVA_DB.Table(staff.TableName()).Where("id=?", staffJob.StaffId).First(&staff).Error
 	if err != nil {
-		fmt.Println("AssembleStaffInfo Err:", err)
+		fmt.Println("AssembleStaffJob Err:", err)
 		return
 	}
 

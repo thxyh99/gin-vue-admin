@@ -29,7 +29,7 @@ func (WcStaffContactResponse) AssembleStaffContactList(staffContacts []weChat.Wc
 		var staff weChat.WcStaff
 		err = global.GVA_DB.Table(staff.TableName()).Where("id=?", staffContact.StaffId).First(&staff).Error
 		if err != nil {
-			fmt.Println("AssembleStaffInfoList Err:", err)
+			fmt.Println("AssembleStaffContactList Err:", err)
 			return
 		}
 		newStaffContact.StaffName = staff.Name
@@ -50,7 +50,7 @@ func (WcStaffContactResponse) AssembleStaffContact(staffContact weChat.WcStaffCo
 	var staff weChat.WcStaff
 	err = global.GVA_DB.Table(staff.TableName()).Where("id=?", staffContact.StaffId).First(&staff).Error
 	if err != nil {
-		fmt.Println("AssembleStaffInfo Err:", err)
+		fmt.Println("AssembleStaffContact Err:", err)
 		return
 	}
 
