@@ -12,4 +12,5 @@ type RouterGroup struct {
 	WcStaffRouter
 	WcStaffPositionRouter
 	WcStaffDepartmentRouter
+	WcStaffAgreementRouter
 }

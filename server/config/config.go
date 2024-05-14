@@ -54,6 +54,7 @@ type CommonConfig struct {
 	StaffJobStatus    []string //员工状态
 	StaffJobTryPeriod []string //员工试用期
 	ExpenseAccount    []string //费用科目
+	AgreementType     []string //合同类型
 }
 
 var config = CommonConfig{
@@ -244,5 +245,14 @@ var config = CommonConfig{
 		2: "研发费用",
 		3: "生产费用",
 		4: "销售费用",
+	},
+	AgreementType: []string{
+		1: "固定期限劳动合同",
+		2: "无固定期限劳动合同",
+		3: "实习协议",
+		4: "外包协议",
+		5: "劳务派遣合同",
+		6: "返聘协议",
+		7: "培训协议",
 	},
 }
