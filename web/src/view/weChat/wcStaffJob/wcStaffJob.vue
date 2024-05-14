@@ -48,6 +48,7 @@
             <template #default="scope">{{ formatDate(scope.row.formalDate) }}</template>
          </el-table-column>
         <el-table-column align="left" label="职位名称" prop="name" width="120" />
+        <el-table-column align="left" label="费用科目" prop="expenseAccountText" width="120" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -111,6 +112,11 @@
             <el-form-item label="职位名称:"  prop="name" >
               <el-input v-model="formData.name" :clearable="true"  placeholder="请输入职位名称" />
             </el-form-item>
+            <el-form-item label="费用科目:"  prop="expenseAccount" >
+              <el-select v-model="formData.expenseAccount" placeholder="选择费用科目">
+                <el-option v-for="expenseAccount in expenseAccounts" :key="expenseAccount.value" :label="expenseAccount.label" :value="expenseAccount.value"></el-option>
+              </el-select>
+            </el-form-item>
           </el-form>
     </el-drawer>
 
@@ -144,6 +150,9 @@
                 </el-descriptions-item>
                 <el-descriptions-item label="职位名称">
                         {{ formData.name }}
+                </el-descriptions-item>
+                <el-descriptions-item label="费用科目">
+                        {{ formData.expenseAccountText }}
                 </el-descriptions-item>
         </el-descriptions>
     </el-drawer>
@@ -180,21 +189,24 @@ const types = ref([
 ])
 
 const statusList = ref([
-  { label: '无状态', value: 0 },
   { label: '试用', value: 1 },
   { label: '正式', value: 2 },
   { label: '待离职', value: 3 },
+  { label: '已离职', value: 4 },
 ])
 
 const tryPeriods = ref([
   { label: '其他', value: 0 },
   { label: '无试用期', value: 1 },
-  { label: '1个月', value: 2 },
-  { label: '2个月', value: 3 },
-  { label: '3个月', value: 4 },
-  { label: '4个月', value: 5 },
-  { label: '5个月', value: 6 },
-  { label: '6个月', value: 7 },
+  { label: '2个月', value: 2 },
+  { label: '6个月', value: 3 },
+])
+
+const expenseAccounts = ref([
+  { label: '管理费用', value: 1 },
+  { label: '研发费用', value: 2 },
+  { label: '生产费用', value: 3 },
+  { label: '销售费用', value: 4 },
 ])
 
 // 自动化生成的字典（可能为空）以及字段
@@ -206,11 +218,13 @@ const formData = ref({
         employmentDate: new Date(),
         formalDate: new Date(),
         name: '',
+        expenseAccount: '',
         staffName:'',
         jobNum: '',
         typeText:'',
         statusText:'',
         tryPeriodText:'',
+        expenseAccountText:'',
         })
 
 
@@ -235,6 +249,12 @@ const rule = reactive({
                },
               ],
                tryPeriod : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
+                expenseAccount : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -458,11 +478,13 @@ const closeDetailShow = () => {
             employmentDate: new Date(),
             formalDate: new Date(),
             name: '',
+            expenseAccount: '',
             staffName:'',
             jobNum: '',
             typeText:'',
             statusText:'',
             tryPeriodText:'',
+            expenseAccountText:'',
           }
 }
 
@@ -484,11 +506,13 @@ const closeDialog = () => {
           employmentDate: new Date(),
           formalDate: new Date(),
           name: '',
+          expenseAccount: '',
           staffName:'',
           jobNum: '',
           typeText:'',
           statusText:'',
           tryPeriodText:'',
+          expenseAccountText:'',
         }
 }
 // 弹窗确定

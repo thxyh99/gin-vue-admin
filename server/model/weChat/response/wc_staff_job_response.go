@@ -11,11 +11,12 @@ import (
 // WcStaffJobResponse 工作信息 结构体
 type WcStaffJobResponse struct {
 	weChat.WcStaffJob
-	StaffName     string `json:"staffName"`     //员工名称
-	JobNum        string `json:"jobNum"`        //员工工号
-	TypeText      string `json:"typeText"`      //员工类型
-	StatusText    string `json:"statusText"`    //员工状态
-	TryPeriodText string `json:"tryPeriodText"` //试用期
+	StaffName          string `json:"staffName"`          //员工名称
+	JobNum             string `json:"jobNum"`             //员工工号
+	TypeText           string `json:"typeText"`           //员工类型
+	StatusText         string `json:"statusText"`         //员工状态
+	TryPeriodText      string `json:"tryPeriodText"`      //试用期
+	ExpenseAccountText string `json:"expenseAccountText"` //费用科目
 }
 
 func (WcStaffJobResponse) AssembleStaffJobList(staffInfos []weChat.WcStaffJob) (newStaffInfos []WcStaffJobResponse, err error) {
@@ -30,6 +31,8 @@ func (WcStaffJobResponse) AssembleStaffJobList(staffInfos []weChat.WcStaffJob) (
 		newStaffJob.StatusText = staffJobStatusText
 		staffJobTryPeriodText, _ := utils.Find(configInfo.StaffJobTryPeriod, *staffJob.TryPeriod)
 		newStaffJob.TryPeriodText = staffJobTryPeriodText
+		expenseAccountText, _ := utils.Find(configInfo.ExpenseAccount, *staffJob.ExpenseAccount)
+		newStaffJob.ExpenseAccountText = expenseAccountText
 
 		//获取员工名称工号
 		var staff weChat.WcStaff
@@ -55,6 +58,8 @@ func (WcStaffJobResponse) AssembleStaffJob(staffJob weChat.WcStaffJob) (newStaff
 	newStaffJob.StatusText = staffJobStatusText
 	staffJobTryPeriodText, _ := utils.Find(configInfo.StaffJobTryPeriod, *staffJob.TryPeriod)
 	newStaffJob.TryPeriodText = staffJobTryPeriodText
+	expenseAccountText, _ := utils.Find(configInfo.ExpenseAccount, *staffJob.ExpenseAccount)
+	newStaffJob.ExpenseAccountText = expenseAccountText
 
 	//获取员工名称工号
 	var staff weChat.WcStaff
