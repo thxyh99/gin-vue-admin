@@ -50,7 +50,7 @@ type CommonConfig struct {
 	PoliticalOutlook  []string //政治面貌
 	Relationship      []string //联系人关系
 	Education         []string //学历
-	StaffJobType      []string //员工工作类型
+	StaffJobType      []string //员工类型
 	StaffJobStatus    []string //员工状态
 	StaffJobTryPeriod []string //员工试用期
 	ExpenseAccount    []string //费用科目

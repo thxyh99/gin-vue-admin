@@ -13,4 +13,5 @@ type ApiGroup struct {
 	WcStaffPositionApi
 	WcStaffDepartmentApi
 	WcStaffAgreementApi
+	WcRankApi
 }
