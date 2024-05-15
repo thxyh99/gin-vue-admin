@@ -26,11 +26,6 @@ type WcStaffJobResponse struct {
 	RankText           string `json:"rankText"`           //职级
 }
 
-type WcStaffJobRank struct {
-	RankTypeText string `json:"rankTypeText"` //职级类型
-	RankText     string `json:"rankText"`     //职级
-}
-
 func (WcStaffJobResponse) AssembleStaffJobList(staffInfos []weChat.WcStaffJob) (newStaffInfos []WcStaffJobResponse, err error) {
 	var newStaffJob WcStaffJobResponse
 	configInfo := config.GetConfigInfo()

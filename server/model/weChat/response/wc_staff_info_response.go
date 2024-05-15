@@ -27,10 +27,6 @@ func (WcStaffInfoResponse) AssembleStaffInfoList(staffInfos []weChat.WcStaffInfo
 
 	for _, staffInfo := range staffInfos {
 		newStaffInfo.WcStaffInfo = staffInfo
-		staffInfoTypeText, _ := utils.Find(configInfo.StaffInfoType, *staffInfo.Type)
-		newStaffInfo.TypeText = staffInfoTypeText
-		staffOfficeRankText, _ := utils.Find(configInfo.StaffOfficeRank, *staffInfo.Rank)
-		newStaffInfo.RankText = staffOfficeRankText
 		householdTypeText, _ := utils.Find(configInfo.HouseholdType, *staffInfo.HouseholdType)
 		newStaffInfo.HouseholdTypeText = householdTypeText
 		nationText, _ := utils.Find(configInfo.Nation, *staffInfo.Nation)
@@ -58,10 +54,6 @@ func (WcStaffInfoResponse) AssembleStaffInfoList(staffInfos []weChat.WcStaffInfo
 func (WcStaffInfoResponse) AssembleStaffInfo(staffInfo weChat.WcStaffInfo) (newStaffInfo WcStaffInfoResponse, err error) {
 	configInfo := config.GetConfigInfo()
 	newStaffInfo.WcStaffInfo = staffInfo
-	staffInfoTypeText, _ := utils.Find(configInfo.StaffInfoType, *staffInfo.Type)
-	newStaffInfo.TypeText = staffInfoTypeText
-	staffOfficeRankText, _ := utils.Find(configInfo.StaffOfficeRank, *staffInfo.Rank)
-	newStaffInfo.RankText = staffOfficeRankText
 	householdTypeText, _ := utils.Find(configInfo.HouseholdType, *staffInfo.HouseholdType)
 	newStaffInfo.HouseholdTypeText = householdTypeText
 	nationText, _ := utils.Find(configInfo.Nation, *staffInfo.Nation)

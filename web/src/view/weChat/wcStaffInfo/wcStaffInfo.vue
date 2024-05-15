@@ -38,8 +38,6 @@
         <el-table-column type="selection" width="55" />
         <el-table-column align="left" label="成员名称" prop="staffName" width="120"/>
         <el-table-column align="left" label="员工工号" prop="jobNum" width="120"/>
-        <el-table-column align="left" label="员工考勤类型" prop="typeText" width="120"/>
-        <el-table-column align="left" label="员工职级" prop="rankText" width="120"/>
          <el-table-column align="left" label="出生日期" width="180">
             <template #default="scope">{{ formatDate(scope.row.birthday) }}</template>
          </el-table-column>
@@ -86,16 +84,6 @@
             <el-form-item label="选择员工:" prop="staffId">
               <SelectStaff v-model="formData.staffId" :disabled="type==='update'?'disabled':false">
               </SelectStaff>
-            </el-form-item>
-            <el-form-item label="考勤类型:" prop="type">
-              <el-select v-model="formData.type" placeholder="选择考勤类型" :on-change="handleTypeChange()">
-                <el-option v-for="type in types" :key="type.value" :label="type.label" :value="type.value"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="员工职级:" prop="rank">
-              <el-select v-model="formData.rank" placeholder="选择员工职级" filterable>
-                <el-option v-for="rank in rankList" :key="rank.value" :label="rank.label" :value="rank.value"></el-option>
-              </el-select>
             </el-form-item>
             <el-form-item label="身份证号:"  prop="idNumber" >
               <el-input v-model="formData.idNumber" :clearable="true"  placeholder="请输入身份证号" />
@@ -162,12 +150,6 @@
                 </el-descriptions-item>
                 <el-descriptions-item label="员工工号">
                         {{ formData.jobNum }}
-                </el-descriptions-item>
-                <el-descriptions-item label="员工考勤类型">
-                        {{ formData.typeText }}
-                </el-descriptions-item>
-                <el-descriptions-item label="员工职级">
-                        {{ formData.rankText }}
                 </el-descriptions-item>
                 <el-descriptions-item label="身份证号">
                         {{ formData.idNumber }}
@@ -237,62 +219,6 @@ import {InfoFilled, QuestionFilled} from "@element-plus/icons-vue";
 defineOptions({
     name: 'WcStaffInfo'
 })
-
-const types = ref([
-  { label: '内勤', value: 1 },
-  { label: '市场', value: 2 },
-])
-
-const officeRanks = ref([
-  { label: '实习生', value: 1 },
-  { label: '职员5级', value: 2 },
-  { label: '职员4级', value: 3 },
-  { label: '职员3级', value: 4 },
-  { label: '职员2级', value: 5 },
-  { label: '职员1级', value: 6 },
-  { label: '专员3级', value: 7 },
-  { label: '专员2级', value: 8 },
-  { label: '专员1级', value: 9 },
-  { label: '主管3级', value: 10 },
-  { label: '主管2级', value: 11 },
-  { label: '主管1级', value: 12 },
-  { label: '资深专员3级', value: 13 },
-  { label: '资深专员2级', value: 14 },
-  { label: '资深专员1级', value: 15 },
-  { label: '资深主管3级', value: 16 },
-  { label: '资深主管2级', value: 17 },
-  { label: '资深主管1级', value: 18 },
-  { label: '专业副经理3级', value: 19 },
-  { label: '专业副经理2级', value: 20 },
-  { label: '专业副经理1级', value: 21 },
-  { label: '专业经理3级', value: 22 },
-  { label: '专业经理2级', value: 23 },
-  { label: '专业经理1级', value: 24 },
-  { label: '副经理3级', value: 25 },
-  { label: '副经理2级', value: 26 },
-  { label: '副经理1级', value: 27 },
-  { label: '经理3级', value: 28 },
-  { label: '经理2级', value: 29 },
-  { label: '经理1级', value: 30 },
-  { label: '副监3级', value: 31 },
-  { label: '副监2级', value: 32 },
-  { label: '副监1级', value: 33 },
-  { label: '总监3级', value: 34 },
-  { label: '总监2级', value: 35 },
-  { label: '总监1级', value: 36 },
-  { label: '副总3级', value: 37 },
-  { label: '副总2级', value: 38 },
-  { label: '副总1级', value: 39 },
-  { label: '总经理3级', value: 40 },
-  { label: '总经理2级', value: 41 },
-  { label: '总经理1级', value: 42 },
-])
-
-const marketRanks  = ref([
-  { label: '市场3级', value: 1 },
-  { label: '市场2级', value: 2 },
-  { label: '市场1级', value: 3 },
-])
 
 const householdTypes = ref([
   { label: '本地城镇', value: 1 },
@@ -378,8 +304,6 @@ const nations = ref([
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
           staffId: '',
-          type: '',
-          rank: '',
           idNumber: '',
           idAddress: '',
           householdType: '',
@@ -396,8 +320,6 @@ const formData = ref({
           paymentPlace: '',
           staffName: '',
           jobNum: '',
-          typeText:'',
-          rankText:'',
           householdTypeText:'',
           nationText:'',
           marriageText:'',
@@ -408,18 +330,6 @@ const formData = ref({
 // 验证规则
 const rule = reactive({
                staffId : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-               ],
-               type : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-               ],
-               rank : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -538,20 +448,11 @@ const total = ref(0)
 const pageSize = ref(10)
 const tableData = ref([])
 const searchInfo = ref({})
-const rankList = ref({})
 
 // 重置
 const onReset = () => {
   searchInfo.value = {}
   getTableData()
-}
-
-const handleTypeChange = () => {
-  if (formData.value.type === 1) {
-    rankList.value = officeRanks.value
-  } else if (formData.value.type === 2) {
-    rankList.value = marketRanks.value
-  }
 }
 
 // 搜索
@@ -709,8 +610,6 @@ const closeDetailShow = () => {
   detailShow.value = false
   formData.value = {
             staffId: '',
-            type: '',
-            rank: '',
             idNumber: '',
             idAddress: '',
             householdType: '',
@@ -727,8 +626,6 @@ const closeDetailShow = () => {
             paymentPlace: '',
             staffName: '',
             jobNum: '',
-            typeText:'',
-            rankText:'',
             householdTypeText:'',
             nationText:'',
             marriageText:'',
@@ -748,8 +645,6 @@ const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
           staffId: '',
-          type: '',
-          rank: '',
           idNumber: '',
           idAddress: '',
           householdType: '',
@@ -766,8 +661,6 @@ const closeDialog = () => {
           paymentPlace: '',
           staffName: '',
           jobNum: '',
-          typeText:'',
-          rankText:'',
           householdTypeText:'',
           nationText:'',
           marriageText:'',
