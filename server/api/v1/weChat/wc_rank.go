@@ -1,6 +1,7 @@
 package weChat
 
 import (
+	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
@@ -175,6 +176,30 @@ func (wcRankApi *WcRankApi) GetRankTypeList(c *gin.Context) {
 			Total:    total,
 			Page:     pageInfo.Page,
 			PageSize: pageInfo.PageSize,
+		}, "获取成功", c)
+	}
+}
+
+// GetRankListByRankType 获取职级列表
+// @Tags WcRank
+// @Summary 分页获取职级管理列表
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Param data query weChatReq.WcRankSearch true "获取职级列表"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
+// @Router /wcRank/getRankListByRankType [get]
+func (wcRankApi *WcRankApi) GetRankListByRankType(c *gin.Context) {
+	rankType := c.Query("type")
+	fmt.Println("rankType", rankType)
+	if list, total, err := wcRankService.GetRankListByRankType(rankType); err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+	} else {
+		fmt.Println("list", list)
+		response.OkWithDetailed(response.PageResult{
+			List:  list,
+			Total: total,
 		}, "获取成功", c)
 	}
 }

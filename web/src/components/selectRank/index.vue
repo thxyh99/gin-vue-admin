@@ -2,8 +2,8 @@
     <el-select  filterable
     >
       <el-option
-        v-for="(item, index) in options"
-        :key="index"
+        v-for="item in options"
+        :key="item.ID"
         :label="item.name"
         :value="item.ID"
       />
@@ -12,10 +12,9 @@
 
 <script setup>
 import { ref } from 'vue'
-import {getRankTypeList} from "@/api/weChat/wcRank";
+import {getRankListByRankType} from "@/api/weChat/wcRank";
 const page = ref(1)
 const pageSize = ref(1000000)
-const searchInfo = ref({})
 
 
 const props = defineProps({
@@ -27,8 +26,8 @@ const props = defineProps({
 })
 
 const options = ref([])
-const initSelectOptions = async () => {
-  const table = await getRankTypeList({page: page.value, pageSize: pageSize.value, ...searchInfo.value})
+const initSelectOptions = async (type) => {
+  const table = await getRankListByRankType({page: page.value, pageSize: pageSize.value, type})
   if (table.code === 0) {
     options.value = table.data.list
   }
@@ -39,8 +38,10 @@ const initSelectOptions = async () => {
 
 
 }
-initSelectOptions()
-
+// initSelectOptions()
+defineExpose({
+  initSelectOptions
+})
 </script>
 
 <style></style>

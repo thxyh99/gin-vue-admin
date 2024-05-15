@@ -1,10 +1,14 @@
 package weChat
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
 	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
+	"time"
 )
 
 type WcRankService struct {
@@ -83,4 +87,59 @@ func (wcRankService *WcRankService) GetRankTypeList(_ weChatReq.WcRankSearch) (l
 	}
 	total = int64(len(list))
 	return
+}
+
+// GetRankListByRankType 分页获取职级记录
+func (wcRankService *WcRankService) GetRankListByRankType(rankType string) (list []weChat2.WcRankItem, total int64, err error) {
+	cacheKey := fmt.Sprintf("GetRankListByRankType:%s", rankType)
+	cacheValue, err := global.GVA_REDIS.Get(context.Background(), cacheKey).Result()
+	if err != nil {
+		fmt.Println("GetRankListByRankType RedisStoreGetError:", err)
+	}
+	if cacheValue != "" {
+		fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+		fmt.Println("cacheValue:", cacheValue)
+		fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+		err = json.Unmarshal([]byte(cacheValue), &list)
+		return list, 0, err
+	} else {
+		var r weChat.WcRank
+		rRows, err := global.GVA_DB.Table(r.TableName()).Select("id,name").Where("type=?", rankType).Rows()
+		if err != nil {
+			fmt.Println("GetRankListByRankType DbQueryErr:", err)
+			return list, 0, err
+		} else {
+			for rRows.Next() {
+				var id int
+				var name string
+				err = rRows.Scan(&id, &name)
+				if err != nil {
+					fmt.Println("GetRankListByRankType DbScanErr:", err)
+					return list, 0, err
+				} else {
+					list = append(list, weChat2.WcRankItem{
+						ID:   id,
+						Name: name,
+					})
+				}
+			}
+
+			jsonValue, err := json.Marshal(list)
+			if err != nil {
+				fmt.Println("GetRankListByRankType JsonMarshalError:", err)
+				return list, 0, err
+			}
+			err = global.GVA_REDIS.Set(context.Background(), cacheKey, jsonValue, time.Hour*24).Err()
+			//err = global.GVA_REDIS.Set(context.Background(), cacheKey, jsonValue, time.Minute).Err()
+			if err != nil {
+				fmt.Println("GetRankListByRankType RedisStoreSetError:", err)
+				return list, 0, err
+			}
+		}
+	}
+	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	fmt.Println("list", list)
+	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	total = int64(len(list))
+	return list, total, nil
 }

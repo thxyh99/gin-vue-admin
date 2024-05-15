@@ -40,9 +40,6 @@
         <el-table-column align="left" label="员工工号" prop="jobNum" width="120"/>
         <el-table-column align="left" label="员工考勤类型" prop="typeText" width="120"/>
         <el-table-column align="left" label="员工职级" prop="rankText" width="120"/>
-<!--        <el-table-column align="left" label="身份证号" prop="idNumber" width="120" />-->
-<!--        <el-table-column align="left" label="身份证地址" prop="idAddress" width="120" />-->
-<!--        <el-table-column align="left" label="户籍类型" prop="householdTypeText" width="120" />-->
          <el-table-column align="left" label="出生日期" width="180">
             <template #default="scope">{{ formatDate(scope.row.birthday) }}</template>
          </el-table-column>
@@ -51,11 +48,6 @@
         <el-table-column align="left" label="身高(cm)" prop="height" width="120" />
         <el-table-column align="left" label="体重(kg)" prop="weight" width="120" />
         <el-table-column align="left" label="婚否" prop="marriageText" width="120" />
-<!--        <el-table-column align="left" label="政治面貌" prop="politicalOutlookText" width="120" />-->
-<!--        <el-table-column align="left" label="常住地址" prop="address" width="120" />-->
-<!--        <el-table-column align="left" label="社保电脑号" prop="socialNumber" width="120" />-->
-<!--        <el-table-column align="left" label="公积金账号" prop="accountNumber" width="120" />-->
-<!--        <el-table-column align="left" label="社保公积金缴纳地" prop="paymentPlace" width="150" />-->
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">

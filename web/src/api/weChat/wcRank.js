@@ -111,3 +111,19 @@ export const getRankTypeList = (params) => {
     params
   })
 }
+
+// @Tags WcRank
+// @Summary 获取职级列表
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Param data query request.PageInfo true "获取职级列表"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
+// @Router /wcRank/getRankListByRankType [get]
+export const getRankListByRankType = (params) => {
+  return service({
+    url: '/wcRank/getRankListByRankType',
+    method: 'get',
+    params
+  })
+}
