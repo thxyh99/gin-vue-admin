@@ -3,23 +3,32 @@ package weChat
 
 import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	"time"
 )
 
 // 账号信息 结构体  WcStaff
 type WcStaff struct {
 	global.GVA_MODEL
-	UserId    *int   `json:"userId" form:"userId" gorm:"column:user_id;comment:用户ID(SSO);size:11;" binding:"required"`          //用户ID(SSO)
-	Userid    string `json:"userid" form:"userid" gorm:"column:userid;comment:企微成员UserID;size:200;" binding:"required"`         //企微成员UserID
-	JobNum    string `json:"jobNum" form:"jobNum" gorm:"column:job_num;comment:员工工号;size:100;" binding:"required"`              //员工工号
-	Name      string `json:"name" form:"name" gorm:"column:name;comment:成员名称;size:200;" binding:"required"`                     //成员名称
-	Gender    *int   `json:"gender" form:"gender" gorm:"column:gender;comment:性别(0未知1男2女);size:1;" binding:"required"`          //性别(0未知1男2女)
-	IsLeader  *int   `json:"isLeader" form:"isLeader" gorm:"column:is_leader;comment:是否领导(1:是 0:否);size:1;" binding:"required"` //是否领导(1:是 0:否)
-	Mobile    string `json:"mobile" form:"mobile" gorm:"column:mobile;comment:手机;size:100;" binding:"required"`                 //手机
-	Telephone string `json:"telephone" form:"telephone" gorm:"column:telephone;comment:座机;size:100;"`                           //座机
-	Email     string `json:"email" form:"email" gorm:"column:email;comment:个人邮箱;size:200;"`                                     //个人邮箱
-	Address   string `json:"address" form:"address" gorm:"column:address;comment:地址;size:255;"`                                 //地址
-	BizMail   string `json:"bizMail" form:"bizMail" gorm:"column:biz_mail;comment:企业邮箱;size:200;"`                              //企业邮箱
-	Status    *int   `json:"status" form:"status" gorm:"column:status;comment:激活状态(1已激活，2已禁用，4未激活，5退出企业);size:1;"`              //激活状态(1已激活，2已禁用，4未激活，5退出企业)
+	UserId           *int       `json:"userId" form:"userId" gorm:"column:user_id;comment:用户ID(SSO);size:11;" binding:"required"`                                                                           //用户ID(SSO)
+	Userid           string     `json:"userid" form:"userid" gorm:"column:userid;comment:企微成员UserID;size:200;" binding:"required"`                                                                          //企微成员UserID
+	Name             string     `json:"name" form:"name" gorm:"column:name;comment:成员名称;size:200;" binding:"required"`                                                                                      //成员名称
+	JobNum           string     `json:"jobNum" form:"jobNum" gorm:"column:job_num;comment:员工工号;size:100;" binding:"required"`                                                                               //员工工号
+	Mobile           string     `json:"mobile" form:"mobile" gorm:"column:mobile;comment:手机;size:100;" binding:"required"`                                                                                  //手机
+	IdNumber         string     `json:"idNumber" form:"idNumber" gorm:"column:id_number;comment:身份证号;size:100;" binding:"required"`                                                                         //身份证号
+	IdAddress        string     `json:"idAddress" form:"idAddress" gorm:"column:id_address;comment:身份证地址;size:255;" binding:"required"`                                                                     //身份证地址
+	HouseholdType    *int       `json:"householdType" form:"householdType" gorm:"column:household_type;comment:户籍类型(1:本地城镇 2:本地农村 3:外地城镇[省内] 4:外地农村[省内] 5:外地城镇[省外] 6:外地农村[省外]);size:1;" binding:"required"` //户籍类型(1:本地城镇 2:本地农村 3:外地城镇[省内] 4:外地农村[省内] 5:外地城镇[省外] 6:外地农村[省外])
+	Gender           *int       `json:"gender" form:"gender" gorm:"column:gender;comment:性别(0未知1男2女);size:1;" binding:"required"`                                                                           //性别(0未知1男2女)
+	Birthday         *time.Time `json:"birthday" form:"birthday" gorm:"column:birthday;comment:出生日期;" binding:"required"`                                                                                   //出生日期
+	NativePlace      string     `json:"nativePlace" form:"nativePlace" gorm:"column:native_place;comment:籍贯;size:255;" binding:"required"`                                                                  //籍贯
+	Nation           *int       `json:"nation" form:"nation" gorm:"column:nation;comment:民族;size:2;" binding:"required"`                                                                                    //民族
+	Height           *float64   `json:"height" form:"height" gorm:"column:height;comment:身高;size:4;" binding:"required"`                                                                                    //身高
+	Weight           *float64   `json:"weight" form:"weight" gorm:"column:weight;comment:体重;size:4;" binding:"required"`                                                                                    //体重
+	Marriage         *int       `json:"marriage" form:"marriage" gorm:"column:marriage;comment:婚否(1:已婚 2:未婚 3:其他);size:1;" binding:"required"`                                                              //婚否(1:已婚 2:未婚 3:其他)
+	PoliticalOutlook *int       `json:"politicalOutlook" form:"politicalOutlook" gorm:"column:political_outlook;comment:政治面貌(1:团员 2:党员 3:群众 0:其他);size:1;" binding:"required"`                              //政治面貌(1:团员 2:党员 3:群众 0:其他)
+	Address          string     `json:"address" form:"address" gorm:"column:address;comment:常住地址;size:255;" binding:"required"`                                                                             //常住地址
+	SocialNumber     string     `json:"socialNumber" form:"socialNumber" gorm:"column:social_number;comment:社保电脑号;size:200;"`                                                                               //社保电脑号
+	AccountNumber    string     `json:"accountNumber" form:"accountNumber" gorm:"column:account_number;comment:公积金账号;size:200;"`                                                                            //公积金账号
+	PaymentPlace     string     `json:"paymentPlace" form:"paymentPlace" gorm:"column:payment_place;comment:社保公积金缴纳地;size:255;"`
 }
 
 // TableName 账号信息 WcStaff自定义表名 wc_staff
