@@ -52,36 +52,27 @@
           @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55"/>
-        <el-table-column align="left" label="成员名称" prop="name" width="180"/>
-        <el-table-column align="left" label="员工工号" prop="jobNum" width="150"/>
-        <el-table-column align="left" label="企微账号" prop="userid" width="150"/>
-        <el-table-column align="left" label="手机" prop="mobile" width="150"/>
-        <el-form-item label="身份证号:"  prop="idNumber" >
-          <el-input v-model="formData.idNumber" :clearable="true"  placeholder="请输入身份证号" />
-        </el-form-item>
-        <el-form-item label="身份证地址:"  prop="idAddress" >
-          <el-input v-model="formData.idAddress" :clearable="true"  placeholder="请输入身份证地址" />
-        </el-form-item>
-        <el-form-item label="户籍类型:"  prop="householdType" >
-          <el-select v-model="formData.householdType" placeholder="选择户籍类型">
-            <el-option v-for="householdType in householdTypes" :key="householdType.value" :label="householdType.label" :value="householdType.value"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-table-column align="left" label="性别" prop="genderText" width="90"/>
-        <el-table-column align="left" label="出生日期" width="180">
+        <el-table-column align="left" label="成员名称" prop="name" width="120"/>
+        <el-table-column align="left" label="员工工号" prop="jobNum" width="120"/>
+        <el-table-column align="left" label="企微账号" prop="userid" width="120"/>
+        <el-table-column align="left" label="手机" prop="mobile" width="120"/>
+<!--        <el-table-column align="left" label="身份证号" prop="idNumber" width="90"/>-->
+<!--        <el-table-column align="left" label="身份证地址" prop="idAddress" width="90"/>-->
+        <el-table-column align="left" label="户籍类型" prop="householdTypeText" width="120"/>
+        <el-table-column align="left" label="性别" prop="genderText" width="60"/>
+        <el-table-column align="left" label="出生日期" width="100">
           <template #default="scope">{{ formatDate(scope.row.birthday) }}</template>
         </el-table-column>
         <el-table-column align="left" label="籍贯" prop="nativePlace" width="120" />
-        <el-table-column align="left" label="民族" prop="nationText" width="120" />
-        <el-table-column align="left" label="身高(cm)" prop="height" width="120" />
-        <el-table-column align="left" label="体重(kg)" prop="weight" width="120" />
-        <el-table-column align="left" label="婚否" prop="marriageText" width="120" />
-        <el-table-column align="left" label="政治面貌" prop="politicalOutlookText" width="120" />
-        <el-table-column align="left" label="常住地址" prop="address" width="120" />
-        <el-table-column align="left" label="社保电脑号" prop="socialNumber" width="120" />
-        <el-table-column align="left" label="公积金账号" prop="accountNumber" width="120" />
-        <el-table-column align="left" label="社保公积金缴纳地" prop="paymentPlace" width="120" />
-        <el-table-column align="left" label="状态" prop="statusText" width="120"/>
+        <el-table-column align="left" label="民族" prop="nationText" width="60" />
+        <el-table-column align="left" label="身高(cm)" prop="height" width="90" />
+        <el-table-column align="left" label="体重(kg)" prop="weight" width="90" />
+        <el-table-column align="left" label="婚否" prop="marriageText" width="60" />
+        <el-table-column align="left" label="政治面貌" prop="politicalOutlookText" width="90" />
+<!--        <el-table-column align="left" label="常住地址" prop="address" width="120" />-->
+<!--        <el-table-column align="left" label="社保电脑号" prop="socialNumber" width="120" />-->
+<!--        <el-table-column align="left" label="公积金账号" prop="accountNumber" width="120" />-->
+<!--        <el-table-column align="left" label="社保公积金缴纳地" prop="paymentPlace" width="120" />-->
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
           <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
