@@ -38,17 +38,21 @@
         <el-table-column type="selection" width="55" />
         <el-table-column align="left" label="成员名称" prop="staffName" width="120"/>
         <el-table-column align="left" label="员工工号" prop="jobNum" width="120"/>
-        <el-table-column align="left" label="员工类型" prop="typeText" width="120" />
-        <el-table-column align="left" label="员工状态" prop="statusText" width="120" />
-        <el-table-column align="left" label="试用期" prop="tryPeriodText" width="120" />
-         <el-table-column align="left" label="入职日期" width="180">
-            <template #default="scope">{{ formatDate(scope.row.employmentDate) }}</template>
+        <el-table-column align="left" label="员工类型" prop="typeText" width="90" />
+        <el-table-column align="left" label="员工状态" prop="statusText" width="90" />
+        <el-table-column align="left" label="部门信息" prop="department" width="200"/>
+        <el-table-column align="left" label="职务信息" prop="position" width="150"/>
+        <el-table-column align="left" label="职级类型" prop="rankTypeText" width="90" />
+        <el-table-column align="left" label="职级" prop="rankText" width="150" />
+        <el-table-column align="left" label="等级工资" prop="rankSalary" width="90" />
+        <el-table-column align="left" label="费用科目" prop="expenseAccountText" width="90" />
+        <el-table-column align="left" label="入职日期" width="100">
+          <template #default="scope">{{ formatDate(scope.row.employmentDate) }}</template>
+        </el-table-column>
+        <el-table-column align="left" label="试用期" prop="tryPeriodText" width="90" />
+        <el-table-column align="left" label="转正日期" width="100">
+         <template #default="scope">{{ formatDate(scope.row.formalDate) }}</template>
          </el-table-column>
-         <el-table-column align="left" label="转正日期" width="180">
-            <template #default="scope">{{ formatDate(scope.row.formalDate) }}</template>
-         </el-table-column>
-        <el-table-column align="left" label="职位名称" prop="name" width="120" />
-        <el-table-column align="left" label="费用科目" prop="expenseAccountText" width="120" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -98,24 +102,40 @@
                 <el-option v-for="status in statusList" :key="status.value" :label="status.label" :value="status.value"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="试用期:"  prop="tryPeriod" >
-              <el-select v-model="formData.tryPeriod" placeholder="选择试用期">
-                <el-option v-for="tryPeriod in tryPeriods" :key="tryPeriod.value" :label="tryPeriod.label" :value="tryPeriod.value"></el-option>
-              </el-select>
+            <el-form-item label="部门信息:" prop="departmentIds">
+              <SelectDepartment v-model="formData.departmentIds">
+              </SelectDepartment>
             </el-form-item>
-            <el-form-item label="入职日期:"  prop="employmentDate" >
-              <el-date-picker v-model="formData.employmentDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
+            <el-form-item label="职务信息:" prop="positionIds">
+              <SelectPosition v-model="formData.positionIds">
+              </SelectPosition>
             </el-form-item>
-            <el-form-item label="转正日期:"  prop="formalDate" >
-              <el-date-picker v-model="formData.formalDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
+            <el-form-item label="职级类型:"  prop="rankType" >
+              <SelectRankType v-model="formData.rankType" placeholder="选择职级类型" @change="handleTypeChange">
+              </SelectRankType>
             </el-form-item>
-            <el-form-item label="职位名称:"  prop="name" >
-              <el-input v-model="formData.name" :clearable="true"  placeholder="请输入职位名称" />
+            <el-form-item label="职级:"  prop="rank" >
+              <SelectRank ref="SelectRankRef" v-model="formData.rank" placeholder="选择职级">
+              </SelectRank>
+            </el-form-item>
+            <el-form-item label="等级工资:"  prop="rankSalary" >
+              <el-input-number v-model="formData.rankSalary"  style="width:100%" :precision="0" :clearable="true"  />
             </el-form-item>
             <el-form-item label="费用科目:"  prop="expenseAccount" >
               <el-select v-model="formData.expenseAccount" placeholder="选择费用科目">
                 <el-option v-for="expenseAccount in expenseAccounts" :key="expenseAccount.value" :label="expenseAccount.label" :value="expenseAccount.value"></el-option>
               </el-select>
+            </el-form-item>
+            <el-form-item label="入职日期:"  prop="employmentDate" >
+              <el-date-picker v-model="formData.employmentDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
+            </el-form-item>
+            <el-form-item label="试用期:"  prop="tryPeriod" >
+              <el-select v-model="formData.tryPeriod" placeholder="选择试用期">
+                <el-option v-for="tryPeriod in tryPeriods" :key="tryPeriod.value" :label="tryPeriod.label" :value="tryPeriod.value"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="转正日期:"  prop="formalDate" >
+              <el-date-picker v-model="formData.formalDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
             </el-form-item>
           </el-form>
     </el-drawer>
@@ -139,6 +159,24 @@
                 <el-descriptions-item label="员工状态">
                         {{ formData.statusText }}
                 </el-descriptions-item>
+                <el-descriptions-item label="部门信息">
+                        {{ formData.department }}
+                </el-descriptions-item>
+                <el-descriptions-item label="职务信息">
+                        {{ formData.position }}
+                </el-descriptions-item>
+                <el-descriptions-item label="职级类型">
+                        {{ formData.rankTypeText }}
+                </el-descriptions-item>
+                <el-descriptions-item label="职级">
+                        {{ formData.rankText }}
+                </el-descriptions-item>
+                <el-descriptions-item label="等级工资">
+                        {{ formData.rankSalary }}
+                </el-descriptions-item>
+                <el-descriptions-item label="费用科目">
+                        {{ formData.expenseAccountText }}
+                </el-descriptions-item>
                 <el-descriptions-item label="试用期">
                         {{ formData.tryPeriodText }}
                 </el-descriptions-item>
@@ -147,12 +185,6 @@
                 </el-descriptions-item>
                 <el-descriptions-item label="转正日期">
                       {{ formatDate(formData.formalDate) }}
-                </el-descriptions-item>
-                <el-descriptions-item label="职位名称">
-                        {{ formData.name }}
-                </el-descriptions-item>
-                <el-descriptions-item label="费用科目">
-                        {{ formData.expenseAccountText }}
                 </el-descriptions-item>
         </el-descriptions>
     </el-drawer>
@@ -175,20 +207,27 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
 import {InfoFilled, QuestionFilled} from "@element-plus/icons-vue";
 import SelectStaff from "@/components/selectStaff/index.vue";
+import SelectPosition from "@/components/selectPosition/index.vue";
+import SelectDepartment from "@/components/selectDepartment/index.vue";
+import SelectRankType from "@/components/selectRankType/index.vue";
+import SelectRank from "@/components/selectRank/index.vue";
 
 defineOptions({
     name: 'WcStaffJob'
 })
 
 const types = ref([
+  { label: '其他', value: 0 },
   { label: '全职', value: 1 },
   { label: '兼职', value: 2 },
-  { label: '实习', value: 3 },
-  { label: '劳务外包', value: 4 },
-  { label: '无类型', value: 5 },
+  { label: '跟岗实习', value: 3 },
+  { label: '顶岗实习', value: 4 },
+  { label: '退休返聘', value: 5 },
+  { label: '劳务外包', value: 6 },
 ])
 
 const statusList = ref([
+  { label: '待入职', value: 0 },
   { label: '试用', value: 1 },
   { label: '正式', value: 2 },
   { label: '待离职', value: 3 },
@@ -217,7 +256,6 @@ const formData = ref({
         tryPeriod: '',
         employmentDate: new Date(),
         formalDate: new Date(),
-        name: '',
         expenseAccount: '',
         staffName:'',
         jobNum: '',
@@ -225,6 +263,15 @@ const formData = ref({
         statusText:'',
         tryPeriodText:'',
         expenseAccountText:'',
+        rankType:'',
+        rankTypeText:'',
+        rank:'',
+        rankText:'',
+        rankSalary:0,
+        department:'',
+        departmentIds:[],
+        position:'',
+        positionIds:[],
         })
 
 
@@ -272,17 +319,37 @@ const rule = reactive({
                    trigger: ['input','blur'],
                },
               ],
-               name : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
+              rankType : [{
+                required: true,
+                message: '',
+                trigger: ['input','blur'],
+              },
               ],
+              rank : [{
+                required: true,
+                message: '',
+                trigger: ['input','blur'],
+              },
+              ],
+              departmentIds : [{
+                required: true,
+                message: '',
+                trigger: ['input','blur'],
+              },
+              ],
+              positionIds : [{
+                required: true,
+                message: '',
+                trigger: ['input','blur'],
+              },
+              ],
+              rankSalary : [{
+                required: true,
+                message: '',
+                trigger: ['input','blur'],
+              },
+              ],
+
 })
 
 const searchRule = reactive({
@@ -310,6 +377,7 @@ const total = ref(0)
 const pageSize = ref(10)
 const tableData = ref([])
 const searchInfo = ref({})
+const rankList = ref({})
 
 // 重置
 const onReset = () => {
@@ -325,6 +393,13 @@ const onSubmit = () => {
     pageSize.value = 10
     getTableData()
   })
+}
+
+const SelectRankRef = ref()
+const handleTypeChange = (e) => {
+  console.log(e)
+  console.log(SelectRankRef.value)
+  SelectRankRef.value.initSelectOptions(e)
 }
 
 // 分页
@@ -477,7 +552,6 @@ const closeDetailShow = () => {
             tryPeriod: '',
             employmentDate: new Date(),
             formalDate: new Date(),
-            name: '',
             expenseAccount: '',
             staffName:'',
             jobNum: '',
@@ -485,6 +559,15 @@ const closeDetailShow = () => {
             statusText:'',
             tryPeriodText:'',
             expenseAccountText:'',
+            rankType:'',
+            rankTypeText:'',
+            rank:'',
+            rankText:'',
+            rankSalary:0,
+            department:'',
+            departmentIds:[],
+            position:'',
+            positionIds:[],
           }
 }
 
@@ -505,7 +588,6 @@ const closeDialog = () => {
           tryPeriod: '',
           employmentDate: new Date(),
           formalDate: new Date(),
-          name: '',
           expenseAccount: '',
           staffName:'',
           jobNum: '',
@@ -513,6 +595,15 @@ const closeDialog = () => {
           statusText:'',
           tryPeriodText:'',
           expenseAccountText:'',
+          rankType:'',
+          rankTypeText:'',
+          rank:'',
+          rankText:'',
+          rankSalary:0,
+          department:'',
+          departmentIds:[],
+          position:'',
+          positionIds:[],
         }
 }
 // 弹窗确定

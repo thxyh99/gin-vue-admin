@@ -38,12 +38,8 @@ func GetConfigInfo() CommonConfig {
 
 type CommonConfig struct {
 	StaffGender       []string //员工性别
-	StaffStatus       []string //员工状态
 	StaffIsLeader     []string //员工是否领导
 	IsMain            []string //是否主部门
-	StaffInfoType     []string //员工考勤类型
-	StaffOfficeRank   []string //员工职级(内勤)
-	StaffMarketRank   []string //员工职级(市场)
 	Nation            []string //民族
 	HouseholdType     []string //户籍类型
 	Marriage          []string //婚否
@@ -63,12 +59,6 @@ var config = CommonConfig{
 		1: "男",
 		2: "女",
 	},
-	StaffStatus: []string{
-		1: "已激活",
-		2: "已禁用",
-		4: "未激活",
-		5: "退出企业",
-	},
 	StaffIsLeader: []string{
 		0: "否",
 		1: "是",
@@ -77,55 +67,6 @@ var config = CommonConfig{
 		0: "否",
 		1: "是",
 	},
-	StaffInfoType: []string{
-		1: "内勤",
-		2: "市场",
-	},
-	StaffOfficeRank: []string{
-		1:  "实习生",
-		2:  "职员5级",
-		3:  "职员4级",
-		4:  "职员3级",
-		5:  "职员2级",
-		6:  "职员1级",
-		7:  "专员3级",
-		8:  "专员2级",
-		9:  "专员1级",
-		10: "主管3级",
-		11: "主管2级",
-		12: "主管1级",
-		13: "资深专员3级",
-		14: "资深专员2级",
-		15: "资深专员1级",
-		16: "资深主管3级",
-		17: "资深主管2级",
-		18: "资深主管1级",
-		19: "专业副经理3级",
-		20: "专业副经理2级",
-		21: "专业副经理1级",
-		22: "专业经理3级",
-		23: "专业经理2级",
-		24: "专业经理1级",
-		25: "副经理3级",
-		26: "副经理2级",
-		27: "副经理1级",
-		28: "经理3级",
-		29: "经理2级",
-		30: "经理1级",
-		31: "副监3级",
-		32: "副监2级",
-		33: "副监1级",
-		34: "总监3级",
-		35: "总监2级",
-		36: "总监1级",
-		37: "副总3级",
-		38: "副总2级",
-		39: "副总1级",
-		40: "总经理3级",
-		41: "总经理2级",
-		42: "总经理1级",
-	},
-	StaffMarketRank: []string{},
 	Nation: []string{
 		1:  "汉族",
 		2:  "蒙古族",
@@ -229,6 +170,7 @@ var config = CommonConfig{
 		6: "劳务外包",
 	},
 	StaffJobStatus: []string{
+		0: "待入职",
 		1: "试用",
 		2: "正式",
 		3: "待离职",

@@ -23,69 +23,22 @@ type WcStaffService struct {
 }
 
 // CreateWcStaff 创建账号信息记录
-func (wcStaffService *WcStaffService) CreateWcStaff(wcStaffRequest *weChatReq.WcStaffRequest) (err error) {
-	zero := 0
-	wcStaff := weChat.WcStaff{
-		UserId:    &zero,
-		Userid:    wcStaffRequest.Userid,
-		JobNum:    wcStaffRequest.JobNum,
-		Name:      wcStaffRequest.Name,
-		Gender:    wcStaffRequest.Gender,
-		IsLeader:  wcStaffRequest.IsLeader,
-		Mobile:    wcStaffRequest.Mobile,
-		Telephone: wcStaffRequest.Telephone,
-		Email:     wcStaffRequest.Email,
-		Address:   wcStaffRequest.Address,
-		BizMail:   wcStaffRequest.BizMail,
-		Status:    wcStaffRequest.Status,
-	}
+func (wcStaffService *WcStaffService) CreateWcStaff(wcStaff *weChat.WcStaff) (err error) {
+	//zero := 0
+	//wcStaff := weChat.WcStaff{
+	//	UserId:  &zero,
+	//	Userid:  wcStaffRequest.Userid,
+	//	JobNum:  wcStaffRequest.JobNum,
+	//	Name:    wcStaffRequest.Name,
+	//	Gender:  wcStaffRequest.Gender,
+	//	Mobile:  wcStaffRequest.Mobile,
+	//	Address: wcStaffRequest.Address,
+	//}
 
 	err = global.GVA_DB.Create(&wcStaff).Error
 	if err != nil {
 		fmt.Println("err1:", err)
 		return err
-	}
-
-	fmt.Println("staff_id:", wcStaff.ID)
-
-	// 更新员工职位信息
-	pSize := len(wcStaffRequest.PositionIds)
-	if pSize > 0 {
-		items := make([]map[string]interface{}, 0, pSize)
-		for _, pId := range wcStaffRequest.PositionIds {
-			var item = make(map[string]interface{})
-			item["staff_id"] = wcStaff.ID
-			item["position_id"] = pId
-			item["created_at"] = time.Now()
-			item["updated_at"] = time.Now()
-			items = append(items, item)
-			fmt.Println("position item", item)
-		}
-		cErr := global.GVA_DB.Table(weChat.WcStaffPosition{}.TableName()).CreateInBatches(&items, 1000).Error
-		fmt.Println("err3:", cErr)
-		if cErr != nil {
-			return cErr
-		}
-	}
-
-	// 更新员工部门信息
-	dSize := len(wcStaffRequest.DepartmentIds)
-	if dSize > 0 {
-		items := make([]map[string]interface{}, 0, dSize)
-		for _, dId := range wcStaffRequest.DepartmentIds {
-			var item = make(map[string]interface{})
-			item["staff_id"] = wcStaff.ID
-			item["department_id"] = dId
-			item["created_at"] = time.Now()
-			item["updated_at"] = time.Now()
-			items = append(items, item)
-			fmt.Println("department item", item)
-		}
-		cErr := global.GVA_DB.Table(weChat.WcStaffDepartment{}.TableName()).CreateInBatches(&items, 1000).Error
-		fmt.Println("err4:", cErr)
-		if cErr != nil {
-			return cErr
-		}
 	}
 
 	return
@@ -104,72 +57,9 @@ func (wcStaffService *WcStaffService) DeleteWcStaffByIds(IDs []string) (err erro
 }
 
 // UpdateWcStaff 更新账号信息记录
-func (wcStaffService *WcStaffService) UpdateWcStaff(wcStaffRequest *weChatReq.WcStaffRequest) (err error) {
-	wcStaff := weChat.WcStaff{
-		Userid:    wcStaffRequest.Userid,
-		JobNum:    wcStaffRequest.JobNum,
-		Name:      wcStaffRequest.Name,
-		Gender:    wcStaffRequest.Gender,
-		IsLeader:  wcStaffRequest.IsLeader,
-		Mobile:    wcStaffRequest.Mobile,
-		Telephone: wcStaffRequest.Telephone,
-		Email:     wcStaffRequest.Email,
-		Address:   wcStaffRequest.Address,
-		BizMail:   wcStaffRequest.BizMail,
-		Status:    wcStaffRequest.Status,
-	}
-	err = global.GVA_DB.Where("id=?", wcStaffRequest.ID).Updates(&wcStaff).Error
-	if err != nil {
-		return err
-	}
-
-	fmt.Println("staff_id:", wcStaffRequest.ID)
-	fmt.Println("position_ids:", wcStaffRequest.PositionIds)
-	fmt.Println("department_ids:", wcStaffRequest.DepartmentIds)
-
-	// 更新员工职位信息
-	pSize := len(wcStaffRequest.PositionIds)
-	if pSize > 0 {
-		global.GVA_DB.Table(weChat.WcStaffPosition{}.TableName()).Where("staff_id=?", wcStaffRequest.ID).Unscoped().Delete(&weChat.WcStaffPosition{})
-		items := make([]map[string]interface{}, 0, pSize)
-		for _, pId := range wcStaffRequest.PositionIds {
-			var item = make(map[string]interface{})
-			item["staff_id"] = wcStaffRequest.ID
-			item["position_id"] = pId
-			item["created_at"] = time.Now()
-			item["updated_at"] = time.Now()
-			items = append(items, item)
-			fmt.Println("item", item)
-		}
-		cErr := global.GVA_DB.Table(weChat.WcStaffPosition{}.TableName()).CreateInBatches(&items, 1000).Error
-		fmt.Println("err3:", cErr)
-		if cErr != nil {
-			return cErr
-		}
-	}
-
-	// 更新员工部门信息
-	dSize := len(wcStaffRequest.DepartmentIds)
-	if dSize > 0 {
-		global.GVA_DB.Table(weChat.WcStaffDepartment{}.TableName()).Where("staff_id=?", wcStaffRequest.ID).Unscoped().Delete(&weChat.WcStaffDepartment{})
-		items := make([]map[string]interface{}, 0, dSize)
-		for _, dId := range wcStaffRequest.DepartmentIds {
-			var item = make(map[string]interface{})
-			item["staff_id"] = wcStaffRequest.ID
-			item["department_id"] = dId
-			item["created_at"] = time.Now()
-			item["updated_at"] = time.Now()
-			items = append(items, item)
-			fmt.Println("item", item)
-		}
-		cErr := global.GVA_DB.Table(weChat.WcStaffDepartment{}.TableName()).CreateInBatches(&items, 1000).Error
-		fmt.Println("err4:", cErr)
-		if cErr != nil {
-			return cErr
-		}
-	}
-
-	return
+func (wcStaffService *WcStaffService) UpdateWcStaff(wcStaff *weChat.WcStaff) (err error) {
+	err = global.GVA_DB.Save(&wcStaff).Error
+	return err
 }
 
 // GetWcStaff 根据ID获取账号信息记录
@@ -415,13 +305,13 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 						return errors.New("是否领导值异常:" + value)
 					}
 				}
-				if key == "status" {
-					if status, ok := utils.FindStringValueKey(configInfo.StaffStatus, value); ok {
-						value = strconv.Itoa(status)
-					} else {
-						return errors.New("状态值异常:" + value)
-					}
-				}
+				//if key == "status" {
+				//	if status, ok := utils.FindStringValueKey(configInfo.StaffStatus, value); ok {
+				//		value = strconv.Itoa(status)
+				//	} else {
+				//		return errors.New("状态值异常:" + value)
+				//	}
+				//}
 
 				if key != "department" && key != "position" {
 					item[key] = value
@@ -525,9 +415,9 @@ func (wcStaffService *WcStaffService) checkImportParam(key, value string) error 
 		return errors.New("是否领导异常:" + value)
 	}
 
-	if key == "status" && !utils.InArray(configInfo.StaffStatus, value) {
-		return errors.New("状态异常:" + value)
-	}
+	//if key == "status" && !utils.InArray(configInfo.StaffStatus, value) {
+	//	return errors.New("状态异常:" + value)
+	//}
 
 	return nil
 }

@@ -112,43 +112,63 @@
         <el-form-item label="企微账号:" prop="userid">
           <el-input v-model="formData.userid" :clearable="true" placeholder="请输入企微账号"/>
         </el-form-item>
-        <el-form-item label="部门信息:" prop="departmentIds">
-          <SelectDepartment v-model="formData.departmentIds">
-          </SelectDepartment>
+        <el-form-item label="手机:" prop="mobile">
+          <el-input v-model="formData.mobile" :clearable="true" placeholder="请输入手机"/>
         </el-form-item>
-        <el-form-item label="职务信息:" prop="positionIds">
-          <SelectPosition v-model="formData.positionIds">
-          </SelectPosition>
+        <el-form-item label="身份证号:"  prop="idNumber" >
+          <el-input v-model="formData.idNumber" :clearable="true"  placeholder="请输入身份证号" />
+        </el-form-item>
+        <el-form-item label="身份证地址:"  prop="idAddress" >
+          <el-input v-model="formData.idAddress" :clearable="true"  placeholder="请输入身份证地址" />
+        </el-form-item>
+        <el-form-item label="户籍类型:"  prop="householdType" >
+          <el-select v-model="formData.householdType" placeholder="选择户籍类型">
+            <el-option v-for="householdType in householdTypes" :key="householdType.value" :label="householdType.label" :value="householdType.value"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="性别:" prop="gender">
           <el-select v-model="formData.gender" placeholder="选择性别">
             <el-option v-for="gender in genders" :key="gender.value" :label="gender.label" :value="gender.value"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="是否领导:" prop="isLeader">
-          <el-select v-model="formData.isLeader" placeholder="选择是否领导">
-            <el-option v-for="isLeader in isLeaders" :key="isLeader.value" :label="isLeader.label" :value="isLeader.value"></el-option>
+        <el-form-item label="出生日期:"  prop="birthday" >
+          <el-date-picker v-model="formData.birthday" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
+        </el-form-item>
+        <el-form-item label="籍贯:"  prop="nativePlace" >
+          <el-input v-model="formData.nativePlace" :clearable="true"  placeholder="请输入籍贯" />
+        </el-form-item>
+        <el-form-item label="民族:"  prop="nation" >
+          <el-select v-model="formData.nation" placeholder="选择民族" filterable>
+            <el-option v-for="nation in nations" :key="nation.value" :label="nation.label" :value="nation.value"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="手机:" prop="mobile">
-          <el-input v-model="formData.mobile" :clearable="true" placeholder="请输入手机"/>
+        <el-form-item label="身高(cm):"  prop="height" >
+          <el-input-number v-model="formData.height"  style="width:100%" :precision="2" :clearable="true"  />
         </el-form-item>
-        <el-form-item label="状态:" prop="status">
-          <el-select v-model="formData.status" placeholder="请选择状态">
-            <el-option v-for="status in statuses" :key="status.value" :label="status.label" :value="status.value"></el-option>
+        <el-form-item label="体重(kg):"  prop="weight" >
+          <el-input-number v-model="formData.weight"  style="width:100%" :precision="2" :clearable="true"  />
+        </el-form-item>
+        <el-form-item label="婚否:"  prop="marriage" >
+          <el-select v-model="formData.marriage" placeholder="选择婚否">
+            <el-option v-for="marriage in marriages" :key="marriage.value" :label="marriage.label" :value="marriage.value"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="座机:" prop="telephone">
-          <el-input v-model="formData.telephone" :clearable="true" placeholder="请输入座机"/>
+        <el-form-item label="政治面貌:"  prop="politicalOutlook" >
+          <el-select v-model="formData.politicalOutlook" placeholder="选择政治面貌">
+            <el-option v-for="politicalOutlook in politicalOutlooks" :key="politicalOutlook.value" :label="politicalOutlook.label" :value="politicalOutlook.value"></el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="个人邮箱:" prop="email">
-          <el-input v-model="formData.email" :clearable="true" placeholder="请输入个人邮箱"/>
+        <el-form-item label="常住地址:"  prop="address" >
+          <el-input v-model="formData.address" :clearable="true"  placeholder="请输入常住地址" />
         </el-form-item>
-        <el-form-item label="地址:" prop="address">
-          <el-input v-model="formData.address" :clearable="true" placeholder="请输入地址"/>
+        <el-form-item label="社保电脑号:"  prop="socialNumber" >
+          <el-input v-model="formData.socialNumber" :clearable="true"  placeholder="请输入社保电脑号" />
         </el-form-item>
-        <el-form-item label="企业邮箱:" prop="bizMail">
-          <el-input v-model="formData.bizMail" :clearable="true" placeholder="请输入企业邮箱"/>
+        <el-form-item label="公积金账号:"  prop="accountNumber" >
+          <el-input v-model="formData.accountNumber" :clearable="true"  placeholder="请输入公积金账号" />
+        </el-form-item>
+        <el-form-item label="社保公积金缴纳地:"  prop="paymentPlace" >
+          <el-input v-model="formData.paymentPlace" :clearable="true"  placeholder="请输入社保公积金缴纳地" />
         </el-form-item>
       </el-form>
     </el-drawer>
@@ -169,35 +189,53 @@
         <el-descriptions-item label="企微账号">
           {{ formData.userid }}
         </el-descriptions-item>
-        <el-descriptions-item label="部门信息">
-          {{ formData.department }}
+        <el-descriptions-item label="手机">
+          {{ formData.mobile }}
         </el-descriptions-item>
-        <el-descriptions-item label="职务信息">
-          {{ formData.position }}
+        <el-descriptions-item label="身份证号">
+          {{ formData.idNumber }}
+        </el-descriptions-item>
+        <el-descriptions-item label="身份证地址">
+          {{ formData.idAddress }}
+        </el-descriptions-item>
+        <el-descriptions-item label="户籍类型">
+          {{ formData.householdTypeText }}
         </el-descriptions-item>
         <el-descriptions-item label="性别">
           {{ formData.genderText }}
         </el-descriptions-item>
-        <el-descriptions-item label="是否领导">
-          {{ formData.isLeaderText }}
+        <el-descriptions-item label="出生日期">
+          {{ formatDate(formData.birthday) }}
         </el-descriptions-item>
-        <el-descriptions-item label="手机">
-          {{ formData.mobile }}
+        <el-descriptions-item label="籍贯">
+          {{ formData.nativePlace }}
         </el-descriptions-item>
-        <el-descriptions-item label="状态">
-          {{ formData.statusText }}
+        <el-descriptions-item label="民族">
+          {{ formData.nationText }}
         </el-descriptions-item>
-        <el-descriptions-item label="座机">
-          {{ formData.telephone }}
+        <el-descriptions-item label="身高(cm)">
+          {{ formData.height }}
         </el-descriptions-item>
-        <el-descriptions-item label="个人邮箱">
-          {{ formData.email }}
+        <el-descriptions-item label="体重(kg)">
+          {{ formData.weight }}
         </el-descriptions-item>
-        <el-descriptions-item label="地址">
+        <el-descriptions-item label="婚否">
+          {{ formData.marriageText }}
+        </el-descriptions-item>
+        <el-descriptions-item label="政治面貌">
+          {{ formData.politicalOutlookText }}
+        </el-descriptions-item>
+        <el-descriptions-item label="常住地址">
           {{ formData.address }}
         </el-descriptions-item>
-        <el-descriptions-item label="企业邮箱">
-          {{ formData.bizMail }}
+        <el-descriptions-item label="社保电脑号">
+          {{ formData.socialNumber }}
+        </el-descriptions-item>
+        <el-descriptions-item label="公积金账号">
+          {{ formData.accountNumber }}
+        </el-descriptions-item>
+        <el-descriptions-item label="社保公积金缴纳地">
+          {{ formData.paymentPlace }}
         </el-descriptions-item>
       </el-descriptions>
     </el-drawer>
@@ -222,21 +260,91 @@ import {useRouter} from 'vue-router'
 import ImportExcel from "@/components/exportExcel/wechat/importExcel.vue";
 import ExportExcel from "@/components/exportExcel/wechat/exportExcel.vue";
 import ExportTemplate from "@/components/exportExcel/wechat/exportTemplate.vue";
-import SelectPosition from "@/components/selectPosition/index.vue";
-import SelectDepartment from "@/components/SelectDepartment/index.vue";
 import {InfoFilled, QuestionFilled} from "@element-plus/icons-vue";
 
 defineOptions({
   name: 'WcStaff'
 })
 
-const router = useRouter()
+const householdTypes = ref([
+  { label: '本地城镇', value: 1 },
+  { label: '本地农村', value: 2 },
+  { label: '外地城镇[省内]', value: 3 },
+  { label: '外地农村[省内]', value: 4 },
+  { label: '外地城镇[省外]', value: 5 },
+  { label: '外地农村[省外]', value: 6 },
+])
 
-const statuses = ref([
-  { label: '已激活', value: 1 },
-  { label: '已禁用', value: 2 },
-  { label: '未激活', value: 4 },
-  { label: '退出企业', value: 5 }
+const marriages = ref([
+  { label: '已婚', value: 1 },
+  { label: '未婚', value: 2 },
+  { label: '其他', value: 3 },
+])
+
+const politicalOutlooks = ref([
+  { label: '其他', value: 0 },
+  { label: '团员', value: 1 },
+  { label: '党员', value: 2 },
+  { label: '群众', value: 3 },
+])
+
+const nations = ref([
+  { label: '汉族', value: 1 },
+  { label: '蒙古族', value: 2 },
+  { label: '回族', value: 3 },
+  { label: '藏族', value: 4 },
+  { label: '维吾尔族', value: 5 },
+  { label: '苗族', value: 6 },
+  { label: '彝族', value: 7 },
+  { label: '壮族', value: 8 },
+  { label: '布依族', value: 9 },
+  { label: '朝鲜族', value: 10 },
+  { label: '满族', value: 11 },
+  { label: '侗族', value: 12 },
+  { label: '瑶族', value: 13 },
+  { label: '白族', value: 14 },
+  { label: '土家族', value: 15 },
+  { label: '哈尼族', value: 16 },
+  { label: '哈萨克族', value: 17 },
+  { label: '傣族', value: 18 },
+  { label: '黎族', value: 19 },
+  { label: '傈僳族', value: 20 },
+  { label: '佤族', value: 21 },
+  { label: '畲族', value: 22 },
+  { label: '高山族', value: 23 },
+  { label: '拉祜族', value: 24 },
+  { label: '水族', value: 25 },
+  { label: '东乡族', value: 26 },
+  { label: '纳西族', value: 27 },
+  { label: '景颇族', value: 28 },
+  { label: '柯尔克孜族', value: 29 },
+  { label: '土族', value: 30 },
+  { label: '达斡尔族', value: 31 },
+  { label: '仫佬族', value: 32 },
+  { label: '羌族', value: 33 },
+  { label: '布朗族', value: 34 },
+  { label: '撒拉族', value: 35 },
+  { label: '毛南族', value: 36 },
+  { label: '仡佬族', value: 37 },
+  { label: '锡伯族', value: 38 },
+  { label: '阿昌族', value: 39 },
+  { label: '普米族', value: 40 },
+  { label: '塔吉克族', value: 41 },
+  { label: '怒族', value: 42 },
+  { label: '乌孜别克族', value: 43 },
+  { label: '俄罗斯族', value: 44 },
+  { label: '鄂温克族', value: 45 },
+  { label: '崩龙族', value: 46 },
+  { label: '保安族', value: 47 },
+  { label: '裕固族', value: 48 },
+  { label: '京族', value: 49 },
+  { label: '塔塔尔族', value: 50 },
+  { label: '独龙族', value: 51 },
+  { label: '鄂伦春族', value: 52 },
+  { label: '赫哲族', value: 53 },
+  { label: '门巴族', value: 54 },
+  { label: '珞巴族', value: 55 },
+  { label: '基诺族', value: 56 },
 ])
 
 const genders = ref([
@@ -245,10 +353,6 @@ const genders = ref([
   { label: '女', value: 2 },
 ])
 
-const isLeaders = ref([
-  { label: '否', value: 0 },
-  { label: '是', value: 1 },
-])
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
@@ -256,21 +360,27 @@ const formData = ref({
   userid: '',
   jobNum: '',
   name: '',
-  departmentIds: [],
-  positionIds: [],
   gender: '',
-  isLeader: '',
   mobile: '',
-  telephone: '',
-  email: '',
+  idNumber: '',
+  idAddress: '',
+  householdType: '',
+  birthday: new Date(),
+  nativePlace: '',
+  nation: '',
+  height: 0,
+  weight: 0,
+  marriage: '',
+  politicalOutlook: '',
   address: '',
-  bizMail: '',
-  status: '',
-  department:'',
-  position:'',
+  socialNumber: '',
+  accountNumber: '',
+  paymentPlace: '',
   genderText:'',
-  isLeaderText:'',
-  statusText:'',
+  householdTypeText:'',
+  nationText:'',
+  marriageText:'',
+  politicalOutlookText:'',
 })
 
 
@@ -321,22 +431,96 @@ const rule = reactive({
     trigger: ['input', 'blur'],
   },
   ],
-  isLeader: [{
-    required: true,
-    message: '',
-    trigger: ['input', 'blur'],
-  },
-  ],
-  status: [{
-    required: true,
-    message: '',
-    trigger: ['input', 'blur'],
-  },
-  ],
   mobile: [{
     required: true,
     message: '',
     trigger: ['input', 'blur'],
+  },
+    {
+      whitespace: true,
+      message: '不能只输入空格',
+      trigger: ['input', 'blur'],
+    }
+  ],
+  idNumber : [{
+    required: true,
+    message: '',
+    trigger: ['input','blur'],
+  },
+    {
+      whitespace: true,
+      message: '不能只输入空格',
+      trigger: ['input', 'blur'],
+    }
+  ],
+  idAddress : [{
+    required: true,
+    message: '',
+    trigger: ['input','blur'],
+  },
+    {
+      whitespace: true,
+      message: '不能只输入空格',
+      trigger: ['input', 'blur'],
+    }
+  ],
+  householdType : [{
+    required: true,
+    message: '',
+    trigger: ['input','blur'],
+  },
+  ],
+  birthday : [{
+    required: true,
+    message: '',
+    trigger: ['input','blur'],
+  },
+  ],
+  nativePlace : [{
+    required: true,
+    message: '',
+    trigger: ['input','blur'],
+  },
+    {
+      whitespace: true,
+      message: '不能只输入空格',
+      trigger: ['input', 'blur'],
+    }
+  ],
+  nation : [{
+    required: true,
+    message: '',
+    trigger: ['input','blur'],
+  }
+  ],
+  height : [{
+    required: true,
+    message: '',
+    trigger: ['input','blur'],
+  },
+  ],
+  weight : [{
+    required: true,
+    message: '',
+    trigger: ['input','blur'],
+  },
+  ],
+  marriage : [{
+    required: true,
+    message: '',
+    trigger: ['input','blur'],
+  },
+  ],
+  politicalOutlook : [{
+    required: true,
+    message: '',
+    trigger: ['input','blur'],
+  },
+  ],
+  address : [{
+    required: true,
+    message: '',
+    trigger: ['input','blur'],
   },
     {
       whitespace: true,
@@ -539,21 +723,27 @@ const closeDetailShow = () => {
     userid: '',
     jobNum: '',
     name: '',
-    departmentIds: [],
-    positionIds: [],
     gender: '',
-    isLeader: '',
     mobile: '',
-    telephone: '',
-    email: '',
+    idNumber: '',
+    idAddress: '',
+    householdType: '',
+    birthday: new Date(),
+    nativePlace: '',
+    nation: '',
+    height: 0,
+    weight: 0,
+    marriage: '',
+    politicalOutlook: '',
     address: '',
-    bizMail: '',
-    status: '',
-    department:'',
-    position:'',
+    socialNumber: '',
+    accountNumber: '',
+    paymentPlace: '',
     genderText:'',
-    isLeaderText:'',
-    statusText:'',
+    householdTypeText:'',
+    nationText:'',
+    marriageText:'',
+    politicalOutlookText:'',
   }
 }
 
@@ -572,21 +762,27 @@ const closeDialog = () => {
     userid: '',
     jobNum: '',
     name: '',
-    departmentIds: [],
-    positionIds: [],
     gender: '',
-    isLeader: '',
     mobile: '',
-    telephone: '',
-    email: '',
+    idNumber: '',
+    idAddress: '',
+    householdType: '',
+    birthday: new Date(),
+    nativePlace: '',
+    nation: '',
+    height: 0,
+    weight: 0,
+    marriage: '',
+    politicalOutlook: '',
     address: '',
-    bizMail: '',
-    status: '',
-    department:'',
-    position:'',
+    socialNumber: '',
+    accountNumber: '',
+    paymentPlace: '',
     genderText:'',
-    isLeaderText:'',
-    statusText:'',
+    householdTypeText:'',
+    nationText:'',
+    marriageText:'',
+    politicalOutlookText:'',
   }
 }
 // 弹窗确定

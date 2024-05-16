@@ -11,6 +11,12 @@ type WcRankResponse struct {
 	TypeText string `json:"typeText"` //职级类型
 }
 
+// WcRankItem 员工等级名称
+type WcRankItem struct {
+	ID   int    `json:"ID"`   // ID
+	Name string `json:"name"` //等级名称
+}
+
 func (WcRankResponse) AssembleRankList(ranks []weChat.WcRank) (newRanks []WcRankResponse, err error) {
 	var newRank WcRankResponse
 	rankTypeList, err := GetRankTypeList()

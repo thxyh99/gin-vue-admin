@@ -1,18 +1,73 @@
 package weChat
 
 import (
+	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
 	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
+	"time"
 )
 
 type WcStaffJobService struct {
 }
 
 // CreateWcStaffJob 创建工作信息记录
-func (wcStaffJobService *WcStaffJobService) CreateWcStaffJob(wcStaffJob *weChat.WcStaffJob) (err error) {
+func (wcStaffJobService *WcStaffJobService) CreateWcStaffJob(wcStaffJobRequest *weChatReq.WcStaffJobRequest) (err error) {
+	var wcStaffJob = weChat.WcStaffJob{
+		StaffId:        wcStaffJobRequest.StaffId,
+		Type:           wcStaffJobRequest.Type,
+		Status:         wcStaffJobRequest.Status,
+		TryPeriod:      wcStaffJobRequest.TryPeriod,
+		RankType:       wcStaffJobRequest.RankType,
+		Rank:           wcStaffJobRequest.Rank,
+		RankSalary:     wcStaffJobRequest.RankSalary,
+		EmploymentDate: wcStaffJobRequest.EmploymentDate,
+		FormalDate:     wcStaffJobRequest.FormalDate,
+		ExpenseAccount: wcStaffJobRequest.ExpenseAccount,
+	}
 	err = global.GVA_DB.Create(wcStaffJob).Error
+
+	// 更新员工职位信息
+	pSize := len(wcStaffJobRequest.PositionIds)
+	if pSize > 0 {
+		items := make([]map[string]interface{}, 0, pSize)
+		for _, pId := range wcStaffJobRequest.PositionIds {
+			var item = make(map[string]interface{})
+			item["staff_id"] = wcStaffJobRequest.StaffId
+			item["position_id"] = pId
+			item["created_at"] = time.Now()
+			item["updated_at"] = time.Now()
+			items = append(items, item)
+			fmt.Println("position item", item)
+		}
+		cErr := global.GVA_DB.Table(weChat.WcStaffPosition{}.TableName()).CreateInBatches(&items, 1000).Error
+		fmt.Println("err3:", cErr)
+		if cErr != nil {
+			return cErr
+		}
+	}
+
+	// 更新员工部门信息
+	dSize := len(wcStaffJobRequest.DepartmentIds)
+	if dSize > 0 {
+		items := make([]map[string]interface{}, 0, dSize)
+		for _, dId := range wcStaffJobRequest.DepartmentIds {
+			var item = make(map[string]interface{})
+			item["staff_id"] = wcStaffJobRequest.StaffId
+			item["department_id"] = dId
+			item["created_at"] = time.Now()
+			item["updated_at"] = time.Now()
+			items = append(items, item)
+			fmt.Println("department item", item)
+		}
+		cErr := global.GVA_DB.Table(weChat.WcStaffDepartment{}.TableName()).CreateInBatches(&items, 1000).Error
+		fmt.Println("err4:", cErr)
+		if cErr != nil {
+			return cErr
+		}
+	}
+
 	return err
 }
 
@@ -29,9 +84,69 @@ func (wcStaffJobService *WcStaffJobService) DeleteWcStaffJobByIds(IDs []string) 
 }
 
 // UpdateWcStaffJob 更新工作信息记录
-func (wcStaffJobService *WcStaffJobService) UpdateWcStaffJob(wcStaffJob weChat.WcStaffJob) (err error) {
-	err = global.GVA_DB.Save(&wcStaffJob).Error
-	return err
+func (wcStaffJobService *WcStaffJobService) UpdateWcStaffJob(wcStaffJobRequest *weChatReq.WcStaffJobRequest) (err error) {
+	var wcStaffJob = weChat.WcStaffJob{
+		StaffId:        wcStaffJobRequest.StaffId,
+		Type:           wcStaffJobRequest.Type,
+		Status:         wcStaffJobRequest.Status,
+		TryPeriod:      wcStaffJobRequest.TryPeriod,
+		RankType:       wcStaffJobRequest.RankType,
+		Rank:           wcStaffJobRequest.Rank,
+		RankSalary:     wcStaffJobRequest.RankSalary,
+		EmploymentDate: wcStaffJobRequest.EmploymentDate,
+		FormalDate:     wcStaffJobRequest.FormalDate,
+		ExpenseAccount: wcStaffJobRequest.ExpenseAccount,
+	}
+	err = global.GVA_DB.Where("id=?", wcStaffJobRequest.ID).Updates(&wcStaffJob).Error
+	if err != nil {
+		return err
+	}
+
+	// 更新员工职位信息
+	pSize := len(wcStaffJobRequest.PositionIds)
+	if pSize > 0 {
+		global.GVA_DB.Table(weChat.WcStaffPosition{}.TableName()).Where("staff_id=?", wcStaffJobRequest.StaffId).Unscoped().Delete(&weChat.WcStaffPosition{})
+		items := make([]map[string]interface{}, 0, pSize)
+		for _, pId := range wcStaffJobRequest.PositionIds {
+			var item = make(map[string]interface{})
+			item["staff_id"] = wcStaffJobRequest.StaffId
+			item["position_id"] = pId
+			item["created_at"] = time.Now()
+			item["updated_at"] = time.Now()
+			items = append(items, item)
+			fmt.Println("item", item)
+		}
+		cErr := global.GVA_DB.Table(weChat.WcStaffPosition{}.TableName()).CreateInBatches(&items, 1000).Error
+		fmt.Println("err3:", cErr)
+		if cErr != nil {
+			return cErr
+		}
+	}
+
+	// 更新员工部门信息
+	dSize := len(wcStaffJobRequest.DepartmentIds)
+	if dSize > 0 {
+		global.GVA_DB.Table(weChat.WcStaffDepartment{}.TableName()).Where("staff_id=?", wcStaffJobRequest.StaffId).Unscoped().Delete(&weChat.WcStaffDepartment{})
+		items := make([]map[string]interface{}, 0, dSize)
+		for _, dId := range wcStaffJobRequest.DepartmentIds {
+			var item = make(map[string]interface{})
+			item["staff_id"] = wcStaffJobRequest.StaffId
+			item["department_id"] = dId
+			item["created_at"] = time.Now()
+			item["updated_at"] = time.Now()
+			items = append(items, item)
+			fmt.Println("item", item)
+		}
+		cErr := global.GVA_DB.Table(weChat.WcStaffDepartment{}.TableName()).CreateInBatches(&items, 1000).Error
+		fmt.Println("err4:", cErr)
+		if cErr != nil {
+			return cErr
+		}
+	}
+
+	return
+	//err = global.GVA_DB.Save(&wcStaffJob).Error
+	//return err
 }
 
 // GetWcStaffJob 根据ID获取工作信息记录

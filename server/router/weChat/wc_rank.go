@@ -23,9 +23,10 @@ func (s *WcRankRouter) InitWcRankRouter(Router *gin.RouterGroup, PublicRouter *g
 		wcRankRouter.PUT("updateWcRank", wcRankApi.UpdateWcRank)              // 更新职级管理
 	}
 	{
-		wcRankRouterWithoutRecord.GET("findWcRank", wcRankApi.FindWcRank)           // 根据ID获取职级管理
-		wcRankRouterWithoutRecord.GET("getWcRankList", wcRankApi.GetWcRankList)     // 获取职级管理列表
-		wcRankRouterWithoutRecord.GET("getRankTypeList", wcRankApi.GetRankTypeList) // 获取职级类型列表
+		wcRankRouterWithoutRecord.GET("findWcRank", wcRankApi.FindWcRank)                       // 根据ID获取职级管理
+		wcRankRouterWithoutRecord.GET("getWcRankList", wcRankApi.GetWcRankList)                 // 获取职级管理列表
+		wcRankRouterWithoutRecord.GET("getRankTypeList", wcRankApi.GetRankTypeList)             // 获取职级类型列表
+		wcRankRouterWithoutRecord.GET("getRankListByRankType", wcRankApi.GetRankListByRankType) // 获取职级列表
 	}
 	{
 		wcRankRouterWithoutAuth.GET("getWcRankPublic", wcRankApi.GetWcRankPublic) // 获取职级管理列表

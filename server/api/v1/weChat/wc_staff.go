@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/service"
 	"github.com/gin-gonic/gin"
@@ -25,20 +26,14 @@ var wcStaffService = service.ServiceGroupApp.WeChatServiceGroup.WcStaffService
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"创建成功"}"
 // @Router /wcStaff/createWcStaff [post]
 func (wcStaffApi *WcStaffApi) CreateWcStaff(c *gin.Context) {
-	var wcStaffRequest weChatReq.WcStaffRequest
-	err := c.ShouldBindJSON(&wcStaffRequest)
+	var wcStaff weChat.WcStaff
+	err := c.ShouldBindJSON(&wcStaff)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
 
-	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	fmt.Println("wcStaffRequest:", wcStaffRequest)
-	fmt.Println("wcStaffRequestPosition:", wcStaffRequest.PositionIds)
-	fmt.Println("wcStaffRequestDepartment:", wcStaffRequest.DepartmentIds)
-	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-
-	if err := wcStaffService.CreateWcStaff(&wcStaffRequest); err != nil {
+	if err := wcStaffService.CreateWcStaff(&wcStaff); err != nil {
 		global.GVA_LOG.Error("创建失败!", zap.Error(err))
 		response.FailWithMessage("创建失败", c)
 	} else {
@@ -93,18 +88,14 @@ func (wcStaffApi *WcStaffApi) DeleteWcStaffByIds(c *gin.Context) {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"更新成功"}"
 // @Router /wcStaff/updateWcStaff [put]
 func (wcStaffApi *WcStaffApi) UpdateWcStaff(c *gin.Context) {
-	var wcStaffRequest weChatReq.WcStaffRequest
-	err := c.ShouldBindJSON(&wcStaffRequest)
+	var wcStaff weChat.WcStaff
+	err := c.ShouldBindJSON(&wcStaff)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
 
-	fmt.Println("=================================")
-	fmt.Println(wcStaffRequest)
-	fmt.Println("=================================")
-
-	if err := wcStaffService.UpdateWcStaff(&wcStaffRequest); err != nil {
+	if err := wcStaffService.UpdateWcStaff(&wcStaff); err != nil {
 		global.GVA_LOG.Error("更新失败!", zap.Error(err))
 		response.FailWithMessage("更新失败", c)
 	} else {
