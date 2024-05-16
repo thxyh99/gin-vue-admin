@@ -52,7 +52,11 @@
           @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55"/>
-        <el-table-column align="left" label="成员名称" prop="name" width="180"/>
+        <el-table-column align="left" label="成员名称" prop="name" width="180">
+          <template #default="scope">
+            <el-link type="primary" @click="jumpRoute(scope.row)">{{ scope.row.name }}</el-link>
+          </template>
+        </el-table-column>
         <el-table-column align="left" label="员工工号" prop="jobNum" width="150"/>
         <el-table-column align="left" label="企微账号" prop="userid" width="150"/>
         <el-table-column align="left" label="部门信息" prop="department" width="200"/>
@@ -214,6 +218,7 @@ import {
 import {getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile} from '@/utils/format'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {ref, reactive} from 'vue'
+import {useRouter} from 'vue-router'
 import ImportExcel from "@/components/exportExcel/wechat/importExcel.vue";
 import ExportExcel from "@/components/exportExcel/wechat/exportExcel.vue";
 import ExportTemplate from "@/components/exportExcel/wechat/exportTemplate.vue";
@@ -224,6 +229,8 @@ import {InfoFilled, QuestionFilled} from "@element-plus/icons-vue";
 defineOptions({
   name: 'WcStaff'
 })
+
+const router = useRouter()
 
 const statuses = ref([
   { label: '已激活', value: 1 },
@@ -607,6 +614,10 @@ const enterDialog = async () => {
       getTableData()
     }
   })
+}
+
+const jumpRoute = (row) => {
+  router.push(`/layout/staff/roster?row=${row}`)
 }
 
 </script>
