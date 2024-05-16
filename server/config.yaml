@@ -51,14 +51,14 @@ cors:
           allow-credentials: true
 db-list:
     - type: mysql
-      alias-name: edu
+      alias-name: local
       prefix: ""
       port: "3306"
       config: charset=utf8mb4&parseTime=True&loc=Local
       db-name: edu
       username: root
-      password: $RongdA!0611
-      path: 112.74.22.24
+      password: root
+      path: 127.0.0.1
       engine: ""
       log-mode: error
       max-idle-conns: 10
@@ -124,8 +124,8 @@ mysql:
     config: charset=utf8mb4&parseTime=True&loc=Local
     db-name: hr
     username: root
-    password: $RongdA!0611
-    path: 112.74.22.24
+    password: root
+    path: 127.0.0.1
     engine: ""
     log-mode: error
     max-idle-conns: 10

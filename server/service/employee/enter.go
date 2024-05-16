@@ -1,0 +1,8 @@
+package employee
+
+type ServiceGroup struct {
+	WcStaffEmploymentApplicationService
+	WcStaffPassApplicationService
+	WcStaffTransferApplicationService
+	WcStaffLeaveApplicationService
+}
