@@ -162,11 +162,13 @@ pgsql:
     log-zap: false
 qiniu:
     zone: ZoneHuaDong
-    bucket: ""
-    img-path: ""
-    access-key: ""
-    secret-key: ""
-    use-https: false
+#    bucket: "rongdajt"
+#    img-path: "rdjy.guoyunmall.com"
+    bucket: "rongda-hr"
+    img-path: "sdkig0dbm.hn-bkt.clouddn.com"
+    access-key: "ZJJE_9LXOuzLouNEl0wlP3VxpWVt8wQecwKa7QKD"
+    secret-key: "1Wv30uQp9hmhVhoxJ8wdHuDkrDLSOxt07fgVHkxb"
+    use-https: true
     use-cdn-domains: false
 redis:
     addr: 127.0.0.1:6379
@@ -193,7 +195,7 @@ sqlite:
     log-zap: false
 system:
     db-type: mysql
-    oss-type: local
+    oss-type: qiniu
     router-prefix: ""
     addr: 8888
     iplimit-count: 15000

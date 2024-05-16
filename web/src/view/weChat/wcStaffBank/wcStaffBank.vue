@@ -39,7 +39,7 @@
         <el-table-column align="left" label="成员名称" prop="staffName" width="150"/>
         <el-table-column align="left" label="员工工号" prop="jobNum" width="150"/>
         <el-table-column align="left" label="银行卡号" prop="cardNumber" width="240" />
-        <el-table-column align="left" label="开户行" prop="bank" width="300" />
+        <el-table-column align="left" label="开户行" prop="bank" width="700" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">

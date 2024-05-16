@@ -40,13 +40,13 @@
         <el-table-column align="left" label="员工工号" prop="jobNum" width="120"/>
         <el-table-column align="left" label="学历" prop="educationText" width="120" />
         <el-table-column align="left" label="毕业院校" prop="school" width="120" />
-         <el-table-column align="left" label="毕业日期" width="180">
+         <el-table-column align="left" label="毕业日期" width="120">
             <template #default="scope">{{ formatDate(scope.row.date) }}</template>
          </el-table-column>
         <el-table-column align="left" label="专业" prop="major" width="120" />
           <el-table-column align="left" label="学历津贴" prop="educationPay" width="120" />
           <el-table-column align="left" label="职称技能津贴" prop="skillPay" width="120" />
-          <el-table-column align="left" label="职称/技能证书" prop="certificate" width="200" />
+          <el-table-column align="left" label="职称/技能证书" prop="certificate" width="320" />
           <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">

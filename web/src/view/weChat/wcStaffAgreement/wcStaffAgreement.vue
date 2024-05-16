@@ -47,7 +47,7 @@
             <template #default="scope">{{ formatDate(scope.row.endDay) }}</template>
          </el-table-column>
         <el-table-column align="left" label="续签次数" prop="times" width="120" />
-        <el-table-column align="left" label="合同附件" prop="attachment" width="150" />
+        <el-table-column align="left" label="合同附件" prop="attachment" width="240" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">

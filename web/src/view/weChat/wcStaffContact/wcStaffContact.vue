@@ -41,7 +41,7 @@
         <el-table-column align="left" label="紧急联系人姓名" prop="name" width="150" />
         <el-table-column align="left" label="联系人关系" prop="relationshipText" width="150" />
         <el-table-column align="left" label="联系人电话" prop="mobile" width="180" />
-        <el-table-column align="left" label="联系人常住地址" prop="address" width="260" />
+        <el-table-column align="left" label="联系人常住地址" prop="address" width="500" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">

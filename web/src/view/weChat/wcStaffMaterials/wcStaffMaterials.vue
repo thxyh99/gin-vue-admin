@@ -42,7 +42,6 @@
             <template #default="scope">
               <el-image
                   :src="scope.row.idCardPortrait"
-                  style=" height: 200px;"
                   alt="身份证(人像)"
               />
             </template>
@@ -51,7 +50,6 @@
             <template #default="scope">
               <el-image
                   :src="scope.row.idCardNational"
-                  style=" height: 200px;"
                   alt="身份证(国徽)"
               />
             </template>
