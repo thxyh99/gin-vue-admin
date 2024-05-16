@@ -305,13 +305,13 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 						return errors.New("是否领导值异常:" + value)
 					}
 				}
-				if key == "status" {
-					if status, ok := utils.FindStringValueKey(configInfo.StaffStatus, value); ok {
-						value = strconv.Itoa(status)
-					} else {
-						return errors.New("状态值异常:" + value)
-					}
-				}
+				//if key == "status" {
+				//	if status, ok := utils.FindStringValueKey(configInfo.StaffStatus, value); ok {
+				//		value = strconv.Itoa(status)
+				//	} else {
+				//		return errors.New("状态值异常:" + value)
+				//	}
+				//}
 
 				if key != "department" && key != "position" {
 					item[key] = value
@@ -415,9 +415,9 @@ func (wcStaffService *WcStaffService) checkImportParam(key, value string) error 
 		return errors.New("是否领导异常:" + value)
 	}
 
-	if key == "status" && !utils.InArray(configInfo.StaffStatus, value) {
-		return errors.New("状态异常:" + value)
-	}
+	//if key == "status" && !utils.InArray(configInfo.StaffStatus, value) {
+	//	return errors.New("状态异常:" + value)
+	//}
 
 	return nil
 }

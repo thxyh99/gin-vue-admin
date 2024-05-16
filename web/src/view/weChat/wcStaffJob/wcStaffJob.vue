@@ -38,19 +38,19 @@
         <el-table-column type="selection" width="55" />
         <el-table-column align="left" label="成员名称" prop="staffName" width="120"/>
         <el-table-column align="left" label="员工工号" prop="jobNum" width="120"/>
-        <el-table-column align="left" label="员工类型" prop="typeText" width="120" />
-        <el-table-column align="left" label="员工状态" prop="statusText" width="120" />
+        <el-table-column align="left" label="员工类型" prop="typeText" width="90" />
+        <el-table-column align="left" label="员工状态" prop="statusText" width="90" />
         <el-table-column align="left" label="部门信息" prop="department" width="200"/>
-        <el-table-column align="left" label="职务信息" prop="position" width="200"/>
-        <el-table-column align="left" label="职级类型" prop="rankTypeText" width="120" />
-        <el-table-column align="left" label="职级" prop="rankText" width="120" />
-        <el-table-column align="left" label="等级工资" prop="rankSalary" width="120" />
-        <el-table-column align="left" label="费用科目" prop="expenseAccountText" width="120" />
-        <el-table-column align="left" label="入职日期" width="180">
+        <el-table-column align="left" label="职务信息" prop="position" width="150"/>
+        <el-table-column align="left" label="职级类型" prop="rankTypeText" width="90" />
+        <el-table-column align="left" label="职级" prop="rankText" width="150" />
+        <el-table-column align="left" label="等级工资" prop="rankSalary" width="90" />
+        <el-table-column align="left" label="费用科目" prop="expenseAccountText" width="90" />
+        <el-table-column align="left" label="入职日期" width="100">
           <template #default="scope">{{ formatDate(scope.row.employmentDate) }}</template>
         </el-table-column>
-        <el-table-column align="left" label="试用期" prop="tryPeriodText" width="120" />
-        <el-table-column align="left" label="转正日期" width="180">
+        <el-table-column align="left" label="试用期" prop="tryPeriodText" width="90" />
+        <el-table-column align="left" label="转正日期" width="100">
          <template #default="scope">{{ formatDate(scope.row.formalDate) }}</template>
          </el-table-column>
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
@@ -227,6 +227,7 @@ const types = ref([
 ])
 
 const statusList = ref([
+  { label: '待入职', value: 0 },
   { label: '试用', value: 1 },
   { label: '正式', value: 2 },
   { label: '待离职', value: 3 },

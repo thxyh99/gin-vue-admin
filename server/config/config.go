@@ -38,7 +38,6 @@ func GetConfigInfo() CommonConfig {
 
 type CommonConfig struct {
 	StaffGender       []string //员工性别
-	StaffStatus       []string //员工状态
 	StaffIsLeader     []string //员工是否领导
 	IsMain            []string //是否主部门
 	Nation            []string //民族
@@ -59,12 +58,6 @@ var config = CommonConfig{
 		0: "未知",
 		1: "男",
 		2: "女",
-	},
-	StaffStatus: []string{
-		1: "已激活",
-		2: "已禁用",
-		4: "未激活",
-		5: "退出企业",
 	},
 	StaffIsLeader: []string{
 		0: "否",
@@ -177,6 +170,7 @@ var config = CommonConfig{
 		6: "劳务外包",
 	},
 	StaffJobStatus: []string{
+		0: "待入职",
 		1: "试用",
 		2: "正式",
 		3: "待离职",
