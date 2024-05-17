@@ -149,10 +149,10 @@ func (wcStaffJobService *WcStaffJobService) UpdateWcStaffJob(wcStaffJobRequest *
 	//return err
 }
 
-// GetWcStaffJob 根据ID获取工作信息记录
+// GetWcStaffJob 根据员工ID获取工作信息记录
 func (wcStaffJobService *WcStaffJobService) GetWcStaffJob(ID string) (newStaffJob weChat2.WcStaffJobResponse, err error) {
 	var staffJob weChat.WcStaffJob
-	err = global.GVA_DB.Where("id = ?", ID).First(&staffJob).Error
+	err = global.GVA_DB.Where("staff_id = ?", ID).First(&staffJob).Error
 	if err != nil {
 		return
 	}

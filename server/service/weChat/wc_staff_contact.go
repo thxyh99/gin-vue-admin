@@ -34,10 +34,10 @@ func (wcStaffContactService *WcStaffContactService) UpdateWcStaffContact(wcStaff
 	return err
 }
 
-// GetWcStaffContact 根据ID获取紧急联系人记录
+// GetWcStaffContact 根据员工ID获取紧急联系人记录
 func (wcStaffContactService *WcStaffContactService) GetWcStaffContact(ID string) (newStaffContact weChat2.WcStaffContactResponse, err error) {
 	var staffContact weChat.WcStaffContact
-	err = global.GVA_DB.Where("id = ?", ID).First(&staffContact).Error
+	err = global.GVA_DB.Where("staff_id = ?", ID).First(&staffContact).Error
 	if err != nil {
 		return
 	}

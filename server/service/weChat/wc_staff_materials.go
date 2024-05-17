@@ -34,10 +34,10 @@ func (wcStaffMaterialsService *WcStaffMaterialsService) UpdateWcStaffMaterials(w
 	return err
 }
 
-// GetWcStaffMaterials 根据ID获取证件材料记录
+// GetWcStaffMaterials 根据员工ID获取证件材料记录
 func (wcStaffMaterialsService *WcStaffMaterialsService) GetWcStaffMaterials(ID string) (newStaffMaterials weChat2.WcStaffMaterialsResponse, err error) {
 	var wcStaffMaterials weChat.WcStaffMaterials
-	err = global.GVA_DB.Where("id = ?", ID).First(&wcStaffMaterials).Error
+	err = global.GVA_DB.Where("staff_id = ?", ID).First(&wcStaffMaterials).Error
 	if err != nil {
 		return
 	}

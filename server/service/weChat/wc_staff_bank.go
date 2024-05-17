@@ -34,10 +34,10 @@ func (wcStaffBankService *WcStaffBankService) UpdateWcStaffBank(wcStaffBank weCh
 	return err
 }
 
-// GetWcStaffBank 根据ID获取银行卡信息记录
+// GetWcStaffBank 根据员工ID获取银行卡信息记录
 func (wcStaffBankService *WcStaffBankService) GetWcStaffBank(ID string) (newStaffBank weChat2.WcStaffBankResponse, err error) {
 	var staffBank weChat.WcStaffBank
-	err = global.GVA_DB.Where("id = ?", ID).First(&staffBank).Error
+	err = global.GVA_DB.Where("staff_id = ?", ID).First(&staffBank).Error
 	if err != nil {
 		return
 	}

@@ -101,7 +101,7 @@ export const getWcStaffList = (params) => {
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data query request.PageInfo true "分页获取账号信息列表"
+// @Param data query request.PageInfo true "分页获取账号信息列表(简单)"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /wcStaff/getSimpleStaffList [get]
 export const getSimpleStaffList = (params) => {

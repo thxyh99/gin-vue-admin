@@ -34,10 +34,10 @@ func (wcStaffEducationService *WcStaffEducationService) UpdateWcStaffEducation(w
 	return err
 }
 
-// GetWcStaffEducation 根据ID获取学历信息记录
+// GetWcStaffEducation 根据员工ID获取学历信息记录
 func (wcStaffEducationService *WcStaffEducationService) GetWcStaffEducation(ID string) (newStaffEducation weChat2.WcStaffEducationResponse, err error) {
 	var staffEducation weChat.WcStaffEducation
-	err = global.GVA_DB.Where("id = ?", ID).First(&staffEducation).Error
+	err = global.GVA_DB.Where("staff_id = ?", ID).First(&staffEducation).Error
 	if err != nil {
 		return
 	}

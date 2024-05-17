@@ -122,6 +122,63 @@ func (wcStaffApi *WcStaffApi) FindWcStaff(c *gin.Context) {
 	}
 }
 
+// ObtainEmployeeRoster 获取员工花名册
+// @Tags WcStaff
+// @Summary 获取员工花名册
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Param data query weChat.WcStaff true "获取员工花名册"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"查询成功"}"
+// @Router /wcStaff/obtainEmployeeRoster [get]
+func (wcStaffApi *WcStaffApi) ObtainEmployeeRoster(c *gin.Context) {
+	ID := c.Query("ID")
+	rewcStaff, err := wcStaffService.GetWcStaff(ID)
+	if err != nil {
+		global.GVA_LOG.Error("查询员工信息失败!", zap.Error(err))
+		response.FailWithMessage("查询员工信息失败", c)
+	}
+	rewcStaffJob, err := wcStaffJobService.GetWcStaffJob(ID)
+	if err != nil {
+		global.GVA_LOG.Error("查询工作信息失败!", zap.Error(err))
+		response.FailWithMessage("查询工作信息失败", c)
+	}
+	rewcStaffEducation, err := wcStaffEducationService.GetWcStaffEducation(ID)
+	if err != nil {
+		global.GVA_LOG.Error("查询学历信息失败!", zap.Error(err))
+		response.FailWithMessage("查询学历信息失败", c)
+	}
+	rewcStaffContact, err := wcStaffContactService.GetWcStaffContact(ID)
+	if err != nil {
+		global.GVA_LOG.Error("查询紧急联系人失败!", zap.Error(err))
+		response.FailWithMessage("查询紧急联系人失败", c)
+	}
+	rewcStaffBank, err := wcStaffBankService.GetWcStaffBank(ID)
+	if err != nil {
+		global.GVA_LOG.Error("查询银行卡信息失败!", zap.Error(err))
+		response.FailWithMessage("查询银行卡信息失败", c)
+	}
+	rewcStaffAgreement, err := wcStaffAgreementService.GetWcStaffAgreement(ID)
+	if err != nil {
+		global.GVA_LOG.Error("查询合同信息失败!", zap.Error(err))
+		response.FailWithMessage("查询合同信息失败", c)
+	}
+	rewcStaffMaterials, err := wcStaffMaterialsService.GetWcStaffMaterials(ID)
+	if err != nil {
+		global.GVA_LOG.Error("查询证件材料失败!", zap.Error(err))
+		response.FailWithMessage("查询证件材料失败", c)
+	}
+	response.OkWithData(gin.H{
+		"rewcStaff":          rewcStaff,
+		"rewcStaffJob":       rewcStaffJob,
+		"rewcStaffEducation": rewcStaffEducation,
+		"rewcStaffContact":   rewcStaffContact,
+		"rewcStaffBank":      rewcStaffBank,
+		"rewcStaffAgreement": rewcStaffAgreement,
+		"rewcStaffMaterials": rewcStaffMaterials,
+	}, c)
+}
+
 // GetWcStaffList 分页获取账号信息列表
 // @Tags WcStaff
 // @Summary 分页获取账号信息列表

@@ -493,7 +493,7 @@ const type = ref('')
 
 // 更新行
 const updateWcStaffJobFunc = async(row) => {
-    const res = await findWcStaffJob({ ID: row.ID })
+    const res = await findWcStaffJob({ ID: row.staffId })
     type.value = 'update'
     if (res.code === 0) {
         formData.value = res.data.rewcStaffJob
@@ -534,7 +534,7 @@ const openDetailShow = () => {
 // 打开详情
 const getDetails = async (row) => {
   // 打开弹窗
-  const res = await findWcStaffJob({ ID: row.ID })
+  const res = await findWcStaffJob({ ID: row.staffId })
   if (res.code === 0) {
     formData.value = res.data.rewcStaffJob
     openDetailShow()

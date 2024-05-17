@@ -261,7 +261,8 @@ import {
   deleteWcStaffByIds,
   updateWcStaff,
   findWcStaff,
-  getWcStaffList
+  getWcStaffList,
+  obtainEmployeeRoster
 } from '@/api/weChat/wcStaff'
 
 // 全量引入格式化工具 请按需保留
