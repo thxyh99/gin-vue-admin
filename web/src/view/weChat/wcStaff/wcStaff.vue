@@ -266,6 +266,8 @@ defineOptions({
   name: 'WcStaff'
 })
 
+const router = useRouter()
+
 const householdTypes = ref([
   { label: '本地城镇', value: 1 },
   { label: '本地农村', value: 2 },
@@ -813,7 +815,7 @@ const enterDialog = async () => {
 }
 
 const jumpRoute = (row) => {
-  router.push(`/layout/staff/roster?row=${row}`)
+  router.push(`/layout/staff/roster?id=${row.ID}`)
 }
 
 </script>

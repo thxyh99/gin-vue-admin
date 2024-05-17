@@ -111,3 +111,12 @@ export const getSimpleStaffList = (params) => {
     params
   })
 }
+
+
+export const getObtainEmployeeRoster = (params) => {
+  return service({
+    url: '/wcStaff/obtainEmployeeRoster',
+    method: 'get',
+    params
+  })
+}
