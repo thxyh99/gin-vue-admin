@@ -5,8 +5,8 @@
         <el-form-item label="转正标题:" prop="title">
           <el-input v-model="formData.title" :clearable="true"  placeholder="请输入转正标题" />
        </el-form-item>
-        <el-form-item label="姓名:" prop="staffName">
-          <el-input v-model="formData.staffName" :clearable="true"  placeholder="请输入姓名" />
+        <el-form-item label="员工ID:" prop="staffId">
+          <el-input v-model.number="formData.staffId" :clearable="true" placeholder="请输入" />
        </el-form-item>
         <el-form-item label="入职日期:" prop="employmentDate">
           <el-date-picker v-model="formData.employmentDate" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
@@ -16,14 +16,14 @@
           <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
         </el-select>
        </el-form-item>
-        <el-form-item label="原职位:" prop="jobPosition">
-        <el-select v-model="formData.jobPosition" placeholder="请选择" style="width:100%" :clearable="true">
-          <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+        <el-form-item label="原职位:" prop="sourcePosition">
+        <el-select v-model="formData.sourcePosition" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
         </el-select>
        </el-form-item>
-        <el-form-item label="原职级:" prop="jobLevel">
-        <el-select v-model="formData.jobLevel" placeholder="请选择" style="width:100%" :clearable="true">
-          <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+        <el-form-item label="原职级:" prop="sourceLevel">
+        <el-select v-model="formData.sourceLevel" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
         </el-select>
        </el-form-item>
         <el-form-item label="试用期(1:无试用期 2:1个月 3:2个月 4:3个月 5:4个月 6:5个月 7:6个月 0:其他):" prop="tryPeriod">
@@ -34,8 +34,8 @@
         <el-form-item label="是否是部门负责人:" prop="isMananger">
           <el-switch v-model="formData.isMananger" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
        </el-form-item>
-        <el-form-item label="附件:" prop="employementAttment">
-          <SelectFile v-model="formData.employementAttment" />
+        <el-form-item label="附件:" prop="attachment">
+          <el-input v-model="formData.attachment" :clearable="true"  placeholder="请输入附件" />
        </el-form-item>
         <el-form-item label="个人自我鉴定:" prop="selfOpinion">
           <el-input v-model="formData.selfOpinion" :clearable="true"  placeholder="请输入个人自我鉴定" />
@@ -43,29 +43,34 @@
         <el-form-item label="用人部门意见:" prop="tryOpinion">
           <el-input v-model="formData.tryOpinion" :clearable="true"  placeholder="请输入用人部门意见" />
        </el-form-item>
-        <el-form-item label="转正后工作职责:" prop="passResponsibilities">
-          <el-input v-model="formData.passResponsibilities" :clearable="true"  placeholder="请输入转正后工作职责" />
+        <el-form-item label="转正后工作职责:" prop="newResponsibilities">
+        <el-select v-model="formData.newResponsibilities" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in [255]" :key="item" :label="item" :value="item" />
+        </el-select>
        </el-form-item>
         <el-form-item label="转正时间:" prop="passDate">
-          <el-date-picker v-model="formData.passDate" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
-       </el-form-item>
-        <el-form-item label="转正后职位:" prop="passPosition">
-        <el-select v-model="formData.passPosition" placeholder="请选择" style="width:100%" :clearable="true">
+        <el-select v-model="formData.passDate" placeholder="请选择" style="width:100%" :clearable="true">
           <el-option v-for="item in []" :key="item" :label="item" :value="item" />
         </el-select>
        </el-form-item>
-        <el-form-item label="转正后职级:" prop="passJoblevel">
-        <el-select v-model="formData.passJoblevel" placeholder="请选择" style="width:100%" :clearable="true">
-          <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+        <el-form-item label="转正后职位:" prop="newPosition">
+        <el-select v-model="formData.newPosition" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
+        </el-select>
+       </el-form-item>
+        <el-form-item label="转正后职级:" prop="newJoblevel">
+        <el-select v-model="formData.newJoblevel" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
         </el-select>
        </el-form-item>
         <el-form-item label="提交意见:" prop="submitOpinion">
           <el-input v-model="formData.submitOpinion" :clearable="true"  placeholder="请输入提交意见" />
        </el-form-item>
-        <el-form-item label="状态:" prop="status">
-        <el-select v-model="formData.status" placeholder="请选择" style="width:100%" :clearable="true">
-          <el-option v-for="item in []" :key="item" :label="item" :value="item" />
-        </el-select>
+        <el-form-item label="OAID:" prop="oaId">
+          <el-input v-model="formData.oaId" :clearable="true"  placeholder="请输入OAID" />
+       </el-form-item>
+        <el-form-item label="OA状态:" prop="oaStatus">
+          <el-switch v-model="formData.oaStatus" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="save">保存</el-button>
@@ -92,7 +97,6 @@ import { getDictFunc } from '@/utils/format'
 import { useRoute, useRouter } from "vue-router"
 import { ElMessage } from 'element-plus'
 import { ref, reactive } from 'vue'
-import SelectFile from '@/components/selectFile/selectFile.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -100,19 +104,19 @@ const router = useRouter()
 const type = ref('')
 const formData = ref({
             title: '',
-            staffName: '',
+            staffId: 0,
             employmentDate: new Date(),
             isMananger: false,
-            employementAttment: [],
+            attachment: '',
             selfOpinion: '',
             tryOpinion: '',
-            passResponsibilities: '',
-            passDate: new Date(),
             submitOpinion: '',
+            oaId: '',
+            oaStatus: false,
         })
 // 验证规则
 const rule = reactive({
-               staffName : [{
+               staffId : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -127,12 +131,12 @@ const rule = reactive({
                    message: '',
                    trigger: ['input','blur'],
                }],
-               jobPosition : [{
+               sourcePosition : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                }],
-               jobLevel : [{
+               sourceLevel : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -147,7 +151,7 @@ const rule = reactive({
                    message: '',
                    trigger: ['input','blur'],
                }],
-               employementAttment : [{
+               attachment : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -162,7 +166,7 @@ const rule = reactive({
                    message: '',
                    trigger: ['input','blur'],
                }],
-               passResponsibilities : [{
+               newResponsibilities : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -172,12 +176,27 @@ const rule = reactive({
                    message: '',
                    trigger: ['input','blur'],
                }],
-               passPosition : [{
+               newPosition : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                }],
-               passJoblevel : [{
+               newJoblevel : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               submitOpinion : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               oaId : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               oaStatus : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],

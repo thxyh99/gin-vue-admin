@@ -5,8 +5,8 @@
         <el-form-item label="入职标题:" prop="title">
           <el-input v-model="formData.title" :clearable="true"  placeholder="请输入入职标题" />
        </el-form-item>
-        <el-form-item label="姓名:" prop="staffName">
-          <el-input v-model="formData.staffName" :clearable="true"  placeholder="请输入姓名" />
+        <el-form-item label="员工ID:" prop="staffId">
+          <el-input v-model.number="formData.staffId" :clearable="true" placeholder="请输入" />
        </el-form-item>
         <el-form-item label="入职日期:" prop="employmentDate">
           <el-date-picker v-model="formData.employmentDate" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
@@ -18,7 +18,7 @@
        </el-form-item>
         <el-form-item label="入职职位:" prop="jobPosition">
         <el-select v-model="formData.jobPosition" placeholder="请选择" style="width:100%" :clearable="true">
-          <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+          <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
         </el-select>
        </el-form-item>
         <el-form-item label="社保电脑号:" prop="socialNumber">
@@ -46,9 +46,7 @@
           <el-date-picker v-model="formData.birthday" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
        </el-form-item>
         <el-form-item label="籍贯:" prop="nativePlace">
-        <el-select v-model="formData.nativePlace" placeholder="请选择" style="width:100%" :clearable="true">
-          <el-option v-for="item in [255]" :key="item" :label="item" :value="item" />
-        </el-select>
+          <el-input v-model="formData.nativePlace" :clearable="true"  placeholder="请输入籍贯" />
        </el-form-item>
         <el-form-item label="民族:" prop="nationality">
         <el-select v-model="formData.nationality" placeholder="请选择" style="width:100%" :clearable="true">
@@ -86,7 +84,7 @@
           <el-date-picker v-model="formData.graduationDate" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
        </el-form-item>
         <el-form-item label="职称技能证书:" prop="certificate">
-           <SelectImage v-model="formData.certificate" multiple file-type="image"/>
+          <el-input v-model="formData.certificate" :clearable="true"  placeholder="请输入职称技能证书" />
        </el-form-item>
         <el-form-item label="身份证号码:" prop="idNumber">
           <el-input v-model="formData.idNumber" :clearable="true"  placeholder="请输入身份证号码" />
@@ -94,14 +92,14 @@
         <el-form-item label="身份证地址:" prop="idAddress">
           <el-input v-model="formData.idAddress" :clearable="true"  placeholder="请输入身份证地址" />
        </el-form-item>
-        <el-form-item label="银行账号:" prop="cardNumber">
-          <el-input v-model="formData.cardNumber" :clearable="true"  placeholder="请输入银行账号" />
+        <el-form-item label="银行账号:" prop="bankAccount">
+          <el-input v-model="formData.bankAccount" :clearable="true"  placeholder="请输入银行账号" />
        </el-form-item>
-        <el-form-item label="开户支行信息:" prop="bank">
-          <el-input v-model="formData.bank" :clearable="true"  placeholder="请输入开户支行信息" />
+        <el-form-item label="开户支行信息:" prop="bankName">
+          <el-input v-model="formData.bankName" :clearable="true"  placeholder="请输入开户支行信息" />
        </el-form-item>
-        <el-form-item label="本人联系微信:" prop="contantWechat">
-          <el-input v-model="formData.contantWechat" :clearable="true"  placeholder="请输入本人联系微信" />
+        <el-form-item label="本人联系微信:" prop="contactWechat">
+          <el-input v-model="formData.contactWechat" :clearable="true"  placeholder="请输入本人联系微信" />
        </el-form-item>
         <el-form-item label="手机:" prop="mobile">
           <el-input v-model="formData.mobile" :clearable="true"  placeholder="请输入手机" />
@@ -109,11 +107,13 @@
         <el-form-item label="常住地址:" prop="homeAddress">
           <el-input v-model="formData.homeAddress" :clearable="true"  placeholder="请输入常住地址" />
        </el-form-item>
-        <el-form-item label="证件资料附件上传:" prop="licenseAttment">
-           <SelectImage v-model="formData.licenseAttment" multiple file-type="image"/>
+        <el-form-item label="证件资料附件上传:" prop="licenseAttachment">
+          <el-input v-model="formData.licenseAttachment" :clearable="true"  placeholder="请输入证件资料附件上传" />
        </el-form-item>
         <el-form-item label="联系人关系(1:父母 2:配偶 3:子女 0:其他):" prop="relationShip">
-          <el-switch v-model="formData.relationShip" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
+        <el-select v-model="formData.relationShip" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+        </el-select>
        </el-form-item>
         <el-form-item label="紧急联系人姓名:" prop="relationName">
           <el-input v-model="formData.relationName" :clearable="true"  placeholder="请输入紧急联系人姓名" />
@@ -132,7 +132,7 @@
        </el-form-item>
         <el-form-item label="职级:" prop="jobLevel">
         <el-select v-model="formData.jobLevel" placeholder="请选择" style="width:100%" :clearable="true">
-          <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+          <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
         </el-select>
        </el-form-item>
         <el-form-item label="试用期(1:无试用期 2:1个月 3:2个月 4:3个月 5:4个月 6:5个月 7:6个月 0:其他):" prop="tryPeriod">
@@ -150,12 +150,15 @@
           <el-input v-model="formData.urgencyNotification" :clearable="true"  placeholder="请输入通知紧急程度" />
        </el-form-item>
         <el-form-item label="入职意见:" prop="onboardingOpinion">
-          <el-input v-model="formData.onboardingOpinion" :clearable="true"  placeholder="请输入入职意见" />
-       </el-form-item>
-        <el-form-item label="状态:" prop="status">
-        <el-select v-model="formData.status" placeholder="请选择" style="width:100%" :clearable="true">
-          <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+        <el-select v-model="formData.onboardingOpinion" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in [255]" :key="item" :label="item" :value="item" />
         </el-select>
+       </el-form-item>
+        <el-form-item label="OAID:" prop="oaId">
+          <el-input v-model="formData.oaId" :clearable="true"  placeholder="请输入OAID" />
+       </el-form-item>
+        <el-form-item label="OA状态:" prop="oaStatus">
+          <el-switch v-model="formData.oaStatus" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="save">保存</el-button>
@@ -182,7 +185,6 @@ import { getDictFunc } from '@/utils/format'
 import { useRoute, useRouter } from "vue-router"
 import { ElMessage } from 'element-plus'
 import { ref, reactive } from 'vue'
-import SelectImage from '@/components/selectImage/selectImage.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -190,26 +192,26 @@ const router = useRouter()
 const type = ref('')
 const formData = ref({
             title: '',
-            staffName: '',
+            staffId: 0,
             employmentDate: new Date(),
             socialNumber: '',
             accountNumber: '',
             birthday: new Date(),
+            nativePlace: '',
             height: 0,
             weight: 0,
             major: '',
             school: '',
             graduationDate: new Date(),
-            certificate: [],
+            certificate: '',
             idNumber: '',
             idAddress: '',
-            cardNumber: '',
-            bank: '',
-            contantWechat: '',
+            bankAccount: '',
+            bankName: '',
+            contactWechat: '',
             mobile: '',
             homeAddress: '',
-            licenseAttment: [],
-            relationShip: false,
+            licenseAttachment: '',
             relationName: '',
             relationMobile: '',
             relationAddress: '',
@@ -218,16 +220,12 @@ const formData = ref({
             employingOpinion: '',
             humanOpinion: '',
             urgencyNotification: '',
-            onboardingOpinion: '',
+            oaId: '',
+            oaStatus: false,
         })
 // 验证规则
 const rule = reactive({
-               title : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               }],
-               staffName : [{
+               staffId : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -287,6 +285,16 @@ const rule = reactive({
                    message: '',
                    trigger: ['input','blur'],
                }],
+               height : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               weight : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
                marriage : [{
                    required: true,
                    message: '',
@@ -332,12 +340,17 @@ const rule = reactive({
                    message: '',
                    trigger: ['input','blur'],
                }],
-               cardNumber : [{
+               bankAccount : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                }],
-               bank : [{
+               bankName : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               contactWechat : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -352,7 +365,37 @@ const rule = reactive({
                    message: '',
                    trigger: ['input','blur'],
                }],
-               licenseAttment : [{
+               licenseAttachment : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               relationShip : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               relationName : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               relationMobile : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               relationAddress : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               isCeopass : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               isBodychecknormal : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -367,7 +410,32 @@ const rule = reactive({
                    message: '',
                    trigger: ['input','blur'],
                }],
-               status : [{
+               employingOpinion : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               humanOpinion : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               urgencyNotification : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               onboardingOpinion : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               oaId : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               oaStatus : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],

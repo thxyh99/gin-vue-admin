@@ -23,10 +23,6 @@
       </el-form>
     </div>
     <div class="gva-table-box">
-        <div class="gva-btn-list">
-            <el-button type="primary" icon="plus" @click="openDialog">新增</el-button>
-            <el-button icon="delete" style="margin-left: 10px;" :disabled="!multipleSelection.length" @click="onDelete">删除</el-button>
-        </div>
         <el-table
         ref="multipleTable"
         style="width: 100%"
@@ -43,7 +39,7 @@
         </el-table-column>
         
         <el-table-column align="left" label="入职标题" prop="title" width="120" />
-        <el-table-column sortable align="left" label="姓名" prop="staffName" width="120" />
+        <el-table-column align="left" label="员工ID" prop="staffId" width="120" />
          <el-table-column sortable align="left" label="入职日期" width="180">
             <template #default="scope">{{ formatDate(scope.row.employmentDate) }}</template>
          </el-table-column>
@@ -51,7 +47,7 @@
         <el-table-column sortable align="left" label="入职职位" prop="jobPosition" width="120" />
         <el-table-column align="left" label="社保电脑号" prop="socialNumber" width="120" />
         <el-table-column align="left" label="公积金账号" prop="accountNumber" width="120" />
-        <el-table-column sortable align="left" label="户籍类型" prop="householdType" width="120" />
+        <el-table-column align="left" label="户籍类型" prop="householdType" width="120" />
         <el-table-column sortable align="left" label="社保公积金缴纳地" prop="paymentPlace" width="120" />
         <el-table-column sortable align="left" label="性别(0未知1男2女)" prop="gender" width="120" />
          <el-table-column sortable align="left" label="出生年月" width="180">
@@ -64,35 +60,21 @@
         <el-table-column sortable align="left" label="婚否(1:已婚 2:未婚 3:其他)" prop="marriage" width="120" />
         <el-table-column sortable align="left" label="政治面貌(1:团员 2:党员 3:群众 0:其他)" prop="politicalOutlook" width="120" />
         <el-table-column sortable align="left" label="学历(1:小学 2:初中 3:高中 4:中专 5:大专 6:本科 7:硕士 8:博士 0:其他)" prop="education" width="120" />
-        <el-table-column sortable align="left" label="专业" prop="major" width="120" />
+        <el-table-column align="left" label="专业" prop="major" width="120" />
         <el-table-column align="left" label="毕业院校" prop="school" width="120" />
          <el-table-column align="left" label="毕业时间" width="180">
             <template #default="scope">{{ formatDate(scope.row.graduationDate) }}</template>
          </el-table-column>
-           <el-table-column label="职称技能证书" width="200">
-              <template #default="scope">
-                 <div class="multiple-img-box">
-                    <el-image v-for="(item,index) in scope.row.certificate" :key="index" style="width: 80px; height: 80px" :src="getUrl(item)" fit="cover"/>
-                </div>
-              </template>
-           </el-table-column>
+        <el-table-column align="left" label="职称技能证书" prop="certificate" width="120" />
         <el-table-column align="left" label="身份证号码" prop="idNumber" width="120" />
         <el-table-column align="left" label="身份证地址" prop="idAddress" width="120" />
-        <el-table-column align="left" label="银行账号" prop="cardNumber" width="120" />
-        <el-table-column align="left" label="开户支行信息" prop="bank" width="120" />
-        <el-table-column align="left" label="本人联系微信" prop="contantWechat" width="120" />
+        <el-table-column align="left" label="银行账号" prop="bankAccount" width="120" />
+        <el-table-column align="left" label="开户支行信息" prop="bankName" width="120" />
+        <el-table-column align="left" label="本人联系微信" prop="contactWechat" width="120" />
         <el-table-column align="left" label="手机" prop="mobile" width="120" />
         <el-table-column align="left" label="常住地址" prop="homeAddress" width="120" />
-           <el-table-column label="证件资料附件上传" width="200">
-              <template #default="scope">
-                 <div class="multiple-img-box">
-                    <el-image v-for="(item,index) in scope.row.licenseAttment" :key="index" style="width: 80px; height: 80px" :src="getUrl(item)" fit="cover"/>
-                </div>
-              </template>
-           </el-table-column>
-        <el-table-column align="left" label="联系人关系(1:父母 2:配偶 3:子女 0:其他)" prop="relationShip" width="120">
-            <template #default="scope">{{ formatBoolean(scope.row.relationShip) }}</template>
-        </el-table-column>
+        <el-table-column align="left" label="证件资料附件上传" prop="licenseAttachment" width="120" />
+        <el-table-column align="left" label="联系人关系(1:父母 2:配偶 3:子女 0:其他)" prop="relationShip" width="120" />
         <el-table-column align="left" label="紧急联系人姓名" prop="relationName" width="120" />
         <el-table-column align="left" label="紧急联系人电话" prop="relationMobile" width="120" />
         <el-table-column align="left" label="联系人常住地址" prop="relationAddress" width="120" />
@@ -103,12 +85,15 @@
             <template #default="scope">{{ formatBoolean(scope.row.isBodychecknormal) }}</template>
         </el-table-column>
         <el-table-column sortable align="left" label="职级" prop="jobLevel" width="120" />
-        <el-table-column align="left" label="试用期(1:无试用期 2:1个月 3:2个月 4:3个月 5:4个月 6:5个月 7:6个月 0:其他)" prop="tryPeriod" width="120" />
+        <el-table-column sortable align="left" label="试用期(1:无试用期 2:1个月 3:2个月 4:3个月 5:4个月 6:5个月 7:6个月 0:其他)" prop="tryPeriod" width="120" />
         <el-table-column align="left" label="用人部门意见" prop="employingOpinion" width="120" />
         <el-table-column align="left" label="人资部意见" prop="humanOpinion" width="120" />
         <el-table-column align="left" label="通知紧急程度" prop="urgencyNotification" width="120" />
         <el-table-column align="left" label="入职意见" prop="onboardingOpinion" width="120" />
-        <el-table-column sortable align="left" label="状态" prop="status" width="120" />
+        <el-table-column align="left" label="OAID" prop="oaId" width="120" />
+        <el-table-column align="left" label="OA状态" prop="oaStatus" width="120">
+            <template #default="scope">{{ formatBoolean(scope.row.oaStatus) }}</template>
+        </el-table-column>
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -147,8 +132,8 @@
             <el-form-item label="入职标题:"  prop="title" >
               <el-input v-model="formData.title" :clearable="true"  placeholder="请输入入职标题" />
             </el-form-item>
-            <el-form-item label="姓名:"  prop="staffName" >
-              <el-input v-model="formData.staffName" :clearable="true"  placeholder="请输入姓名" />
+            <el-form-item label="员工ID:"  prop="staffId" >
+              <el-input v-model.number="formData.staffId" :clearable="true" placeholder="请输入员工ID" />
             </el-form-item>
             <el-form-item label="入职日期:"  prop="employmentDate" >
               <el-date-picker v-model="formData.employmentDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
@@ -160,7 +145,7 @@
             </el-form-item>
             <el-form-item label="入职职位:"  prop="jobPosition" >
                 <el-select v-model="formData.jobPosition" placeholder="请选择入职职位" style="width:100%" :clearable="true" >
-                   <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+                   <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
                 </el-select>
             </el-form-item>
             <el-form-item label="社保电脑号:"  prop="socialNumber" >
@@ -188,9 +173,7 @@
               <el-date-picker v-model="formData.birthday" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
             </el-form-item>
             <el-form-item label="籍贯:"  prop="nativePlace" >
-                <el-select v-model="formData.nativePlace" placeholder="请选择籍贯" style="width:100%" :clearable="true" >
-                   <el-option v-for="item in [255]" :key="item" :label="item" :value="item" />
-                </el-select>
+              <el-input v-model="formData.nativePlace" :clearable="true"  placeholder="请输入籍贯" />
             </el-form-item>
             <el-form-item label="民族:"  prop="nationality" >
                 <el-select v-model="formData.nationality" placeholder="请选择民族" style="width:100%" :clearable="true" >
@@ -228,11 +211,7 @@
               <el-date-picker v-model="formData.graduationDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
             </el-form-item>
             <el-form-item label="职称技能证书:"  prop="certificate" >
-                <SelectImage
-                 multiple
-                 v-model="formData.certificate"
-                 file-type="image"
-                 />
+              <el-input v-model="formData.certificate" :clearable="true"  placeholder="请输入职称技能证书" />
             </el-form-item>
             <el-form-item label="身份证号码:"  prop="idNumber" >
               <el-input v-model="formData.idNumber" :clearable="true"  placeholder="请输入身份证号码" />
@@ -240,14 +219,14 @@
             <el-form-item label="身份证地址:"  prop="idAddress" >
               <el-input v-model="formData.idAddress" :clearable="true"  placeholder="请输入身份证地址" />
             </el-form-item>
-            <el-form-item label="银行账号:"  prop="cardNumber" >
-              <el-input v-model="formData.cardNumber" :clearable="true"  placeholder="请输入银行账号" />
+            <el-form-item label="银行账号:"  prop="bankAccount" >
+              <el-input v-model="formData.bankAccount" :clearable="true"  placeholder="请输入银行账号" />
             </el-form-item>
-            <el-form-item label="开户支行信息:"  prop="bank" >
-              <el-input v-model="formData.bank" :clearable="true"  placeholder="请输入开户支行信息" />
+            <el-form-item label="开户支行信息:"  prop="bankName" >
+              <el-input v-model="formData.bankName" :clearable="true"  placeholder="请输入开户支行信息" />
             </el-form-item>
-            <el-form-item label="本人联系微信:"  prop="contantWechat" >
-              <el-input v-model="formData.contantWechat" :clearable="true"  placeholder="请输入本人联系微信" />
+            <el-form-item label="本人联系微信:"  prop="contactWechat" >
+              <el-input v-model="formData.contactWechat" :clearable="true"  placeholder="请输入本人联系微信" />
             </el-form-item>
             <el-form-item label="手机:"  prop="mobile" >
               <el-input v-model="formData.mobile" :clearable="true"  placeholder="请输入手机" />
@@ -255,15 +234,13 @@
             <el-form-item label="常住地址:"  prop="homeAddress" >
               <el-input v-model="formData.homeAddress" :clearable="true"  placeholder="请输入常住地址" />
             </el-form-item>
-            <el-form-item label="证件资料附件上传:"  prop="licenseAttment" >
-                <SelectImage
-                 multiple
-                 v-model="formData.licenseAttment"
-                 file-type="image"
-                 />
+            <el-form-item label="证件资料附件上传:"  prop="licenseAttachment" >
+              <el-input v-model="formData.licenseAttachment" :clearable="true"  placeholder="请输入证件资料附件上传" />
             </el-form-item>
             <el-form-item label="联系人关系(1:父母 2:配偶 3:子女 0:其他):"  prop="relationShip" >
-              <el-switch v-model="formData.relationShip" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
+                <el-select v-model="formData.relationShip" placeholder="请选择联系人关系(1:父母 2:配偶 3:子女 0:其他)" style="width:100%" :clearable="true" >
+                   <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+                </el-select>
             </el-form-item>
             <el-form-item label="紧急联系人姓名:"  prop="relationName" >
               <el-input v-model="formData.relationName" :clearable="true"  placeholder="请输入紧急联系人姓名" />
@@ -282,7 +259,7 @@
             </el-form-item>
             <el-form-item label="职级:"  prop="jobLevel" >
                 <el-select v-model="formData.jobLevel" placeholder="请选择职级" style="width:100%" :clearable="true" >
-                   <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+                   <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
                 </el-select>
             </el-form-item>
             <el-form-item label="试用期(1:无试用期 2:1个月 3:2个月 4:3个月 5:4个月 6:5个月 7:6个月 0:其他):"  prop="tryPeriod" >
@@ -300,12 +277,15 @@
               <el-input v-model="formData.urgencyNotification" :clearable="true"  placeholder="请输入通知紧急程度" />
             </el-form-item>
             <el-form-item label="入职意见:"  prop="onboardingOpinion" >
-              <el-input v-model="formData.onboardingOpinion" :clearable="true"  placeholder="请输入入职意见" />
-            </el-form-item>
-            <el-form-item label="状态:"  prop="status" >
-                <el-select v-model="formData.status" placeholder="请选择状态" style="width:100%" :clearable="true" >
-                   <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+                <el-select v-model="formData.onboardingOpinion" placeholder="请选择入职意见" style="width:100%" :clearable="true" >
+                   <el-option v-for="item in [255]" :key="item" :label="item" :value="item" />
                 </el-select>
+            </el-form-item>
+            <el-form-item label="OAID:"  prop="oaId" >
+              <el-input v-model="formData.oaId" :clearable="true"  placeholder="请输入OAID" />
+            </el-form-item>
+            <el-form-item label="OA状态:"  prop="oaStatus" >
+              <el-switch v-model="formData.oaStatus" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
             </el-form-item>
           </el-form>
     </el-drawer>
@@ -320,8 +300,8 @@
                 <el-descriptions-item label="入职标题">
                         {{ formData.title }}
                 </el-descriptions-item>
-                <el-descriptions-item label="姓名">
-                        {{ formData.staffName }}
+                <el-descriptions-item label="员工ID">
+                        {{ formData.staffId }}
                 </el-descriptions-item>
                 <el-descriptions-item label="入职日期">
                       {{ formatDate(formData.employmentDate) }}
@@ -381,7 +361,7 @@
                       {{ formatDate(formData.graduationDate) }}
                 </el-descriptions-item>
                 <el-descriptions-item label="职称技能证书">
-                        <el-image style="width: 50px; height: 50px; margin-right: 10px" :preview-src-list="ReturnArrImg(formData.certificate)" :initial-index="index" v-for="(item,index) in formData.certificate" :key="index" :src="getUrl(item)" fit="cover" />
+                        {{ formData.certificate }}
                 </el-descriptions-item>
                 <el-descriptions-item label="身份证号码">
                         {{ formData.idNumber }}
@@ -390,13 +370,13 @@
                         {{ formData.idAddress }}
                 </el-descriptions-item>
                 <el-descriptions-item label="银行账号">
-                        {{ formData.cardNumber }}
+                        {{ formData.bankAccount }}
                 </el-descriptions-item>
                 <el-descriptions-item label="开户支行信息">
-                        {{ formData.bank }}
+                        {{ formData.bankName }}
                 </el-descriptions-item>
                 <el-descriptions-item label="本人联系微信">
-                        {{ formData.contantWechat }}
+                        {{ formData.contactWechat }}
                 </el-descriptions-item>
                 <el-descriptions-item label="手机">
                         {{ formData.mobile }}
@@ -405,10 +385,10 @@
                         {{ formData.homeAddress }}
                 </el-descriptions-item>
                 <el-descriptions-item label="证件资料附件上传">
-                        <el-image style="width: 50px; height: 50px; margin-right: 10px" :preview-src-list="ReturnArrImg(formData.licenseAttment)" :initial-index="index" v-for="(item,index) in formData.licenseAttment" :key="index" :src="getUrl(item)" fit="cover" />
+                        {{ formData.licenseAttachment }}
                 </el-descriptions-item>
                 <el-descriptions-item label="联系人关系(1:父母 2:配偶 3:子女 0:其他)">
-                    {{ formatBoolean(formData.relationShip) }}
+                        {{ formData.relationShip }}
                 </el-descriptions-item>
                 <el-descriptions-item label="紧急联系人姓名">
                         {{ formData.relationName }}
@@ -443,8 +423,11 @@
                 <el-descriptions-item label="入职意见">
                         {{ formData.onboardingOpinion }}
                 </el-descriptions-item>
-                <el-descriptions-item label="状态">
-                        {{ formData.status }}
+                <el-descriptions-item label="OAID">
+                        {{ formData.oaId }}
+                </el-descriptions-item>
+                <el-descriptions-item label="OA状态">
+                    {{ formatBoolean(formData.oaStatus) }}
                 </el-descriptions-item>
         </el-descriptions>
     </el-drawer>
@@ -460,9 +443,6 @@ import {
   findWcStaffEmploymentApplication,
   getWcStaffEmploymentApplicationList
 } from '@/api/employee/wcStaffEmploymentApplication'
-import { getUrl } from '@/utils/image'
-// 图片选择组件
-import SelectImage from '@/components/selectImage/selectImage.vue'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
@@ -476,26 +456,26 @@ defineOptions({
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
         title: '',
-        staffName: '',
+        staffId: 0,
         employmentDate: new Date(),
         socialNumber: '',
         accountNumber: '',
         birthday: new Date(),
+        nativePlace: '',
         height: 0,
         weight: 0,
         major: '',
         school: '',
         graduationDate: new Date(),
-        certificate: [],
+        certificate: '',
         idNumber: '',
         idAddress: '',
-        cardNumber: '',
-        bank: '',
-        contantWechat: '',
+        bankAccount: '',
+        bankName: '',
+        contactWechat: '',
         mobile: '',
         homeAddress: '',
-        licenseAttment: [],
-        relationShip: false,
+        licenseAttachment: '',
         relationName: '',
         relationMobile: '',
         relationAddress: '',
@@ -504,33 +484,18 @@ const formData = ref({
         employingOpinion: '',
         humanOpinion: '',
         urgencyNotification: '',
-        onboardingOpinion: '',
+        oaId: '',
+        oaStatus: false,
         })
 
 
 // 验证规则
 const rule = reactive({
-               title : [{
+               staffId : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
-              ],
-               staffName : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
               ],
                employmentDate : [{
                    required: true,
@@ -601,8 +566,25 @@ const rule = reactive({
                    message: '',
                    trigger: ['input','blur'],
                },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
               ],
                nationality : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
+               height : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
+               weight : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -659,6 +641,11 @@ const rule = reactive({
                    message: '',
                    trigger: ['input','blur'],
                },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
               ],
                idNumber : [{
                    required: true,
@@ -682,7 +669,7 @@ const rule = reactive({
                    trigger: ['input', 'blur'],
               }
               ],
-               cardNumber : [{
+               bankAccount : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -693,7 +680,18 @@ const rule = reactive({
                    trigger: ['input', 'blur'],
               }
               ],
-               bank : [{
+               bankName : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
+              ],
+               contactWechat : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -726,7 +724,63 @@ const rule = reactive({
                    trigger: ['input', 'blur'],
               }
               ],
-               licenseAttment : [{
+               licenseAttachment : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
+              ],
+               relationShip : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
+               relationName : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
+              ],
+               relationMobile : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
+              ],
+               relationAddress : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
+              ],
+               isCeopass : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
+               isBodychecknormal : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -744,7 +798,57 @@ const rule = reactive({
                    trigger: ['input','blur'],
                },
               ],
-               status : [{
+               employingOpinion : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
+              ],
+               humanOpinion : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
+              ],
+               urgencyNotification : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
+              ],
+               onboardingOpinion : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
+               oaId : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
+              ],
+               oaStatus : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -780,11 +884,9 @@ const searchInfo = ref({})
 // 排序
 const sortChange = ({ prop, order }) => {
   const sortMap = {
-            staffName: 'staff_name',
             employmentDate: 'employment_date',
             employmentDepartment: 'employment_department',
             jobPosition: 'job_position',
-            householdType: 'household_type',
             paymentPlace: 'payment_place',
             gender: 'gender',
             birthday: 'birthday',
@@ -793,9 +895,8 @@ const sortChange = ({ prop, order }) => {
             marriage: 'marriage',
             politicalOutlook: 'political_outlook',
             education: 'education',
-            major: 'major',
             jobLevel: 'job_level',
-            status: 'status',
+            tryPeriod: 'try_period',
   }
 
   let sort = sortMap[prop]
@@ -820,14 +921,14 @@ const onSubmit = () => {
     if (!valid) return
     page.value = 1
     pageSize.value = 10
-    if (searchInfo.value.relationShip === ""){
-        searchInfo.value.relationShip=null
-    }
     if (searchInfo.value.isCeopass === ""){
         searchInfo.value.isCeopass=null
     }
     if (searchInfo.value.isBodychecknormal === ""){
         searchInfo.value.isBodychecknormal=null
+    }
+    if (searchInfo.value.oaStatus === ""){
+        searchInfo.value.oaStatus=null
     }
     getTableData()
   })
@@ -978,24 +1079,26 @@ const closeDetailShow = () => {
   detailShow.value = false
   formData.value = {
           title: '',
-          staffName: '',
+          staffId: 0,
           employmentDate: new Date(),
           socialNumber: '',
           accountNumber: '',
           birthday: new Date(),
+          nativePlace: '',
           height: 0,
           weight: 0,
           major: '',
           school: '',
           graduationDate: new Date(),
+          certificate: '',
           idNumber: '',
           idAddress: '',
-          cardNumber: '',
-          bank: '',
-          contantWechat: '',
+          bankAccount: '',
+          bankName: '',
+          contactWechat: '',
           mobile: '',
           homeAddress: '',
-          relationShip: false,
+          licenseAttachment: '',
           relationName: '',
           relationMobile: '',
           relationAddress: '',
@@ -1004,7 +1107,8 @@ const closeDetailShow = () => {
           employingOpinion: '',
           humanOpinion: '',
           urgencyNotification: '',
-          onboardingOpinion: '',
+          oaId: '',
+          oaStatus: false,
           }
 }
 
@@ -1020,24 +1124,26 @@ const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
         title: '',
-        staffName: '',
+        staffId: 0,
         employmentDate: new Date(),
         socialNumber: '',
         accountNumber: '',
         birthday: new Date(),
+        nativePlace: '',
         height: 0,
         weight: 0,
         major: '',
         school: '',
         graduationDate: new Date(),
+        certificate: '',
         idNumber: '',
         idAddress: '',
-        cardNumber: '',
-        bank: '',
-        contantWechat: '',
+        bankAccount: '',
+        bankName: '',
+        contactWechat: '',
         mobile: '',
         homeAddress: '',
-        relationShip: false,
+        licenseAttachment: '',
         relationName: '',
         relationMobile: '',
         relationAddress: '',
@@ -1046,7 +1152,8 @@ const closeDialog = () => {
         employingOpinion: '',
         humanOpinion: '',
         urgencyNotification: '',
-        onboardingOpinion: '',
+        oaId: '',
+        oaStatus: false,
         }
 }
 // 弹窗确定

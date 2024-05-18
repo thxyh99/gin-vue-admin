@@ -42,37 +42,21 @@
             <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
         </el-table-column>
         
-        <el-table-column align="left" label="离职标题" prop="title" width="120" />
+        <el-table-column align="left" label="调动标题" prop="title" width="120" />
         <el-table-column align="left" label="员工ID" prop="staffId" width="120" />
-         <el-table-column sortable align="left" label="解除日期" width="180">
-            <template #default="scope">{{ formatDate(scope.row.leaveDate) }}</template>
+         <el-table-column sortable align="left" label="生效日期" width="180">
+            <template #default="scope">{{ formatDate(scope.row.effectiveDate) }}</template>
          </el-table-column>
-        <el-table-column sortable align="left" label="所属部门" prop="jobDepartment" width="120" />
-        <el-table-column sortable align="left" label="原职位" prop="leaveType" width="120" />
-        <el-table-column align="left" label="事由" prop="leaveResult" width="120" />
-                    <el-table-column label="申请表" width="200">
-                        <template #default="scope">
-                             <div class="file-list">
-                               <el-tag v-for="file in scope.row.attachment" :key="file.uid">{{file.name}}</el-tag>
-                             </div>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="交接清单" width="200">
-                        <template #default="scope">
-                             <div class="file-list">
-                               <el-tag v-for="file in scope.row.checkList" :key="file.uid">{{file.name}}</el-tag>
-                             </div>
-                        </template>
-                    </el-table-column>
-        <el-table-column align="left" label="是否开具离职证明" prop="isLeave" width="120">
-            <template #default="scope">{{ formatBoolean(scope.row.isLeave) }}</template>
-        </el-table-column>
-        <el-table-column align="left" label="是否入住公司宿舍" prop="isHome" width="120">
-            <template #default="scope">{{ formatBoolean(scope.row.isHome) }}</template>
-        </el-table-column>
-        <el-table-column align="left" label="宿舍所在地" prop="dormLocation" width="120" />
-        <el-table-column align="left" label="房间门牌号" prop="roomNum" width="120" />
-        <el-table-column align="left" label="提交意见" prop="submitOpinion" width="120" />
+        <el-table-column sortable align="left" label="调动前部门" prop="sourceDepartment" width="120" />
+        <el-table-column sortable align="left" label="调动后部门" prop="newDepartment2" width="120" />
+        <el-table-column sortable align="left" label="调动前岗位" prop="sourcePosition" width="120" />
+        <el-table-column sortable align="left" label="调动前岗位" prop="newPosition" width="120" />
+        <el-table-column sortable align="left" label="调动前职级" prop="sourceJoblevel" width="120" />
+        <el-table-column sortable align="left" label="调动后职级" prop="newJoblevel" width="120" />
+        <el-table-column sortable align="left" label="调动前上级" prop="sourceManager" width="120" />
+        <el-table-column sortable align="left" label="调动后上级" prop="newManager" width="120" />
+        <el-table-column align="left" label="备注" prop="memo" width="120" />
+        <el-table-column align="left" label="附件" prop="attachment" width="120" />
         <el-table-column align="left" label="OAID" prop="oaId" width="120" />
         <el-table-column align="left" label="OA状态" prop="oaStatus" width="120">
             <template #default="scope">{{ formatBoolean(scope.row.oaStatus) }}</template>
@@ -83,7 +67,7 @@
                 <el-icon style="margin-right: 5px"><InfoFilled /></el-icon>
                 查看详情
             </el-button>
-            <el-button type="primary" link icon="edit" class="table-button" @click="updateWcStaffLeaveApplicationFunc(scope.row)">变更</el-button>
+            <el-button type="primary" link icon="edit" class="table-button" @click="updateWcStaffAjustlevelApplicationFunc(scope.row)">变更</el-button>
             <el-button type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>
             </template>
         </el-table-column>
@@ -112,48 +96,60 @@
             </template>
 
           <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
-            <el-form-item label="离职标题:"  prop="title" >
-              <el-input v-model="formData.title" :clearable="true"  placeholder="请输入离职标题" />
+            <el-form-item label="调动标题:"  prop="title" >
+              <el-input v-model="formData.title" :clearable="true"  placeholder="请输入调动标题" />
             </el-form-item>
             <el-form-item label="员工ID:"  prop="staffId" >
               <el-input v-model.number="formData.staffId" :clearable="true" placeholder="请输入员工ID" />
             </el-form-item>
-            <el-form-item label="解除日期:"  prop="leaveDate" >
-              <el-date-picker v-model="formData.leaveDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
+            <el-form-item label="生效日期:"  prop="effectiveDate" >
+              <el-date-picker v-model="formData.effectiveDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
             </el-form-item>
-            <el-form-item label="所属部门:"  prop="jobDepartment" >
-                <el-select v-model="formData.jobDepartment" placeholder="请选择所属部门" style="width:100%" :clearable="true" >
+            <el-form-item label="调动前部门:"  prop="sourceDepartment" >
+                <el-select v-model="formData.sourceDepartment" placeholder="请选择调动前部门" style="width:100%" :clearable="true" >
                    <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
                 </el-select>
             </el-form-item>
-            <el-form-item label="原职位:"  prop="leaveType" >
-                <el-select v-model="formData.leaveType" placeholder="请选择原职位" style="width:100%" :clearable="true" >
-                   <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+            <el-form-item label="调动后部门:"  prop="newDepartment2" >
+                <el-select v-model="formData.newDepartment2" placeholder="请选择调动后部门" style="width:100%" :clearable="true" >
+                   <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
                 </el-select>
             </el-form-item>
-            <el-form-item label="事由:"  prop="leaveResult" >
-              <el-input v-model="formData.leaveResult" :clearable="true"  placeholder="请输入事由" />
+            <el-form-item label="调动前岗位:"  prop="sourcePosition" >
+                <el-select v-model="formData.sourcePosition" placeholder="请选择调动前岗位" style="width:100%" :clearable="true" >
+                   <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
+                </el-select>
             </el-form-item>
-            <el-form-item label="申请表:"  prop="attachment" >
-                <SelectFile v-model="formData.attachment" />
+            <el-form-item label="调动前岗位:"  prop="newPosition" >
+                <el-select v-model="formData.newPosition" placeholder="请选择调动前岗位" style="width:100%" :clearable="true" >
+                   <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
+                </el-select>
             </el-form-item>
-            <el-form-item label="交接清单:"  prop="checkList" >
-                <SelectFile v-model="formData.checkList" />
+            <el-form-item label="调动前职级:"  prop="sourceJoblevel" >
+                <el-select v-model="formData.sourceJoblevel" placeholder="请选择调动前职级" style="width:100%" :clearable="true" >
+                   <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
+                </el-select>
             </el-form-item>
-            <el-form-item label="是否开具离职证明:"  prop="isLeave" >
-              <el-switch v-model="formData.isLeave" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
+            <el-form-item label="调动后职级:"  prop="newJoblevel" >
+                <el-select v-model="formData.newJoblevel" placeholder="请选择调动后职级" style="width:100%" :clearable="true" >
+                   <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
+                </el-select>
             </el-form-item>
-            <el-form-item label="是否入住公司宿舍:"  prop="isHome" >
-              <el-switch v-model="formData.isHome" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
+            <el-form-item label="调动前上级:"  prop="sourceManager" >
+                <el-select v-model="formData.sourceManager" placeholder="请选择调动前上级" style="width:100%" :clearable="true" >
+                   <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
+                </el-select>
             </el-form-item>
-            <el-form-item label="宿舍所在地:"  prop="dormLocation" >
-              <el-input v-model="formData.dormLocation" :clearable="true"  placeholder="请输入宿舍所在地" />
+            <el-form-item label="调动后上级:"  prop="newManager" >
+                <el-select v-model="formData.newManager" placeholder="请选择调动后上级" style="width:100%" :clearable="true" >
+                   <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
+                </el-select>
             </el-form-item>
-            <el-form-item label="房间门牌号:"  prop="roomNum" >
-              <el-input v-model="formData.roomNum" :clearable="true"  placeholder="请输入房间门牌号" />
+            <el-form-item label="备注:"  prop="memo" >
+              <el-input v-model="formData.memo" :clearable="true"  placeholder="请输入备注" />
             </el-form-item>
-            <el-form-item label="提交意见:"  prop="submitOpinion" >
-              <el-input v-model="formData.submitOpinion" :clearable="true"  placeholder="请输入提交意见" />
+            <el-form-item label="附件:"  prop="attachment" >
+              <el-input v-model="formData.attachment" :clearable="true"  placeholder="请输入附件" />
             </el-form-item>
             <el-form-item label="OAID:"  prop="oaId" >
               <el-input v-model="formData.oaId" :clearable="true"  placeholder="请输入OAID" />
@@ -171,54 +167,44 @@
              </div>
          </template>
         <el-descriptions :column="1" border>
-                <el-descriptions-item label="离职标题">
+                <el-descriptions-item label="调动标题">
                         {{ formData.title }}
                 </el-descriptions-item>
                 <el-descriptions-item label="员工ID">
                         {{ formData.staffId }}
                 </el-descriptions-item>
-                <el-descriptions-item label="解除日期">
-                      {{ formatDate(formData.leaveDate) }}
+                <el-descriptions-item label="生效日期">
+                      {{ formatDate(formData.effectiveDate) }}
                 </el-descriptions-item>
-                <el-descriptions-item label="所属部门">
-                        {{ formData.jobDepartment }}
+                <el-descriptions-item label="调动前部门">
+                        {{ formData.sourceDepartment }}
                 </el-descriptions-item>
-                <el-descriptions-item label="原职位">
-                        {{ formData.leaveType }}
+                <el-descriptions-item label="调动后部门">
+                        {{ formData.newDepartment2 }}
                 </el-descriptions-item>
-                <el-descriptions-item label="事由">
-                        {{ formData.leaveResult }}
+                <el-descriptions-item label="调动前岗位">
+                        {{ formData.sourcePosition }}
                 </el-descriptions-item>
-                <el-descriptions-item label="申请表">
-                        <div class="fileBtn" v-for="(item,index) in formData.attachment" :key="index">
-                          <el-button type="primary" text bg @click="onDownloadFile(item.url)">
-                            <el-icon style="margin-right: 5px"><Download /></el-icon>
-                            {{ item.name }}
-                          </el-button>
-                        </div>
+                <el-descriptions-item label="调动前岗位">
+                        {{ formData.newPosition }}
                 </el-descriptions-item>
-                <el-descriptions-item label="交接清单">
-                        <div class="fileBtn" v-for="(item,index) in formData.checkList" :key="index">
-                          <el-button type="primary" text bg @click="onDownloadFile(item.url)">
-                            <el-icon style="margin-right: 5px"><Download /></el-icon>
-                            {{ item.name }}
-                          </el-button>
-                        </div>
+                <el-descriptions-item label="调动前职级">
+                        {{ formData.sourceJoblevel }}
                 </el-descriptions-item>
-                <el-descriptions-item label="是否开具离职证明">
-                    {{ formatBoolean(formData.isLeave) }}
+                <el-descriptions-item label="调动后职级">
+                        {{ formData.newJoblevel }}
                 </el-descriptions-item>
-                <el-descriptions-item label="是否入住公司宿舍">
-                    {{ formatBoolean(formData.isHome) }}
+                <el-descriptions-item label="调动前上级">
+                        {{ formData.sourceManager }}
                 </el-descriptions-item>
-                <el-descriptions-item label="宿舍所在地">
-                        {{ formData.dormLocation }}
+                <el-descriptions-item label="调动后上级">
+                        {{ formData.newManager }}
                 </el-descriptions-item>
-                <el-descriptions-item label="房间门牌号">
-                        {{ formData.roomNum }}
+                <el-descriptions-item label="备注">
+                        {{ formData.memo }}
                 </el-descriptions-item>
-                <el-descriptions-item label="提交意见">
-                        {{ formData.submitOpinion }}
+                <el-descriptions-item label="附件">
+                        {{ formData.attachment }}
                 </el-descriptions-item>
                 <el-descriptions-item label="OAID">
                         {{ formData.oaId }}
@@ -233,16 +219,13 @@
 
 <script setup>
 import {
-  createWcStaffLeaveApplication,
-  deleteWcStaffLeaveApplication,
-  deleteWcStaffLeaveApplicationByIds,
-  updateWcStaffLeaveApplication,
-  findWcStaffLeaveApplication,
-  getWcStaffLeaveApplicationList
-} from '@/api/employee/wcStaffLeaveApplication'
-import { getUrl } from '@/utils/image'
-// 文件选择组件
-import SelectFile from '@/components/selectFile/selectFile.vue'
+  createWcStaffAjustlevelApplication,
+  deleteWcStaffAjustlevelApplication,
+  deleteWcStaffAjustlevelApplicationByIds,
+  updateWcStaffAjustlevelApplication,
+  findWcStaffAjustlevelApplication,
+  getWcStaffAjustlevelApplicationList
+} from '@/api/employee/wcStaffAjustlevelApplication'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
@@ -250,22 +233,16 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
 
 defineOptions({
-    name: 'WcStaffLeaveApplication'
+    name: 'WcStaffAjustlevelApplication'
 })
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
         title: '',
         staffId: 0,
-        leaveDate: new Date(),
-        leaveResult: '',
-        attachment: [],
-        checkList: [],
-        isLeave: false,
-        isHome: false,
-        dormLocation: '',
-        roomNum: '',
-        submitOpinion: '',
+        effectiveDate: new Date(),
+        memo: '',
+        attachment: '',
         oaId: '',
         oaStatus: false,
         })
@@ -273,31 +250,61 @@ const formData = ref({
 
 // 验证规则
 const rule = reactive({
-               staffId : [{
+               effectiveDate : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
               ],
-               leaveDate : [{
+               sourceDepartment : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
               ],
-               jobDepartment : [{
+               newDepartment2 : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
               ],
-               leaveType : [{
+               sourcePosition : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
               ],
-               leaveResult : [{
+               newPosition : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
+               sourceJoblevel : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
+               newJoblevel : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
+               sourceManager : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
+               newManager : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
+               memo : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -309,52 +316,6 @@ const rule = reactive({
               }
               ],
                attachment : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-              ],
-               checkList : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-              ],
-               isLeave : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-              ],
-               isHome : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-              ],
-               dormLocation : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
-              ],
-               roomNum : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
-              ],
-               submitOpinion : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -395,9 +356,15 @@ const searchInfo = ref({})
 // 排序
 const sortChange = ({ prop, order }) => {
   const sortMap = {
-            leaveDate: 'leave_date',
-            jobDepartment: 'job_department',
-            leaveType: 'leave_type',
+            effectiveDate: 'effective_date',
+            sourceDepartment: 'source_department',
+            newDepartment2: 'new_department2',
+            sourcePosition: 'source_position',
+            newPosition: 'new_position',
+            sourceJoblevel: 'source_joblevel',
+            newJoblevel: 'new_joblevel',
+            sourceManager: 'source_manager',
+            newManager: 'new_manager',
   }
 
   let sort = sortMap[prop]
@@ -422,12 +389,6 @@ const onSubmit = () => {
     if (!valid) return
     page.value = 1
     pageSize.value = 10
-    if (searchInfo.value.isLeave === ""){
-        searchInfo.value.isLeave=null
-    }
-    if (searchInfo.value.isHome === ""){
-        searchInfo.value.isHome=null
-    }
     if (searchInfo.value.oaStatus === ""){
         searchInfo.value.oaStatus=null
     }
@@ -449,7 +410,7 @@ const handleCurrentChange = (val) => {
 
 // 查询
 const getTableData = async() => {
-  const table = await getWcStaffLeaveApplicationList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
+  const table = await getWcStaffAjustlevelApplicationList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
   if (table.code === 0) {
     tableData.value = table.data.list
     total.value = table.data.total
@@ -484,7 +445,7 @@ const deleteRow = (row) => {
         cancelButtonText: '取消',
         type: 'warning'
     }).then(() => {
-            deleteWcStaffLeaveApplicationFunc(row)
+            deleteWcStaffAjustlevelApplicationFunc(row)
         })
     }
 
@@ -507,7 +468,7 @@ const onDelete = async() => {
         multipleSelection.value.map(item => {
           IDs.push(item.ID)
         })
-      const res = await deleteWcStaffLeaveApplicationByIds({ IDs })
+      const res = await deleteWcStaffAjustlevelApplicationByIds({ IDs })
       if (res.code === 0) {
         ElMessage({
           type: 'success',
@@ -525,19 +486,19 @@ const onDelete = async() => {
 const type = ref('')
 
 // 更新行
-const updateWcStaffLeaveApplicationFunc = async(row) => {
-    const res = await findWcStaffLeaveApplication({ ID: row.ID })
+const updateWcStaffAjustlevelApplicationFunc = async(row) => {
+    const res = await findWcStaffAjustlevelApplication({ ID: row.ID })
     type.value = 'update'
     if (res.code === 0) {
-        formData.value = res.data.rewcStaffLeaveApplication
+        formData.value = res.data.rewcStaffAjustlevelApplication
         dialogFormVisible.value = true
     }
 }
 
 
 // 删除行
-const deleteWcStaffLeaveApplicationFunc = async (row) => {
-    const res = await deleteWcStaffLeaveApplication({ ID: row.ID })
+const deleteWcStaffAjustlevelApplicationFunc = async (row) => {
+    const res = await deleteWcStaffAjustlevelApplication({ ID: row.ID })
     if (res.code === 0) {
         ElMessage({
                 type: 'success',
@@ -567,9 +528,9 @@ const openDetailShow = () => {
 // 打开详情
 const getDetails = async (row) => {
   // 打开弹窗
-  const res = await findWcStaffLeaveApplication({ ID: row.ID })
+  const res = await findWcStaffAjustlevelApplication({ ID: row.ID })
   if (res.code === 0) {
-    formData.value = res.data.rewcStaffLeaveApplication
+    formData.value = res.data.rewcStaffAjustlevelApplication
     openDetailShow()
   }
 }
@@ -581,13 +542,9 @@ const closeDetailShow = () => {
   formData.value = {
           title: '',
           staffId: 0,
-          leaveDate: new Date(),
-          leaveResult: '',
-          isLeave: false,
-          isHome: false,
-          dormLocation: '',
-          roomNum: '',
-          submitOpinion: '',
+          effectiveDate: new Date(),
+          memo: '',
+          attachment: '',
           oaId: '',
           oaStatus: false,
           }
@@ -606,13 +563,9 @@ const closeDialog = () => {
     formData.value = {
         title: '',
         staffId: 0,
-        leaveDate: new Date(),
-        leaveResult: '',
-        isLeave: false,
-        isHome: false,
-        dormLocation: '',
-        roomNum: '',
-        submitOpinion: '',
+        effectiveDate: new Date(),
+        memo: '',
+        attachment: '',
         oaId: '',
         oaStatus: false,
         }
@@ -624,13 +577,13 @@ const enterDialog = async () => {
               let res
               switch (type.value) {
                 case 'create':
-                  res = await createWcStaffLeaveApplication(formData.value)
+                  res = await createWcStaffAjustlevelApplication(formData.value)
                   break
                 case 'update':
-                  res = await updateWcStaffLeaveApplication(formData.value)
+                  res = await updateWcStaffAjustlevelApplication(formData.value)
                   break
                 default:
-                  res = await createWcStaffLeaveApplication(formData.value)
+                  res = await createWcStaffAjustlevelApplication(formData.value)
                   break
               }
               if (res.code === 0) {
@@ -644,26 +597,8 @@ const enterDialog = async () => {
       })
 }
 
-const downloadFile = (url) => {
-    window.open(getUrl(url), '_blank')
-}
-
 </script>
 
 <style>
-
-.file-list{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-.fileBtn{
-  margin-bottom: 10px;
-}
-
-.fileBtn:last-child{
-  margin-bottom: 0;
-}
 
 </style>

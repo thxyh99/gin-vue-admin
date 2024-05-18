@@ -102,6 +102,7 @@ func Routers() *gin.Engine {
 		employeeRouter := router.RouterGroupApp.Employee
 		employeeRouter.InitWcStaffEmploymentApplicationRouter(PrivateGroup, PublicGroup)
 		employeeRouter.InitWcStaffPassApplicationRouter(PrivateGroup, PublicGroup)
+		employeeRouter.InitWcStaffAjustlevelApplicationRouter(PrivateGroup, PublicGroup)
 		employeeRouter.InitWcStaffTransferApplicationRouter(PrivateGroup, PublicGroup)
 		employeeRouter.InitWcStaffLeaveApplicationRouter(PrivateGroup, PublicGroup)
 	}

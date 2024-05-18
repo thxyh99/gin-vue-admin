@@ -17,26 +17,28 @@
         </el-select>
        </el-form-item>
         <el-form-item label="被调动人:" prop="transferStaff">
-          <el-input v-model.number="formData.transferStaff" :clearable="true" placeholder="请输入" />
-       </el-form-item>
-        <el-form-item label="原部门:" prop="jobDepartment">
-        <el-select v-model="formData.jobDepartment" placeholder="请选择" style="width:100%" :clearable="true">
-          <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+        <el-select v-model="formData.transferStaff" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
         </el-select>
        </el-form-item>
-        <el-form-item label="原职位:" prop="jobPosition">
-        <el-select v-model="formData.jobPosition" placeholder="请选择" style="width:100%" :clearable="true">
-          <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+        <el-form-item label="原部门:" prop="sourceDepartment">
+        <el-select v-model="formData.sourceDepartment" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
         </el-select>
        </el-form-item>
-        <el-form-item label="调往部门:" prop="toDepartment">
-        <el-select v-model="formData.toDepartment" placeholder="请选择" style="width:100%" :clearable="true">
-          <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+        <el-form-item label="原职位:" prop="sourcePosition">
+        <el-select v-model="formData.sourcePosition" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
         </el-select>
        </el-form-item>
-        <el-form-item label="调往职位:" prop="toPosition">
-        <el-select v-model="formData.toPosition" placeholder="请选择" style="width:100%" :clearable="true">
-          <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+        <el-form-item label="调往部门:" prop="newDepartment">
+        <el-select v-model="formData.newDepartment" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
+        </el-select>
+       </el-form-item>
+        <el-form-item label="调往职位:" prop="newPosition">
+        <el-select v-model="formData.newPosition" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
         </el-select>
        </el-form-item>
         <el-form-item label="调动事由:" prop="transferResult">
@@ -52,18 +54,21 @@
           <el-date-picker v-model="formData.toDate" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
        </el-form-item>
         <el-form-item label="考察期:" prop="inspectionPerion">
-          <el-input v-model.number="formData.inspectionPerion" :clearable="true" placeholder="请输入" />
+        <el-select v-model="formData.inspectionPerion" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+        </el-select>
        </el-form-item>
-        <el-form-item label="附件:" prop="employementAttment">
-          <SelectFile v-model="formData.employementAttment" />
+        <el-form-item label="附件:" prop="attachment">
+          <el-input v-model="formData.attachment" :clearable="true"  placeholder="请输入附件" />
        </el-form-item>
         <el-form-item label="提交意见:" prop="submitOpinion">
           <el-input v-model="formData.submitOpinion" :clearable="true"  placeholder="请输入提交意见" />
        </el-form-item>
-        <el-form-item label="状态:" prop="status">
-        <el-select v-model="formData.status" placeholder="请选择" style="width:100%" :clearable="true">
-          <el-option v-for="item in []" :key="item" :label="item" :value="item" />
-        </el-select>
+        <el-form-item label="OAID:" prop="oaId">
+          <el-input v-model="formData.oaId" :clearable="true"  placeholder="请输入OAID" />
+       </el-form-item>
+        <el-form-item label="OA状态:" prop="oaStatus">
+          <el-switch v-model="formData.oaStatus" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="save">保存</el-button>
@@ -90,7 +95,6 @@ import { getDictFunc } from '@/utils/format'
 import { useRoute, useRouter } from "vue-router"
 import { ElMessage } from 'element-plus'
 import { ref, reactive } from 'vue'
-import SelectFile from '@/components/selectFile/selectFile.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -100,14 +104,14 @@ const formData = ref({
             title: '',
             applyTitle: '',
             employmentDate: new Date(),
-            transferStaff: 0,
             transferResult: '',
             sourceResult: '',
             toResult: '',
             toDate: new Date(),
-            inspectionPerion: 0,
-            employementAttment: [],
+            attachment: '',
             submitOpinion: '',
+            oaId: '',
+            oaStatus: false,
         })
 // 验证规则
 const rule = reactive({
@@ -131,22 +135,22 @@ const rule = reactive({
                    message: '',
                    trigger: ['input','blur'],
                }],
-               jobDepartment : [{
+               sourceDepartment : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                }],
-               jobPosition : [{
+               sourcePosition : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                }],
-               toDepartment : [{
+               newDepartment : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                }],
-               toPosition : [{
+               newPosition : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -176,7 +180,12 @@ const rule = reactive({
                    message: '',
                    trigger: ['input','blur'],
                }],
-               status : [{
+               attachment : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               submitOpinion : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],

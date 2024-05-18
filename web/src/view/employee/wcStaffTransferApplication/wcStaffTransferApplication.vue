@@ -48,27 +48,24 @@
             <template #default="scope">{{ formatDate(scope.row.employmentDate) }}</template>
          </el-table-column>
         <el-table-column sortable align="left" label="调动类型" prop="transferType" width="120" />
-        <el-table-column align="left" label="被调动人" prop="transferStaff" width="120" />
-        <el-table-column sortable align="left" label="原部门" prop="jobDepartment" width="120" />
-        <el-table-column sortable align="left" label="原职位" prop="jobPosition" width="120" />
-        <el-table-column sortable align="left" label="调往部门" prop="toDepartment" width="120" />
-        <el-table-column sortable align="left" label="调往职位" prop="toPosition" width="120" />
+        <el-table-column sortable align="left" label="被调动人" prop="transferStaff" width="120" />
+        <el-table-column sortable align="left" label="原部门" prop="sourceDepartment" width="120" />
+        <el-table-column sortable align="left" label="原职位" prop="sourcePosition" width="120" />
+        <el-table-column sortable align="left" label="调往部门" prop="newDepartment" width="120" />
+        <el-table-column sortable align="left" label="调往职位" prop="newPosition" width="120" />
         <el-table-column align="left" label="调动事由" prop="transferResult" width="120" />
         <el-table-column align="left" label="原部门意见" prop="sourceResult" width="120" />
         <el-table-column align="left" label="调往部门意见" prop="toResult" width="120" />
-         <el-table-column align="left" label="调入时间" width="180">
+         <el-table-column sortable align="left" label="调入时间" width="180">
             <template #default="scope">{{ formatDate(scope.row.toDate) }}</template>
          </el-table-column>
-        <el-table-column align="left" label="考察期" prop="inspectionPerion" width="120" />
-                    <el-table-column label="附件" width="200">
-                        <template #default="scope">
-                             <div class="file-list">
-                               <el-tag v-for="file in scope.row.employementAttment" :key="file.uid">{{file.name}}</el-tag>
-                             </div>
-                        </template>
-                    </el-table-column>
+        <el-table-column sortable align="left" label="考察期" prop="inspectionPerion" width="120" />
+        <el-table-column align="left" label="附件" prop="attachment" width="120" />
         <el-table-column align="left" label="提交意见" prop="submitOpinion" width="120" />
-        <el-table-column align="left" label="状态" prop="status" width="120" />
+        <el-table-column align="left" label="OAID" prop="oaId" width="120" />
+        <el-table-column align="left" label="OA状态" prop="oaStatus" width="120">
+            <template #default="scope">{{ formatBoolean(scope.row.oaStatus) }}</template>
+        </el-table-column>
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -119,26 +116,28 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="被调动人:"  prop="transferStaff" >
-              <el-input v-model.number="formData.transferStaff" :clearable="true" placeholder="请输入被调动人" />
-            </el-form-item>
-            <el-form-item label="原部门:"  prop="jobDepartment" >
-                <el-select v-model="formData.jobDepartment" placeholder="请选择原部门" style="width:100%" :clearable="true" >
-                   <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+                <el-select v-model="formData.transferStaff" placeholder="请选择被调动人" style="width:100%" :clearable="true" >
+                   <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
                 </el-select>
             </el-form-item>
-            <el-form-item label="原职位:"  prop="jobPosition" >
-                <el-select v-model="formData.jobPosition" placeholder="请选择原职位" style="width:100%" :clearable="true" >
-                   <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+            <el-form-item label="原部门:"  prop="sourceDepartment" >
+                <el-select v-model="formData.sourceDepartment" placeholder="请选择原部门" style="width:100%" :clearable="true" >
+                   <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
                 </el-select>
             </el-form-item>
-            <el-form-item label="调往部门:"  prop="toDepartment" >
-                <el-select v-model="formData.toDepartment" placeholder="请选择调往部门" style="width:100%" :clearable="true" >
-                   <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+            <el-form-item label="原职位:"  prop="sourcePosition" >
+                <el-select v-model="formData.sourcePosition" placeholder="请选择原职位" style="width:100%" :clearable="true" >
+                   <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
                 </el-select>
             </el-form-item>
-            <el-form-item label="调往职位:"  prop="toPosition" >
-                <el-select v-model="formData.toPosition" placeholder="请选择调往职位" style="width:100%" :clearable="true" >
-                   <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+            <el-form-item label="调往部门:"  prop="newDepartment" >
+                <el-select v-model="formData.newDepartment" placeholder="请选择调往部门" style="width:100%" :clearable="true" >
+                   <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
+                </el-select>
+            </el-form-item>
+            <el-form-item label="调往职位:"  prop="newPosition" >
+                <el-select v-model="formData.newPosition" placeholder="请选择调往职位" style="width:100%" :clearable="true" >
+                   <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
                 </el-select>
             </el-form-item>
             <el-form-item label="调动事由:"  prop="transferResult" >
@@ -154,18 +153,21 @@
               <el-date-picker v-model="formData.toDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
             </el-form-item>
             <el-form-item label="考察期:"  prop="inspectionPerion" >
-              <el-input v-model.number="formData.inspectionPerion" :clearable="true" placeholder="请输入考察期" />
+                <el-select v-model="formData.inspectionPerion" placeholder="请选择考察期" style="width:100%" :clearable="true" >
+                   <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+                </el-select>
             </el-form-item>
-            <el-form-item label="附件:"  prop="employementAttment" >
-                <SelectFile v-model="formData.employementAttment" />
+            <el-form-item label="附件:"  prop="attachment" >
+              <el-input v-model="formData.attachment" :clearable="true"  placeholder="请输入附件" />
             </el-form-item>
             <el-form-item label="提交意见:"  prop="submitOpinion" >
               <el-input v-model="formData.submitOpinion" :clearable="true"  placeholder="请输入提交意见" />
             </el-form-item>
-            <el-form-item label="状态:"  prop="status" >
-                <el-select v-model="formData.status" placeholder="请选择状态" style="width:100%" :clearable="true" >
-                   <el-option v-for="item in []" :key="item" :label="item" :value="item" />
-                </el-select>
+            <el-form-item label="OAID:"  prop="oaId" >
+              <el-input v-model="formData.oaId" :clearable="true"  placeholder="请输入OAID" />
+            </el-form-item>
+            <el-form-item label="OA状态:"  prop="oaStatus" >
+              <el-switch v-model="formData.oaStatus" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
             </el-form-item>
           </el-form>
     </el-drawer>
@@ -193,16 +195,16 @@
                         {{ formData.transferStaff }}
                 </el-descriptions-item>
                 <el-descriptions-item label="原部门">
-                        {{ formData.jobDepartment }}
+                        {{ formData.sourceDepartment }}
                 </el-descriptions-item>
                 <el-descriptions-item label="原职位">
-                        {{ formData.jobPosition }}
+                        {{ formData.sourcePosition }}
                 </el-descriptions-item>
                 <el-descriptions-item label="调往部门">
-                        {{ formData.toDepartment }}
+                        {{ formData.newDepartment }}
                 </el-descriptions-item>
                 <el-descriptions-item label="调往职位">
-                        {{ formData.toPosition }}
+                        {{ formData.newPosition }}
                 </el-descriptions-item>
                 <el-descriptions-item label="调动事由">
                         {{ formData.transferResult }}
@@ -220,18 +222,16 @@
                         {{ formData.inspectionPerion }}
                 </el-descriptions-item>
                 <el-descriptions-item label="附件">
-                        <div class="fileBtn" v-for="(item,index) in formData.employementAttment" :key="index">
-                          <el-button type="primary" text bg @click="onDownloadFile(item.url)">
-                            <el-icon style="margin-right: 5px"><Download /></el-icon>
-                            {{ item.name }}
-                          </el-button>
-                        </div>
+                        {{ formData.attachment }}
                 </el-descriptions-item>
                 <el-descriptions-item label="提交意见">
                         {{ formData.submitOpinion }}
                 </el-descriptions-item>
-                <el-descriptions-item label="状态">
-                        {{ formData.status }}
+                <el-descriptions-item label="OAID">
+                        {{ formData.oaId }}
+                </el-descriptions-item>
+                <el-descriptions-item label="OA状态">
+                    {{ formatBoolean(formData.oaStatus) }}
                 </el-descriptions-item>
         </el-descriptions>
     </el-drawer>
@@ -247,9 +247,6 @@ import {
   findWcStaffTransferApplication,
   getWcStaffTransferApplicationList
 } from '@/api/employee/wcStaffTransferApplication'
-import { getUrl } from '@/utils/image'
-// 文件选择组件
-import SelectFile from '@/components/selectFile/selectFile.vue'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
@@ -265,14 +262,14 @@ const formData = ref({
         title: '',
         applyTitle: '',
         employmentDate: new Date(),
-        transferStaff: 0,
         transferResult: '',
         sourceResult: '',
         toResult: '',
         toDate: new Date(),
-        inspectionPerion: 0,
-        employementAttment: [],
+        attachment: '',
         submitOpinion: '',
+        oaId: '',
+        oaStatus: false,
         })
 
 
@@ -307,25 +304,25 @@ const rule = reactive({
                    trigger: ['input','blur'],
                },
               ],
-               jobDepartment : [{
+               sourceDepartment : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
               ],
-               jobPosition : [{
+               sourcePosition : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
               ],
-               toDepartment : [{
+               newDepartment : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
               ],
-               toPosition : [{
+               newPosition : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -376,11 +373,27 @@ const rule = reactive({
                    trigger: ['input','blur'],
                },
               ],
-               status : [{
+               attachment : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
+              ],
+               submitOpinion : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
               ],
 })
 
@@ -414,10 +427,13 @@ const sortChange = ({ prop, order }) => {
   const sortMap = {
             employmentDate: 'employment_date',
             transferType: 'transfer_type',
-            jobDepartment: 'job_department',
-            jobPosition: 'job_position',
-            toDepartment: 'to_department',
-            toPosition: 'to_position',
+            transferStaff: 'transfer_staff',
+            sourceDepartment: 'source_department',
+            sourcePosition: 'source_position',
+            newDepartment: 'new_department',
+            newPosition: 'new_position',
+            toDate: 'to_date',
+            inspectionPerion: 'inspection_perion',
   }
 
   let sort = sortMap[prop]
@@ -442,6 +458,9 @@ const onSubmit = () => {
     if (!valid) return
     page.value = 1
     pageSize.value = 10
+    if (searchInfo.value.oaStatus === ""){
+        searchInfo.value.oaStatus=null
+    }
     getTableData()
   })
 }
@@ -593,13 +612,14 @@ const closeDetailShow = () => {
           title: '',
           applyTitle: '',
           employmentDate: new Date(),
-          transferStaff: 0,
           transferResult: '',
           sourceResult: '',
           toResult: '',
           toDate: new Date(),
-          inspectionPerion: 0,
+          attachment: '',
           submitOpinion: '',
+          oaId: '',
+          oaStatus: false,
           }
 }
 
@@ -617,13 +637,14 @@ const closeDialog = () => {
         title: '',
         applyTitle: '',
         employmentDate: new Date(),
-        transferStaff: 0,
         transferResult: '',
         sourceResult: '',
         toResult: '',
         toDate: new Date(),
-        inspectionPerion: 0,
+        attachment: '',
         submitOpinion: '',
+        oaId: '',
+        oaStatus: false,
         }
 }
 // 弹窗确定
@@ -653,26 +674,8 @@ const enterDialog = async () => {
       })
 }
 
-const downloadFile = (url) => {
-    window.open(getUrl(url), '_blank')
-}
-
 </script>
 
 <style>
-
-.file-list{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-.fileBtn{
-  margin-bottom: 10px;
-}
-
-.fileBtn:last-child{
-  margin-bottom: 0;
-}
 
 </style>

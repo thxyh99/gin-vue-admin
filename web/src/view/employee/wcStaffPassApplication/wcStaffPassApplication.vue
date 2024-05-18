@@ -43,34 +43,29 @@
         </el-table-column>
         
         <el-table-column align="left" label="转正标题" prop="title" width="120" />
-        <el-table-column align="left" label="姓名" prop="staffName" width="120" />
+        <el-table-column align="left" label="员工ID" prop="staffId" width="120" />
          <el-table-column sortable align="left" label="入职日期" width="180">
             <template #default="scope">{{ formatDate(scope.row.employmentDate) }}</template>
          </el-table-column>
         <el-table-column sortable align="left" label="所属部门" prop="jobDepartment" width="120" />
-        <el-table-column sortable align="left" label="原职位" prop="jobPosition" width="120" />
-        <el-table-column sortable align="left" label="原职级" prop="jobLevel" width="120" />
+        <el-table-column sortable align="left" label="原职位" prop="sourcePosition" width="120" />
+        <el-table-column sortable align="left" label="原职级" prop="sourceLevel" width="120" />
         <el-table-column sortable align="left" label="试用期(1:无试用期 2:1个月 3:2个月 4:3个月 5:4个月 6:5个月 7:6个月 0:其他)" prop="tryPeriod" width="120" />
         <el-table-column align="left" label="是否是部门负责人" prop="isMananger" width="120">
             <template #default="scope">{{ formatBoolean(scope.row.isMananger) }}</template>
         </el-table-column>
-                    <el-table-column label="附件" width="200">
-                        <template #default="scope">
-                             <div class="file-list">
-                               <el-tag v-for="file in scope.row.employementAttment" :key="file.uid">{{file.name}}</el-tag>
-                             </div>
-                        </template>
-                    </el-table-column>
+        <el-table-column align="left" label="附件" prop="attachment" width="120" />
         <el-table-column align="left" label="个人自我鉴定" prop="selfOpinion" width="120" />
         <el-table-column align="left" label="用人部门意见" prop="tryOpinion" width="120" />
-        <el-table-column align="left" label="转正后工作职责" prop="passResponsibilities" width="120" />
-         <el-table-column align="left" label="转正时间" width="180">
-            <template #default="scope">{{ formatDate(scope.row.passDate) }}</template>
-         </el-table-column>
-        <el-table-column sortable align="left" label="转正后职位" prop="passPosition" width="120" />
-        <el-table-column sortable align="left" label="转正后职级" prop="passJoblevel" width="120" />
+        <el-table-column align="left" label="转正后工作职责" prop="newResponsibilities" width="120" />
+        <el-table-column sortable align="left" label="转正时间" prop="passDate" width="120" />
+        <el-table-column sortable align="left" label="转正后职位" prop="newPosition" width="120" />
+        <el-table-column sortable align="left" label="转正后职级" prop="newJoblevel" width="120" />
         <el-table-column align="left" label="提交意见" prop="submitOpinion" width="120" />
-        <el-table-column align="left" label="状态" prop="status" width="120" />
+        <el-table-column align="left" label="OAID" prop="oaId" width="120" />
+        <el-table-column align="left" label="OA状态" prop="oaStatus" width="120">
+            <template #default="scope">{{ formatBoolean(scope.row.oaStatus) }}</template>
+        </el-table-column>
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -109,8 +104,8 @@
             <el-form-item label="转正标题:"  prop="title" >
               <el-input v-model="formData.title" :clearable="true"  placeholder="请输入转正标题" />
             </el-form-item>
-            <el-form-item label="姓名:"  prop="staffName" >
-              <el-input v-model="formData.staffName" :clearable="true"  placeholder="请输入姓名" />
+            <el-form-item label="员工ID:"  prop="staffId" >
+              <el-input v-model.number="formData.staffId" :clearable="true" placeholder="请输入员工ID" />
             </el-form-item>
             <el-form-item label="入职日期:"  prop="employmentDate" >
               <el-date-picker v-model="formData.employmentDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
@@ -120,14 +115,14 @@
                    <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
                 </el-select>
             </el-form-item>
-            <el-form-item label="原职位:"  prop="jobPosition" >
-                <el-select v-model="formData.jobPosition" placeholder="请选择原职位" style="width:100%" :clearable="true" >
-                   <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+            <el-form-item label="原职位:"  prop="sourcePosition" >
+                <el-select v-model="formData.sourcePosition" placeholder="请选择原职位" style="width:100%" :clearable="true" >
+                   <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
                 </el-select>
             </el-form-item>
-            <el-form-item label="原职级:"  prop="jobLevel" >
-                <el-select v-model="formData.jobLevel" placeholder="请选择原职级" style="width:100%" :clearable="true" >
-                   <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+            <el-form-item label="原职级:"  prop="sourceLevel" >
+                <el-select v-model="formData.sourceLevel" placeholder="请选择原职级" style="width:100%" :clearable="true" >
+                   <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
                 </el-select>
             </el-form-item>
             <el-form-item label="试用期(1:无试用期 2:1个月 3:2个月 4:3个月 5:4个月 6:5个月 7:6个月 0:其他):"  prop="tryPeriod" >
@@ -138,8 +133,8 @@
             <el-form-item label="是否是部门负责人:"  prop="isMananger" >
               <el-switch v-model="formData.isMananger" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
             </el-form-item>
-            <el-form-item label="附件:"  prop="employementAttment" >
-                <SelectFile v-model="formData.employementAttment" />
+            <el-form-item label="附件:"  prop="attachment" >
+              <el-input v-model="formData.attachment" :clearable="true"  placeholder="请输入附件" />
             </el-form-item>
             <el-form-item label="个人自我鉴定:"  prop="selfOpinion" >
               <el-input v-model="formData.selfOpinion" :clearable="true"  placeholder="请输入个人自我鉴定" />
@@ -147,29 +142,34 @@
             <el-form-item label="用人部门意见:"  prop="tryOpinion" >
               <el-input v-model="formData.tryOpinion" :clearable="true"  placeholder="请输入用人部门意见" />
             </el-form-item>
-            <el-form-item label="转正后工作职责:"  prop="passResponsibilities" >
-              <el-input v-model="formData.passResponsibilities" :clearable="true"  placeholder="请输入转正后工作职责" />
+            <el-form-item label="转正后工作职责:"  prop="newResponsibilities" >
+                <el-select v-model="formData.newResponsibilities" placeholder="请选择转正后工作职责" style="width:100%" :clearable="true" >
+                   <el-option v-for="item in [255]" :key="item" :label="item" :value="item" />
+                </el-select>
             </el-form-item>
             <el-form-item label="转正时间:"  prop="passDate" >
-              <el-date-picker v-model="formData.passDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
-            </el-form-item>
-            <el-form-item label="转正后职位:"  prop="passPosition" >
-                <el-select v-model="formData.passPosition" placeholder="请选择转正后职位" style="width:100%" :clearable="true" >
+                <el-select v-model="formData.passDate" placeholder="请选择转正时间" style="width:100%" :clearable="true" >
                    <el-option v-for="item in []" :key="item" :label="item" :value="item" />
                 </el-select>
             </el-form-item>
-            <el-form-item label="转正后职级:"  prop="passJoblevel" >
-                <el-select v-model="formData.passJoblevel" placeholder="请选择转正后职级" style="width:100%" :clearable="true" >
-                   <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+            <el-form-item label="转正后职位:"  prop="newPosition" >
+                <el-select v-model="formData.newPosition" placeholder="请选择转正后职位" style="width:100%" :clearable="true" >
+                   <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
+                </el-select>
+            </el-form-item>
+            <el-form-item label="转正后职级:"  prop="newJoblevel" >
+                <el-select v-model="formData.newJoblevel" placeholder="请选择转正后职级" style="width:100%" :clearable="true" >
+                   <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
                 </el-select>
             </el-form-item>
             <el-form-item label="提交意见:"  prop="submitOpinion" >
               <el-input v-model="formData.submitOpinion" :clearable="true"  placeholder="请输入提交意见" />
             </el-form-item>
-            <el-form-item label="状态:"  prop="status" >
-                <el-select v-model="formData.status" placeholder="请选择状态" style="width:100%" :clearable="true" >
-                   <el-option v-for="item in []" :key="item" :label="item" :value="item" />
-                </el-select>
+            <el-form-item label="OAID:"  prop="oaId" >
+              <el-input v-model="formData.oaId" :clearable="true"  placeholder="请输入OAID" />
+            </el-form-item>
+            <el-form-item label="OA状态:"  prop="oaStatus" >
+              <el-switch v-model="formData.oaStatus" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
             </el-form-item>
           </el-form>
     </el-drawer>
@@ -184,8 +184,8 @@
                 <el-descriptions-item label="转正标题">
                         {{ formData.title }}
                 </el-descriptions-item>
-                <el-descriptions-item label="姓名">
-                        {{ formData.staffName }}
+                <el-descriptions-item label="员工ID">
+                        {{ formData.staffId }}
                 </el-descriptions-item>
                 <el-descriptions-item label="入职日期">
                       {{ formatDate(formData.employmentDate) }}
@@ -194,10 +194,10 @@
                         {{ formData.jobDepartment }}
                 </el-descriptions-item>
                 <el-descriptions-item label="原职位">
-                        {{ formData.jobPosition }}
+                        {{ formData.sourcePosition }}
                 </el-descriptions-item>
                 <el-descriptions-item label="原职级">
-                        {{ formData.jobLevel }}
+                        {{ formData.sourceLevel }}
                 </el-descriptions-item>
                 <el-descriptions-item label="试用期(1:无试用期 2:1个月 3:2个月 4:3个月 5:4个月 6:5个月 7:6个月 0:其他)">
                         {{ formData.tryPeriod }}
@@ -206,12 +206,7 @@
                     {{ formatBoolean(formData.isMananger) }}
                 </el-descriptions-item>
                 <el-descriptions-item label="附件">
-                        <div class="fileBtn" v-for="(item,index) in formData.employementAttment" :key="index">
-                          <el-button type="primary" text bg @click="onDownloadFile(item.url)">
-                            <el-icon style="margin-right: 5px"><Download /></el-icon>
-                            {{ item.name }}
-                          </el-button>
-                        </div>
+                        {{ formData.attachment }}
                 </el-descriptions-item>
                 <el-descriptions-item label="个人自我鉴定">
                         {{ formData.selfOpinion }}
@@ -220,22 +215,25 @@
                         {{ formData.tryOpinion }}
                 </el-descriptions-item>
                 <el-descriptions-item label="转正后工作职责">
-                        {{ formData.passResponsibilities }}
+                        {{ formData.newResponsibilities }}
                 </el-descriptions-item>
                 <el-descriptions-item label="转正时间">
-                      {{ formatDate(formData.passDate) }}
+                        {{ formData.passDate }}
                 </el-descriptions-item>
                 <el-descriptions-item label="转正后职位">
-                        {{ formData.passPosition }}
+                        {{ formData.newPosition }}
                 </el-descriptions-item>
                 <el-descriptions-item label="转正后职级">
-                        {{ formData.passJoblevel }}
+                        {{ formData.newJoblevel }}
                 </el-descriptions-item>
                 <el-descriptions-item label="提交意见">
                         {{ formData.submitOpinion }}
                 </el-descriptions-item>
-                <el-descriptions-item label="状态">
-                        {{ formData.status }}
+                <el-descriptions-item label="OAID">
+                        {{ formData.oaId }}
+                </el-descriptions-item>
+                <el-descriptions-item label="OA状态">
+                    {{ formatBoolean(formData.oaStatus) }}
                 </el-descriptions-item>
         </el-descriptions>
     </el-drawer>
@@ -251,9 +249,6 @@ import {
   findWcStaffPassApplication,
   getWcStaffPassApplicationList
 } from '@/api/employee/wcStaffPassApplication'
-import { getUrl } from '@/utils/image'
-// 文件选择组件
-import SelectFile from '@/components/selectFile/selectFile.vue'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
@@ -267,30 +262,25 @@ defineOptions({
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
         title: '',
-        staffName: '',
+        staffId: 0,
         employmentDate: new Date(),
         isMananger: false,
-        employementAttment: [],
+        attachment: '',
         selfOpinion: '',
         tryOpinion: '',
-        passResponsibilities: '',
-        passDate: new Date(),
         submitOpinion: '',
+        oaId: '',
+        oaStatus: false,
         })
 
 
 // 验证规则
 const rule = reactive({
-               staffName : [{
+               staffId : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
               ],
                employmentDate : [{
                    required: true,
@@ -304,13 +294,13 @@ const rule = reactive({
                    trigger: ['input','blur'],
                },
               ],
-               jobPosition : [{
+               sourcePosition : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
               ],
-               jobLevel : [{
+               sourceLevel : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -328,11 +318,16 @@ const rule = reactive({
                    trigger: ['input','blur'],
                },
               ],
-               employementAttment : [{
+               attachment : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
               ],
                selfOpinion : [{
                    required: true,
@@ -356,7 +351,31 @@ const rule = reactive({
                    trigger: ['input', 'blur'],
               }
               ],
-               passResponsibilities : [{
+               newResponsibilities : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
+               passDate : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
+               newPosition : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
+               newJoblevel : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
+               submitOpinion : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -367,19 +386,18 @@ const rule = reactive({
                    trigger: ['input', 'blur'],
               }
               ],
-               passDate : [{
+               oaId : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
               ],
-               passPosition : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-              ],
-               passJoblevel : [{
+               oaStatus : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -417,11 +435,12 @@ const sortChange = ({ prop, order }) => {
   const sortMap = {
             employmentDate: 'employment_date',
             jobDepartment: 'job_department',
-            jobPosition: 'job_position',
-            jobLevel: 'job_level',
+            sourcePosition: 'source_position',
+            sourceLevel: 'source_level',
             tryPeriod: 'try_period',
-            passPosition: 'pass_position',
-            passJoblevel: 'pass_joblevel',
+            passDate: 'pass_date',
+            newPosition: 'new_position',
+            newJoblevel: 'new_joblevel',
   }
 
   let sort = sortMap[prop]
@@ -448,6 +467,9 @@ const onSubmit = () => {
     pageSize.value = 10
     if (searchInfo.value.isMananger === ""){
         searchInfo.value.isMananger=null
+    }
+    if (searchInfo.value.oaStatus === ""){
+        searchInfo.value.oaStatus=null
     }
     getTableData()
   })
@@ -598,14 +620,15 @@ const closeDetailShow = () => {
   detailShow.value = false
   formData.value = {
           title: '',
-          staffName: '',
+          staffId: 0,
           employmentDate: new Date(),
           isMananger: false,
+          attachment: '',
           selfOpinion: '',
           tryOpinion: '',
-          passResponsibilities: '',
-          passDate: new Date(),
           submitOpinion: '',
+          oaId: '',
+          oaStatus: false,
           }
 }
 
@@ -621,14 +644,15 @@ const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
         title: '',
-        staffName: '',
+        staffId: 0,
         employmentDate: new Date(),
         isMananger: false,
+        attachment: '',
         selfOpinion: '',
         tryOpinion: '',
-        passResponsibilities: '',
-        passDate: new Date(),
         submitOpinion: '',
+        oaId: '',
+        oaStatus: false,
         }
 }
 // 弹窗确定
@@ -658,26 +682,8 @@ const enterDialog = async () => {
       })
 }
 
-const downloadFile = (url) => {
-    window.open(getUrl(url), '_blank')
-}
-
 </script>
 
 <style>
-
-.file-list{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-.fileBtn{
-  margin-bottom: 10px;
-}
-
-.fileBtn:last-child{
-  margin-bottom: 0;
-}
 
 </style>

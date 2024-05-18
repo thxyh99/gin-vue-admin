@@ -3,6 +3,7 @@ package employee
 type ServiceGroup struct {
 	WcStaffEmploymentApplicationService
 	WcStaffPassApplicationService
+	WcStaffAjustlevelApplicationService
 	WcStaffTransferApplicationService
 	WcStaffLeaveApplicationService
 }

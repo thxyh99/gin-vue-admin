@@ -2,48 +2,60 @@
   <div>
     <div class="gva-form-box">
       <el-form :model="formData" ref="elFormRef" label-position="right" :rules="rule" label-width="80px">
-        <el-form-item label="离职标题:" prop="title">
-          <el-input v-model="formData.title" :clearable="true"  placeholder="请输入离职标题" />
+        <el-form-item label="调动标题:" prop="title">
+          <el-input v-model="formData.title" :clearable="true"  placeholder="请输入调动标题" />
        </el-form-item>
         <el-form-item label="员工ID:" prop="staffId">
           <el-input v-model.number="formData.staffId" :clearable="true" placeholder="请输入" />
        </el-form-item>
-        <el-form-item label="解除日期:" prop="leaveDate">
-          <el-date-picker v-model="formData.leaveDate" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
+        <el-form-item label="生效日期:" prop="effectiveDate">
+          <el-date-picker v-model="formData.effectiveDate" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
        </el-form-item>
-        <el-form-item label="所属部门:" prop="jobDepartment">
-        <el-select v-model="formData.jobDepartment" placeholder="请选择" style="width:100%" :clearable="true">
+        <el-form-item label="调动前部门:" prop="sourceDepartment">
+        <el-select v-model="formData.sourceDepartment" placeholder="请选择" style="width:100%" :clearable="true">
           <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
         </el-select>
        </el-form-item>
-        <el-form-item label="原职位:" prop="leaveType">
-        <el-select v-model="formData.leaveType" placeholder="请选择" style="width:100%" :clearable="true">
-          <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+        <el-form-item label="调动后部门:" prop="newDepartment2">
+        <el-select v-model="formData.newDepartment2" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
         </el-select>
        </el-form-item>
-        <el-form-item label="事由:" prop="leaveResult">
-          <el-input v-model="formData.leaveResult" :clearable="true"  placeholder="请输入事由" />
+        <el-form-item label="调动前岗位:" prop="sourcePosition">
+        <el-select v-model="formData.sourcePosition" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
+        </el-select>
        </el-form-item>
-        <el-form-item label="申请表:" prop="attachment">
-          <SelectFile v-model="formData.attachment" />
+        <el-form-item label="调动前岗位:" prop="newPosition">
+        <el-select v-model="formData.newPosition" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
+        </el-select>
        </el-form-item>
-        <el-form-item label="交接清单:" prop="checkList">
-          <SelectFile v-model="formData.checkList" />
+        <el-form-item label="调动前职级:" prop="sourceJoblevel">
+        <el-select v-model="formData.sourceJoblevel" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
+        </el-select>
        </el-form-item>
-        <el-form-item label="是否开具离职证明:" prop="isLeave">
-          <el-switch v-model="formData.isLeave" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
+        <el-form-item label="调动后职级:" prop="newJoblevel">
+        <el-select v-model="formData.newJoblevel" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
+        </el-select>
        </el-form-item>
-        <el-form-item label="是否入住公司宿舍:" prop="isHome">
-          <el-switch v-model="formData.isHome" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
+        <el-form-item label="调动前上级:" prop="sourceManager">
+        <el-select v-model="formData.sourceManager" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
+        </el-select>
        </el-form-item>
-        <el-form-item label="宿舍所在地:" prop="dormLocation">
-          <el-input v-model="formData.dormLocation" :clearable="true"  placeholder="请输入宿舍所在地" />
+        <el-form-item label="调动后上级:" prop="newManager">
+        <el-select v-model="formData.newManager" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
+        </el-select>
        </el-form-item>
-        <el-form-item label="房间门牌号:" prop="roomNum">
-          <el-input v-model="formData.roomNum" :clearable="true"  placeholder="请输入房间门牌号" />
+        <el-form-item label="备注:" prop="memo">
+          <el-input v-model="formData.memo" :clearable="true"  placeholder="请输入备注" />
        </el-form-item>
-        <el-form-item label="提交意见:" prop="submitOpinion">
-          <el-input v-model="formData.submitOpinion" :clearable="true"  placeholder="请输入提交意见" />
+        <el-form-item label="附件:" prop="attachment">
+          <el-input v-model="formData.attachment" :clearable="true"  placeholder="请输入附件" />
        </el-form-item>
         <el-form-item label="OAID:" prop="oaId">
           <el-input v-model="formData.oaId" :clearable="true"  placeholder="请输入OAID" />
@@ -62,13 +74,13 @@
 
 <script setup>
 import {
-  createWcStaffLeaveApplication,
-  updateWcStaffLeaveApplication,
-  findWcStaffLeaveApplication
-} from '@/api/employee/wcStaffLeaveApplication'
+  createWcStaffAjustlevelApplication,
+  updateWcStaffAjustlevelApplication,
+  findWcStaffAjustlevelApplication
+} from '@/api/employee/wcStaffAjustlevelApplication'
 
 defineOptions({
-    name: 'WcStaffLeaveApplicationForm'
+    name: 'WcStaffAjustlevelApplicationForm'
 })
 
 // 自动获取字典
@@ -76,7 +88,6 @@ import { getDictFunc } from '@/utils/format'
 import { useRoute, useRouter } from "vue-router"
 import { ElMessage } from 'element-plus'
 import { ref, reactive } from 'vue'
-import SelectFile from '@/components/selectFile/selectFile.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -85,76 +96,65 @@ const type = ref('')
 const formData = ref({
             title: '',
             staffId: 0,
-            leaveDate: new Date(),
-            leaveResult: '',
-            attachment: [],
-            checkList: [],
-            isLeave: false,
-            isHome: false,
-            dormLocation: '',
-            roomNum: '',
-            submitOpinion: '',
+            effectiveDate: new Date(),
+            memo: '',
+            attachment: '',
             oaId: '',
             oaStatus: false,
         })
 // 验证规则
 const rule = reactive({
-               staffId : [{
+               effectiveDate : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                }],
-               leaveDate : [{
+               sourceDepartment : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                }],
-               jobDepartment : [{
+               newDepartment2 : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                }],
-               leaveType : [{
+               sourcePosition : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                }],
-               leaveResult : [{
+               newPosition : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               sourceJoblevel : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               newJoblevel : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               sourceManager : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               newManager : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               memo : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                }],
                attachment : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               }],
-               checkList : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               }],
-               isLeave : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               }],
-               isHome : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               }],
-               dormLocation : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               }],
-               roomNum : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               }],
-               submitOpinion : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -167,9 +167,9 @@ const elFormRef = ref()
 const init = async () => {
  // 建议通过url传参获取目标数据ID 调用 find方法进行查询数据操作 从而决定本页面是create还是update 以下为id作为url参数示例
     if (route.query.id) {
-      const res = await findWcStaffLeaveApplication({ ID: route.query.id })
+      const res = await findWcStaffAjustlevelApplication({ ID: route.query.id })
       if (res.code === 0) {
-        formData.value = res.data.rewcStaffLeaveApplication
+        formData.value = res.data.rewcStaffAjustlevelApplication
         type.value = 'update'
       }
     } else {
@@ -185,13 +185,13 @@ const save = async() => {
             let res
            switch (type.value) {
              case 'create':
-               res = await createWcStaffLeaveApplication(formData.value)
+               res = await createWcStaffAjustlevelApplication(formData.value)
                break
              case 'update':
-               res = await updateWcStaffLeaveApplication(formData.value)
+               res = await updateWcStaffAjustlevelApplication(formData.value)
                break
              default:
-               res = await createWcStaffLeaveApplication(formData.value)
+               res = await createWcStaffAjustlevelApplication(formData.value)
                break
            }
            if (res.code === 0) {
