@@ -155,10 +155,10 @@
           </el-select>
         </el-form-item>
         <el-form-item label="身高(cm):"  prop="height" >
-          <el-input-number v-model="formData.height"  style="width:100%" :precision="2" :clearable="true"  />
+          <el-input-number v-model="formData.height"  style="width:100%" :precision="1" :clearable="true"  />
         </el-form-item>
         <el-form-item label="体重(kg):"  prop="weight" >
-          <el-input-number v-model="formData.weight"  style="width:100%" :precision="2" :clearable="true"  />
+          <el-input-number v-model="formData.weight"  style="width:100%" :precision="1" :clearable="true"  />
         </el-form-item>
         <el-form-item label="婚否:"  prop="marriage" >
           <el-select v-model="formData.marriage" placeholder="选择婚否">
