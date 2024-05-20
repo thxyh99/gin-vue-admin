@@ -12,7 +12,7 @@ autocode:
     server-api: /api/v1/%s
     server-plug: /plugin/%s
     server-initialize: /initialize
-    root: D:\thxyh99\gin-vue-admin
+    root: D:\thxyh99\hr
     web-table: /view
     web: /web/src
     server-service: /service/%s
@@ -164,7 +164,7 @@ pgsql:
 qiniu:
     zone: ZoneHuaDong
     bucket: rongda-hr
-    img-path: sdkig0dbm.hn-bkt.clouddn.com
+    img-path: http://sdkig0dbm.hn-bkt.clouddn.com/
     access-key: ZJJE_9LXOuzLouNEl0wlP3VxpWVt8wQecwKa7QKD
     secret-key: 1Wv30uQp9hmhVhoxJ8wdHuDkrDLSOxt07fgVHkxb
     use-https: false

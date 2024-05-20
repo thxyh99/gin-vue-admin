@@ -2,13 +2,16 @@ package example
 
 import (
 	"errors"
-	"mime/multipart"
-	"strings"
-
+	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/example"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils/upload"
+	"github.com/qiniu/api.v7/v7/auth"
+	"github.com/qiniu/api.v7/v7/storage"
+	"mime/multipart"
+	"strings"
+	"time"
 )
 
 //@author: [piexlmax](https://github.com/piexlmax)
@@ -79,7 +82,24 @@ func (e *FileUploadAndDownloadService) GetFileRecordInfoList(info request.PageIn
 		return
 	}
 	err = db.Limit(limit).Offset(offset).Order("updated_at desc").Find(&fileLists).Error
-	return fileLists, total, err
+	if err != nil {
+		return
+	}
+	newFileLists := make([]example.ExaFileUploadAndDownload, 0, total)
+	qiNiuConfig := global.GVA_CONFIG.Qiniu
+	mac := auth.New(qiNiuConfig.AccessKey, qiNiuConfig.SecretKey)
+	deadline := time.Now().Add(time.Second * 3600).Unix()
+
+	fmt.Println("fileLists", fileLists)
+
+	for _, value := range fileLists {
+		value.Url = storage.MakePrivateURL(mac, qiNiuConfig.ImgPath, value.Key, deadline)
+		newFileLists = append(newFileLists, value)
+	}
+
+	fmt.Println("newFileLists", newFileLists)
+
+	return newFileLists, total, err
 }
 
 //@author: [piexlmax](https://github.com/piexlmax)
