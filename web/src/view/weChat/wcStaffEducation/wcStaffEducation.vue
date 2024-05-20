@@ -101,10 +101,10 @@
               <el-input v-model="formData.major" :clearable="true"  placeholder="请输入专业" />
             </el-form-item>
             <el-form-item label="学历津贴:"  prop="educationPay" >
-              <el-input v-model="formData.educationPay" :clearable="true"  placeholder="请输入学历津贴" />
+              <el-input-number v-model="formData.educationPay"  style="width:100%" :precision="0" :clearable="true"  />
             </el-form-item>
             <el-form-item label="职称技能津贴:"  prop="skillPay" >
-              <el-input v-model="formData.skillPay" :clearable="true"  placeholder="请输入职称技能津贴" />
+              <el-input-number v-model="formData.skillPay"  style="width:100%" :precision="0" :clearable="true"  />
             </el-form-item>
             <el-form-item label="职称/技能证书:"  prop="certificate" >
               <el-input v-model="formData.certificate" :clearable="true"  placeholder="请输入职称/技能证书" />
