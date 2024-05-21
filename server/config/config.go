@@ -51,6 +51,7 @@ type CommonConfig struct {
 	StaffJobTryPeriod []string //员工试用期
 	ExpenseAccount    []string //费用科目
 	AgreementType     []string //合同类型
+	FileType          []string //合同类型
 }
 
 var config = CommonConfig{
@@ -196,5 +197,18 @@ var config = CommonConfig{
 		5: "劳务派遣合同",
 		6: "返聘协议",
 		7: "培训协议",
+	},
+	FileType: []string{
+		0:  "其它",
+		1:  "合同附件",
+		2:  "身份证(人像)",
+		3:  "身份证(国徽)",
+		4:  "学历证书",
+		5:  "学位证书",
+		6:  "前公司离职证明",
+		7:  "员工入职申请表",
+		8:  "试用期管理规定",
+		9:  "个人简历",
+		10: "职称/技能证书",
 	},
 }

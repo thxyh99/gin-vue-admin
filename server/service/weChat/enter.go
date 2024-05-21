@@ -14,4 +14,5 @@ type ServiceGroup struct {
 	WcStaffDepartmentService
 	WcStaffAgreementService
 	WcRankService
+	WcFileService
 }
