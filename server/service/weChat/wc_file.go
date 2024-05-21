@@ -74,34 +74,38 @@ func (wcFileService *WcFileService) Upload(file weChat.WcFile) error {
 	return global.GVA_DB.Create(&file).Error
 }
 
-func (wcFileService *WcFileService) FindFile(staffId, fileType int) (weChat.WcFile, error) {
+func (wcFileService *WcFileService) FindFile(ID uint) (newFile weChat2.WcFileResponse, err error) {
 	var file weChat.WcFile
-	err := global.GVA_DB.Where("staff_id=? and type=?", staffId, fileType).First(&file).Error
-	return file, err
+	err = global.GVA_DB.Where("id=?", ID).First(&file).Error
+	if err != nil {
+		return newFile, err
+	}
+
+	newFile, err = weChat2.WcFileResponse{}.AssembleFile(file)
+	return newFile, err
 }
 
 func (wcFileService *WcFileService) DeleteFile(file weChat.WcFile) (err error) {
-	var fileFromDb weChat.WcFile
-	fileFromDb, err = wcFileService.FindFile(*file.StaffId, *file.Type)
+	fileResponse, err := wcFileService.FindFile(file.ID)
 	if err != nil {
 		return
 	}
 	oss := upload.NewOss()
-	if err = oss.DeleteFile(fileFromDb.Key); err != nil {
+	if err = oss.DeleteFile(fileResponse.Key); err != nil {
 		return errors.New("文件删除失败")
 	}
 
-	err = global.GVA_DB.Where("id = ?", fileFromDb.ID).Unscoped().Delete(&file).Error
+	err = global.GVA_DB.Where("id = ?", fileResponse.ID).Unscoped().Delete(&file).Error
 	return err
 }
 
 // EditFileName 编辑文件名或者备注
 func (wcFileService *WcFileService) EditFileName(file weChat.WcFile) (err error) {
 	var fileFromDb weChat.WcFile
-	return global.GVA_DB.Where("staff_id=? and type=?", file.StaffId, file.Type).First(&fileFromDb).Update("name", file.Name).Error
+	return global.GVA_DB.Where("id=?", file.ID).First(&fileFromDb).Update("name", file.Name).Error
 }
 
-func (wcFileService *WcFileService) GetFileRecordInfoList(info request.PageInfo, fileType, staffId int) (list interface{}, total int64, err error) {
+func (wcFileService *WcFileService) GetFileRecordInfoList(info request.PageInfo, fileType, staffId int) (list []weChat2.WcFileResponse, total int64, err error) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
 	keyword := info.Keyword

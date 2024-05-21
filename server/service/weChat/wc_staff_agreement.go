@@ -43,11 +43,12 @@ func (wcStaffAgreementService *WcStaffAgreementService) GetWcStaffAgreement(ID s
 	}
 
 	newStaffAgreement, err = weChat2.WcStaffAgreementResponse{}.AssembleStaffAgreement(staffAgreement)
+
 	return
 }
 
 // GetWcStaffAgreementInfoList 分页获取合同信息记录
-func (wcStaffAgreementService *WcStaffAgreementService) GetWcStaffAgreementInfoList(info weChatReq.WcStaffAgreementSearch) (list []weChat2.WcStaffAgreementResponse, total int64, err error) {
+func (wcStaffAgreementService *WcStaffAgreementService) GetWcStaffAgreementInfoList(info weChatReq.WcStaffAgreementSearch, staffId int) (list []weChat2.WcStaffAgreementResponse, total int64, err error) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
@@ -56,6 +57,9 @@ func (wcStaffAgreementService *WcStaffAgreementService) GetWcStaffAgreementInfoL
 	// 如果有条件搜索 下方会自动创建搜索语句
 	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
 		db = db.Where("created_at BETWEEN ? AND ?", info.StartCreatedAt, info.EndCreatedAt)
+	}
+	if staffId != 0 {
+		db = db.Where("staff_id=?", staffId)
 	}
 	err = db.Count(&total).Error
 	if err != nil {

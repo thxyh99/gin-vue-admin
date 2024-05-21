@@ -7,10 +7,12 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
+	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/service"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"strconv"
 )
 
 type WcStaffApi struct {
@@ -135,6 +137,7 @@ func (wcStaffApi *WcStaffApi) FindWcStaff(c *gin.Context) {
 // @Router /wcStaff/obtainEmployeeRoster [get]
 func (wcStaffApi *WcStaffApi) ObtainEmployeeRoster(c *gin.Context) {
 	ID := c.Query("id")
+	staffId, _ := strconv.Atoi(ID)
 	rewcStaff, err := wcStaffService.GetWcStaff(ID)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		global.GVA_LOG.Error("查询员工信息失败!", zap.Error(err))
@@ -160,11 +163,25 @@ func (wcStaffApi *WcStaffApi) ObtainEmployeeRoster(c *gin.Context) {
 		global.GVA_LOG.Error("查询银行卡信息失败!", zap.Error(err))
 		response.FailWithMessage("查询银行卡信息失败", c)
 	}
-	rewcStaffAgreement, err := wcStaffAgreementService.GetWcStaffAgreement(ID)
+
+	var pageInfo weChatReq.WcStaffAgreementSearch
+	pageInfo.Page = 1
+	pageInfo.PageSize = 10
+	rewcStaffAgreementList, rewcStaffAgreementTotal, err := wcStaffAgreementService.GetWcStaffAgreementInfoList(pageInfo, staffId)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		global.GVA_LOG.Error("查询合同信息失败!", zap.Error(err))
+		global.GVA_LOG.Error("查询合同信息失败1!", zap.Error(err))
 		response.FailWithMessage("查询合同信息失败", c)
 	}
+	rewcStaffAgreement := make([]weChat2.WcStaffAgreementResponse, 0, rewcStaffAgreementTotal)
+	for _, item := range rewcStaffAgreementList {
+		var attachment weChat2.WcFileResponse
+		if *item.FileId != 0 {
+			attachment, _ = wcFileService.FindFile(uint(*item.FileId))
+		}
+		item.Attachment = &attachment
+		rewcStaffAgreement = append(rewcStaffAgreement, item)
+	}
+
 	rewcStaffMaterials, err := wcStaffMaterialsService.GetWcStaffMaterials(ID)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		global.GVA_LOG.Error("查询证件材料失败!", zap.Error(err))
