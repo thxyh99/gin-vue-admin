@@ -221,7 +221,7 @@ func (wcFileApi *WcFileApi) EditFileName(c *gin.Context) {
 
 // DeleteFile 删除文件
 func (wcFileApi *WcFileApi) DeleteFile(c *gin.Context) {
-	var file weChat.WcFile
+	var file request.DeleteById
 	err := c.ShouldBindJSON(&file)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)

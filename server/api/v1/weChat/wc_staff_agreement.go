@@ -52,6 +52,18 @@ func (wcStaffAgreementApi *WcStaffAgreementApi) CreateWcStaffAgreement(c *gin.Co
 // @Router /wcStaffAgreement/deleteWcStaffAgreement [delete]
 func (wcStaffAgreementApi *WcStaffAgreementApi) DeleteWcStaffAgreement(c *gin.Context) {
 	ID := c.Query("ID")
+	agreement, err := wcStaffAgreementService.GetWcStaffAgreement(ID)
+	if err != nil {
+		global.GVA_LOG.Error("删除失败，合同不存在!", zap.Error(err))
+		response.FailWithMessage("删除失败，合同不存在!", c)
+	}
+	if *agreement.FileId != 0 {
+		fileId := strconv.Itoa(*agreement.FileId)
+		if err := wcFileService.DeleteWcFile(fileId); err != nil {
+			global.GVA_LOG.Error("删除合同附件失败!", zap.Error(err))
+			response.FailWithMessage("删除合同附件失败!", c)
+		}
+	}
 	if err := wcStaffAgreementService.DeleteWcStaffAgreement(ID); err != nil {
 		global.GVA_LOG.Error("删除失败!", zap.Error(err))
 		response.FailWithMessage("删除失败", c)

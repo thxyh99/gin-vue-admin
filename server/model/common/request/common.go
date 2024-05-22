@@ -12,6 +12,11 @@ type GetById struct {
 	ID int `json:"id" form:"id"` // 主键ID
 }
 
+// DeleteById Delete by id structure
+type DeleteById struct {
+	ID uint `json:"ID" form:"ID"` // 主键ID
+}
+
 func (r *GetById) Uint() uint {
 	return uint(r.ID)
 }

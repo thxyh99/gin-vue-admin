@@ -91,8 +91,8 @@ func (wcFileService *WcFileService) FindFile(ID uint) (newFile weChat2.WcFileRes
 	return newFile, err
 }
 
-func (wcFileService *WcFileService) DeleteFile(file weChat.WcFile) (err error) {
-	fileResponse, err := wcFileService.FindFile(file.ID)
+func (wcFileService *WcFileService) DeleteFile(fileParam request.DeleteById) (err error) {
+	fileResponse, err := wcFileService.FindFile(fileParam.ID)
 	if err != nil {
 		return
 	}
@@ -100,8 +100,7 @@ func (wcFileService *WcFileService) DeleteFile(file weChat.WcFile) (err error) {
 	if err = oss.DeleteFile(fileResponse.Key); err != nil {
 		return errors.New("文件删除失败")
 	}
-
-	err = global.GVA_DB.Where("id = ?", fileResponse.ID).Unscoped().Delete(&file).Error
+	err = global.GVA_DB.Where("id = ?", fileResponse.ID).Model(weChat.WcFile{}).Unscoped().Delete(&weChat.WcFile{}).Error
 	return err
 }
 
