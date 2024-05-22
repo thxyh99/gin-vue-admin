@@ -2,76 +2,125 @@
 	<div>
 		<el-descriptions title="个人信息" border>
 			<template #extra>
-				<el-button type="primary" size="small">操作</el-button>
+				<el-button type="primary" size="small" @click="edit(1)">编 辑</el-button>
 			</template>
-			<el-descriptions-item label-align="right" label="姓名">李逍遥</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="员工编码">RD0007</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="手机号">123 4567 8910</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="身份证号">440001441111111</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="身份证地址">江苏省苏州市吴中区吴</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="户籍类型">本地城镇</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="出生日期">1083-12-19</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="籍贯">余杭镇</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="民族">汉</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="身高">173</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="体重">60公斤</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="婚否">已婚</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="政治面貌">群众</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="常住地址">中国浙江省杭州市余杭镇</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="社保电脑号">10000</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="公积金账号">10000</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="社保公积金缴纳地">浙江省余杭镇</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="姓名">{{ rewcStaff.name }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="员工编码">{{ rewcStaff.jobNum }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="手机号">{{ rewcStaff.mobile }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="身份证号">{{ rewcStaff.idNumber }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="身份证地址">{{ rewcStaff.idAddress }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="户籍类型">{{
+				rewcStaff.householdTypeText
+			}}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="出生日期">{{
+				formatDate(rewcStaff.birthday)
+			}}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="籍贯">{{ rewcStaff.nativePlace }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="民族">{{ rewcStaff.nationText }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="身高">{{ rewcStaff.height }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="体重">{{ rewcStaff.weight }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="婚否">{{ rewcStaff.marriageText }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="政治面貌">{{ rewcStaff.politicalOutlookText }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="常住地址">{{ rewcStaff.address }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="社保电脑号">{{ rewcStaff.socialNumber }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="公积金账号">{{ rewcStaff.accountNumber }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="社保公积金缴纳地">{{ rewcStaff.paymentPlace }}</el-descriptions-item>
 		</el-descriptions>
-    <el-divider></el-divider>
-    <el-descriptions title="工作信息" border>
+		<el-divider></el-divider>
+		<el-descriptions title="工作信息" border>
 			<template #extra>
-				<el-button type="primary" size="small">操作</el-button>
+				<el-button type="primary" size="small" @click="edit(2)">编 辑</el-button>
 			</template>
-			<el-descriptions-item label-align="right" label="员工类型">全职</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="员工状态">正式</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="部门">蜀山七圣</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="职位">蜀山七圣之一</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="职级">蜀山七圣首席 1188 号</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="等级工资">3000.00</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="费用科目">无</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="入职日期">1103-12-19</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="试用期">60公斤</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="转正日期">1103-12-19</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="司龄（系统计算）">10年</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="员工类型">{{ rewcStaffJob.typeText }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="员工状态">{{ rewcStaffJob.statusText }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="部门">{{ rewcStaffJob.department }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="职位">{{ rewcStaffJob.position }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="职级">{{ rewcStaffJob.rankText }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="等级工资">{{ rewcStaffJob.rankSalary }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="费用科目">{{ rewcStaffJob.expenseAccountText }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="入职日期">{{ formatDate(rewcStaffJob.employmentDate) }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="试用期">{{ rewcStaffJob.tryPeriodText }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="转正日期">{{ formatDate(rewcStaffJob.formalDate) }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="司龄（系统计算）">{{ getDateYearSub(formatDate(rewcStaffJob.employmentDate)) }}年</el-descriptions-item>
 		</el-descriptions>
-    <el-divider></el-divider>
-    <el-descriptions title="学历信息" border>
+		<el-divider></el-divider>
+		<el-descriptions title="学历信息" border>
 			<template #extra>
-				<el-button type="primary" size="small">操作</el-button>
+				<el-button type="primary" size="small" @click="edit(3)">编 辑</el-button>
 			</template>
-			<el-descriptions-item label-align="right" label="学历">小学</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="学历津贴">0</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="毕业院校">蜀山派</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="毕业日期">1103-12-19</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="专业">蜀山七圣首席</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="职称/技能证书">仙风云体术、万剑诀、酒神咒</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="职称技能津贴">无</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="学历">{{ rewcStaffEducation.educationText }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="学历津贴">{{ rewcStaffEducation.educationPay }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="毕业院校">{{ rewcStaffEducation.school }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="毕业日期">{{ formatDate(rewcStaffEducation.date) }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="专业">{{ rewcStaffEducation.major }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="职称/技能证书">{{ rewcStaffEducation.certificate }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="职称技能津贴">{{ rewcStaffEducation.skillPay }}</el-descriptions-item>
 		</el-descriptions>
-    <el-divider></el-divider>
-    <el-descriptions title="银行卡信息" border>
+		<el-divider></el-divider>
+		<el-descriptions title="银行卡信息" border>
 			<template #extra>
-				<el-button type="primary" size="small">操作</el-button>
+				<el-button type="primary" size="small" @click="edit(4)">编 辑</el-button>
 			</template>
-			<el-descriptions-item label-align="right" label="银行卡号">6222 0000 6222 0000</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="开户行">余杭钱庄</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="银行卡号">{{ rewcStaffBank.cardNumber }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="开户行">{{ rewcStaffBank.bank }}</el-descriptions-item>
 		</el-descriptions>
-    <el-divider></el-divider>
-    <el-descriptions title="紧急联系人信息" border>
+		<el-divider></el-divider>
+		<el-descriptions title="紧急联系人信息" border>
 			<template #extra>
-				<el-button type="primary" size="small">操作</el-button>
+				<el-button type="primary" size="small" @click="edit(5)">编 辑</el-button>
 			</template>
-			<el-descriptions-item label-align="right" label="紧急联系人姓名">林月如</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="联系人关系">妻子</el-descriptions-item>
-      <el-descriptions-item label-align="right" label="联系人电话">123 4567 8910</el-descriptions-item>
-      <el-descriptions-item label-align="right" label="联系人常住地址">中国浙江省杭州市余杭镇盛</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="紧急联系人姓名">{{ rewcStaffContact.name }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="联系人关系">{{ rewcStaffContact.relationshipText }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="联系人电话">{{ rewcStaffContact.mobile }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="联系人常住地址">{{ rewcStaffContact.address }}</el-descriptions-item>
 		</el-descriptions>
+		
 	</div>
 </template>
 
 <script setup>
+import { formatDate } from '@/utils/format'
+
+const emits = defineEmits(['updateInfo'])
+
+defineProps({
+	rewcStaff: {
+		type: Object,
+		default: () => {
+			return {}
+		},
+	},
+	rewcStaffJob: {
+			type: Object,
+			default: () => {
+				return {}
+			},
+		},
+		rewcStaffEducation: {
+			type: Object,
+			default: () => {
+				return {}
+			},
+		},
+		rewcStaffBank: {
+			type: Object,
+			default: () => {
+				return {}
+			},
+		},
+		rewcStaffContact: {
+			type: Object,
+			default: () => {
+				return {}
+			},
+		}
+})
+
+const edit = (type) => {
+	emits('updateInfo', type)
+}
+
+const getDateYearSub = (startDateStr) => {
+	return new Date().getFullYear() - startDateStr.split('-')[0]
+}
 </script>
