@@ -23,7 +23,6 @@
 				</el-descriptions-item>
 			</el-descriptions>
 		</template>
-
 		<div class="btn" @click="handleAdd">
 			<span>+ 添加合同</span>
 		</div>

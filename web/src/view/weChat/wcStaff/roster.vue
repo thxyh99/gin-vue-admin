@@ -5,7 +5,7 @@
 				style="width: 120px; height: 120px; border-radius: 10px"
 				src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
 			/>
-			<span>xxx</span>
+			<span style="margin-left: 10px;">{{ rewcStaff.name }}</span>
 		</div>
 		<div class="gva-table-box" v-loading="loading">
 			<el-tabs v-model="activeName">
@@ -117,4 +117,9 @@ onMounted(() => {
 })
 </script>
 
-<style></style>
+<style scoped>
+.gva-search-box {
+	display: flex;
+	justify-content: flex-start;
+}
+</style>
