@@ -7,7 +7,6 @@ type RouterGroup struct {
 	WcStaffEducationRouter
 	WcStaffBankRouter
 	WcStaffContactRouter
-	WcStaffMaterialsRouter
 	WcStaffRouter
 	WcStaffPositionRouter
 	WcStaffDepartmentRouter

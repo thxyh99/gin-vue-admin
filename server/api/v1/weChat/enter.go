@@ -7,7 +7,6 @@ type ApiGroup struct {
 	WcStaffEducationApi
 	WcStaffBankApi
 	WcStaffContactApi
-	WcStaffMaterialsApi
 	WcStaffApi
 	WcStaffPositionApi
 	WcStaffDepartmentApi

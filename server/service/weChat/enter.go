@@ -7,7 +7,6 @@ type ServiceGroup struct {
 	WcStaffEducationService
 	WcStaffBankService
 	WcStaffContactService
-	WcStaffMaterialsService
 	WcStaffService
 	WcStaffPositionService
 	WcStaffDepartmentService
