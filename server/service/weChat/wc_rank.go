@@ -8,6 +8,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
 	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"time"
 )
 
@@ -46,7 +47,7 @@ func (wcRankService *WcRankService) GetWcRank(ID string) (wcRank weChat2.WcRankR
 		return
 	}
 
-	wcRank, err = weChat2.WcRankResponse{}.AssembleRank(rank)
+	wcRank, err = wcRankService.AssembleRank(rank)
 	return
 }
 
@@ -75,13 +76,13 @@ func (wcRankService *WcRankService) GetWcRankInfoList(info weChatReq.WcRankSearc
 		return
 	}
 
-	list, err = weChat2.WcRankResponse{}.AssembleRankList(wcRanks)
+	list, err = wcRankService.AssembleRankList(wcRanks)
 	return
 }
 
 // GetRankTypeList 分页获取职级类型记录
 func (wcRankService *WcRankService) GetRankTypeList(_ weChatReq.WcRankSearch) (list []weChat2.WcRankTypeResponse, total int64, err error) {
-	list, err = weChat2.GetRankTypeList()
+	list, err = GetRankTypeList()
 	if err != nil {
 		return
 	}
@@ -142,4 +143,38 @@ func (wcRankService *WcRankService) GetRankListByRankType(rankType string) (list
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	total = int64(len(list))
 	return list, total, nil
+}
+
+func (wcRankService *WcRankService) AssembleRankList(ranks []weChat.WcRank) (newRanks []weChat2.WcRankResponse, err error) {
+	var newRank weChat2.WcRankResponse
+	rankTypeList, err := GetRankTypeList()
+	if err != nil {
+		return
+	}
+	rankTypeMap := make(map[int]string)
+	for _, rankTypeItem := range rankTypeList {
+		rankTypeMap[rankTypeItem.ID] = rankTypeItem.Name
+	}
+	for _, rank := range ranks {
+		newRank.WcRank = rank
+		typeText, _ := utils.GetValueByKey(rankTypeMap, *rank.Type)
+		newRank.TypeText = typeText
+		newRanks = append(newRanks, newRank)
+	}
+	return
+}
+
+func (wcRankService *WcRankService) AssembleRank(rank weChat.WcRank) (newRank weChat2.WcRankResponse, err error) {
+	newRank.WcRank = rank
+	rankTypeList, err := GetRankTypeList()
+	if err != nil {
+		return
+	}
+	rankTypeMap := make(map[int]string)
+	for _, rankTypeItem := range rankTypeList {
+		rankTypeMap[rankTypeItem.ID] = rankTypeItem.Name
+	}
+	typeText, _ := utils.GetValueByKey(rankTypeMap, *rank.Type)
+	newRank.TypeText = typeText
+	return
 }

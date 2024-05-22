@@ -1,10 +1,13 @@
 package weChat
 
 import (
+	"fmt"
+	"github.com/flipped-aurora/gin-vue-admin/server/config"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
 	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 )
 
 type WcStaffContactService struct {
@@ -42,7 +45,7 @@ func (wcStaffContactService *WcStaffContactService) GetWcStaffContact(ID string)
 		return
 	}
 
-	newStaffContact, err = weChat2.WcStaffContactResponse{}.AssembleStaffContact(staffContact)
+	newStaffContact, err = wcStaffContactService.AssembleStaffContact(staffContact)
 	return
 }
 
@@ -71,6 +74,50 @@ func (wcStaffContactService *WcStaffContactService) GetWcStaffContactInfoList(in
 		return
 	}
 
-	list, err = weChat2.WcStaffContactResponse{}.AssembleStaffContactList(wcStaffContacts)
+	list, err = wcStaffContactService.AssembleStaffContactList(wcStaffContacts)
+	return
+}
+
+func (wcStaffContactService *WcStaffContactService) AssembleStaffContactList(staffContacts []weChat.WcStaffContact) (newStaffContacts []weChat2.WcStaffContactResponse, err error) {
+	var newStaffContact weChat2.WcStaffContactResponse
+	configInfo := config.GetConfigInfo()
+
+	for _, staffContact := range staffContacts {
+		newStaffContact.WcStaffContact = staffContact
+		relationshipText, _ := utils.Find(configInfo.Relationship, *staffContact.Relationship)
+		newStaffContact.RelationshipText = relationshipText
+
+		//获取员工名称工号
+		var staff weChat.WcStaff
+		err = global.GVA_DB.Table(staff.TableName()).Where("id=?", staffContact.StaffId).First(&staff).Error
+		if err != nil {
+			fmt.Println("AssembleStaffContactList Err:", err)
+			return
+		}
+		newStaffContact.StaffName = staff.Name
+		newStaffContact.JobNum = staff.JobNum
+
+		newStaffContacts = append(newStaffContacts, newStaffContact)
+	}
+	return
+}
+
+func (wcStaffContactService *WcStaffContactService) AssembleStaffContact(staffContact weChat.WcStaffContact) (newStaffContact weChat2.WcStaffContactResponse, err error) {
+	configInfo := config.GetConfigInfo()
+	newStaffContact.WcStaffContact = staffContact
+	relationshipText, _ := utils.Find(configInfo.Relationship, *staffContact.Relationship)
+	newStaffContact.RelationshipText = relationshipText
+
+	//获取员工名称工号
+	var staff weChat.WcStaff
+	err = global.GVA_DB.Table(staff.TableName()).Where("id=?", staffContact.StaffId).First(&staff).Error
+	if err != nil {
+		fmt.Println("AssembleStaffContact Err:", err)
+		return
+	}
+
+	newStaffContact.StaffName = staff.Name
+	newStaffContact.JobNum = staff.JobNum
+
 	return
 }

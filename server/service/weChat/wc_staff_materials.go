@@ -1,10 +1,12 @@
 package weChat
 
 import (
+	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
 	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
+	"strings"
 )
 
 type WcStaffMaterialsService struct {
@@ -42,7 +44,7 @@ func (wcStaffMaterialsService *WcStaffMaterialsService) GetWcStaffMaterials(ID s
 		return
 	}
 
-	newStaffMaterials, err = weChat2.WcStaffMaterialsResponse{}.AssembleStaffMaterials(wcStaffMaterials)
+	newStaffMaterials, err = wcStaffMaterialsService.AssembleStaffMaterials(wcStaffMaterials)
 	return
 }
 
@@ -71,6 +73,52 @@ func (wcStaffMaterialsService *WcStaffMaterialsService) GetWcStaffMaterialsInfoL
 		return
 	}
 
-	list, err = weChat2.WcStaffMaterialsResponse{}.AssembleStaffMaterialsList(wcStaffMaterials)
+	list, err = wcStaffMaterialsService.AssembleStaffMaterialsList(wcStaffMaterials)
+	return
+}
+
+func (wcStaffMaterialsService *WcStaffMaterialsService) AssembleStaffMaterialsList(staffMaterials []weChat.WcStaffMaterials) (newStaffMaterials []weChat2.WcStaffMaterialsResponse, err error) {
+	var newStaffMater weChat2.WcStaffMaterialsResponse
+
+	for _, staffMaterial := range staffMaterials {
+		newStaffMater.WcStaffMaterials = staffMaterial
+
+		if newStaffMater.SkillCertificate != "" {
+			newStaffMater.SkillCertificateList = strings.Split(staffMaterial.SkillCertificate, "###")
+		}
+
+		//获取员工名称工号
+		var staff weChat.WcStaff
+		err = global.GVA_DB.Table(staff.TableName()).Where("id=?", staffMaterial.StaffId).First(&staff).Error
+		if err != nil {
+			fmt.Println("AssembleStaffMaterialsList Err:", err)
+			return
+		}
+		newStaffMater.StaffName = staff.Name
+		newStaffMater.JobNum = staff.JobNum
+
+		newStaffMaterials = append(newStaffMaterials, newStaffMater)
+	}
+	return
+}
+
+func (wcStaffMaterialsService *WcStaffMaterialsService) AssembleStaffMaterials(staffMaterials weChat.WcStaffMaterials) (newStaffMaterials weChat2.WcStaffMaterialsResponse, err error) {
+	newStaffMaterials.WcStaffMaterials = staffMaterials
+
+	if staffMaterials.SkillCertificate != "" {
+		newStaffMaterials.SkillCertificateList = strings.Split(staffMaterials.SkillCertificate, "###")
+	}
+
+	//获取员工名称工号
+	var staff weChat.WcStaff
+	err = global.GVA_DB.Table(staff.TableName()).Where("id=?", staffMaterials.StaffId).First(&staff).Error
+	if err != nil {
+		fmt.Println("AssembleStaffMaterials Err:", err)
+		return
+	}
+
+	newStaffMaterials.StaffName = staff.Name
+	newStaffMaterials.JobNum = staff.JobNum
+
 	return
 }

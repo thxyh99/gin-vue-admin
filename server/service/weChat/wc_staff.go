@@ -69,7 +69,7 @@ func (wcStaffService *WcStaffService) GetWcStaff(ID string) (wcStaffResponse weC
 	if err != nil {
 		return
 	}
-	wcStaffResponse, err = weChat2.WcStaffResponse{}.AssembleStaff(wcStaff)
+	wcStaffResponse, err = wcStaffService.AssembleStaff(wcStaff)
 
 	return
 }
@@ -101,7 +101,7 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 	fmt.Println("GetWcStaffInfoList err", err)
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-	wcStaffResponse, err = weChat2.WcStaffResponse{}.AssembleStaffList(wcStaffs)
+	wcStaffResponse, err = wcStaffService.AssembleStaffList(wcStaffs)
 
 	return
 }
@@ -305,13 +305,6 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 						return errors.New("是否领导值异常:" + value)
 					}
 				}
-				//if key == "status" {
-				//	if status, ok := utils.FindStringValueKey(configInfo.StaffStatus, value); ok {
-				//		value = strconv.Itoa(status)
-				//	} else {
-				//		return errors.New("状态值异常:" + value)
-				//	}
-				//}
 
 				if key != "department" && key != "position" {
 					item[key] = value
@@ -415,9 +408,44 @@ func (wcStaffService *WcStaffService) checkImportParam(key, value string) error 
 		return errors.New("是否领导异常:" + value)
 	}
 
-	//if key == "status" && !utils.InArray(configInfo.StaffStatus, value) {
-	//	return errors.New("状态异常:" + value)
-	//}
-
 	return nil
+}
+
+func (wcStaffService *WcStaffService) AssembleStaffList(staffs []weChat.WcStaff) (newStaffs []weChat2.WcStaffResponse, err error) {
+	var newStaff weChat2.WcStaffResponse
+	configInfo := config.GetConfigInfo()
+
+	for _, item := range staffs {
+		newStaff.WcStaff = item
+		gender, _ := utils.Find(configInfo.StaffGender, *item.Gender)
+		newStaff.GenderText = gender
+		householdTypeText, _ := utils.Find(configInfo.HouseholdType, *item.HouseholdType)
+		newStaff.HouseholdTypeText = householdTypeText
+		nationText, _ := utils.Find(configInfo.Nation, *item.Nation)
+		newStaff.NationText = nationText
+		marriageText, _ := utils.Find(configInfo.Marriage, *item.Marriage)
+		newStaff.MarriageText = marriageText
+		politicalOutlookText, _ := utils.Find(configInfo.PoliticalOutlook, *item.PoliticalOutlook)
+		newStaff.PoliticalOutlookText = politicalOutlookText
+
+		newStaffs = append(newStaffs, newStaff)
+	}
+	return
+}
+
+func (wcStaffService *WcStaffService) AssembleStaff(staff weChat.WcStaff) (newStaff weChat2.WcStaffResponse, err error) {
+	configInfo := config.GetConfigInfo()
+	gender, _ := utils.Find(configInfo.StaffGender, *staff.Gender)
+	newStaff.GenderText = gender
+	householdTypeText, _ := utils.Find(configInfo.HouseholdType, *staff.HouseholdType)
+	newStaff.HouseholdTypeText = householdTypeText
+	nationText, _ := utils.Find(configInfo.Nation, *staff.Nation)
+	newStaff.NationText = nationText
+	marriageText, _ := utils.Find(configInfo.Marriage, *staff.Marriage)
+	newStaff.MarriageText = marriageText
+	politicalOutlookText, _ := utils.Find(configInfo.PoliticalOutlook, *staff.PoliticalOutlook)
+	newStaff.PoliticalOutlookText = politicalOutlookText
+	newStaff.WcStaff = staff
+
+	return
 }

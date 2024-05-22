@@ -3,14 +3,19 @@ package weChat
 import (
 	"errors"
 	"fmt"
+	"github.com/flipped-aurora/gin-vue-admin/server/config"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
 	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils/upload"
+	"github.com/qiniu/api.v7/v7/auth"
+	"github.com/qiniu/api.v7/v7/storage"
 	"mime/multipart"
 	"strings"
+	"time"
 )
 
 type WcFileService struct {
@@ -82,7 +87,7 @@ func (wcFileService *WcFileService) FindFile(ID uint) (newFile weChat2.WcFileRes
 		return newFile, err
 	}
 
-	newFile, err = weChat2.WcFileResponse{}.AssembleFile(file)
+	newFile, err = wcFileService.AssembleFile(file)
 	return newFile, err
 }
 
@@ -124,7 +129,7 @@ func (wcFileService *WcFileService) GetFileRecordInfoList(info request.PageInfo,
 	if err != nil {
 		return
 	}
-	newFileLists, err := weChat2.WcFileResponse{}.AssembleFileList(fileLists)
+	newFileLists, err := wcFileService.AssembleFileList(fileLists)
 
 	fmt.Println("newFileLists", newFileLists)
 
@@ -148,6 +153,63 @@ func (wcFileService *WcFileService) UploadFile(header *multipart.FileHeader, fil
 	}
 
 	newF, err := wcFileService.Upload(f)
-	newFile, err = weChat2.WcFileResponse{}.AssembleFile(newF)
+	newFile, err = wcFileService.AssembleFile(newF)
 	return newFile, err
+}
+
+func (wcFileService *WcFileService) AssembleFileList(files []weChat.WcFile) (newFiles []weChat2.WcFileResponse, err error) {
+	configInfo := config.GetConfigInfo()
+	var newFile weChat2.WcFileResponse
+	qiNiuConfig := global.GVA_CONFIG.Qiniu
+	mac := auth.New(qiNiuConfig.AccessKey, qiNiuConfig.SecretKey)
+	for _, file := range files {
+		newFile.WcFile = file
+		//文件类型
+		fileTypeText, _ := utils.Find(configInfo.FileType, *file.Type)
+		newFile.TypeText = fileTypeText
+
+		//获取员工名称工号
+		var staff weChat.WcStaff
+		err = global.GVA_DB.Table(staff.TableName()).Where("id=?", file.StaffId).First(&staff).Error
+		if err != nil {
+			fmt.Println("AssembleStaffBank Err:", err)
+			return
+		}
+		newFile.StaffName = staff.Name
+		newFile.JobNum = staff.JobNum
+
+		//私有空间文件下载的 URL
+		deadline := time.Now().Add(time.Second * 3600).Unix()
+		newFile.PrivateAccessURL = storage.MakePrivateURL(mac, qiNiuConfig.ImgPath, file.Key, deadline)
+
+		newFiles = append(newFiles, newFile)
+	}
+	return
+}
+
+func (wcFileService *WcFileService) AssembleFile(file weChat.WcFile) (newFile weChat2.WcFileResponse, err error) {
+	configInfo := config.GetConfigInfo()
+	newFile.WcFile = file
+
+	//文件类型
+	fileTypeText, _ := utils.Find(configInfo.FileType, *file.Type)
+	newFile.TypeText = fileTypeText
+
+	//获取员工名称工号
+	var staff weChat.WcStaff
+	err = global.GVA_DB.Table(staff.TableName()).Where("id=?", file.StaffId).First(&staff).Error
+	if err != nil {
+		fmt.Println("AssembleStaffBank Err:", err)
+		return
+	}
+	newFile.StaffName = staff.Name
+	newFile.JobNum = staff.JobNum
+
+	//私有空间文件下载的 URL
+	qiNiuConfig := global.GVA_CONFIG.Qiniu
+	mac := auth.New(qiNiuConfig.AccessKey, qiNiuConfig.SecretKey)
+	deadline := time.Now().Add(time.Second * 3600).Unix()
+	newFile.PrivateAccessURL = storage.MakePrivateURL(mac, qiNiuConfig.ImgPath, file.Key, deadline)
+
+	return
 }

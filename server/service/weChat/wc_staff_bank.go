@@ -1,6 +1,7 @@
 package weChat
 
 import (
+	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
@@ -42,7 +43,7 @@ func (wcStaffBankService *WcStaffBankService) GetWcStaffBank(ID string) (newStaf
 		return
 	}
 
-	newStaffBank, err = weChat2.WcStaffBankResponse{}.AssembleStaffBank(staffBank)
+	newStaffBank, err = wcStaffBankService.AssembleStaffBank(staffBank)
 	return
 }
 
@@ -71,6 +72,44 @@ func (wcStaffBankService *WcStaffBankService) GetWcStaffBankInfoList(info weChat
 		return
 	}
 
-	list, err = weChat2.WcStaffBankResponse{}.AssembleStaffBankList(wcStaffBanks)
+	list, err = wcStaffBankService.AssembleStaffBankList(wcStaffBanks)
+	return
+}
+
+func (wcStaffBankService *WcStaffBankService) AssembleStaffBankList(staffBanks []weChat.WcStaffBank) (newStaffBanks []weChat2.WcStaffBankResponse, err error) {
+	var newStaffBank weChat2.WcStaffBankResponse
+
+	for _, staffBank := range staffBanks {
+		newStaffBank.WcStaffBank = staffBank
+
+		//获取员工名称工号
+		var staff weChat.WcStaff
+		err = global.GVA_DB.Table(staff.TableName()).Where("id=?", staffBank.StaffId).First(&staff).Error
+		if err != nil {
+			fmt.Println("AssembleStaffBankList Err:", err)
+			return
+		}
+		newStaffBank.StaffName = staff.Name
+		newStaffBank.JobNum = staff.JobNum
+
+		newStaffBanks = append(newStaffBanks, newStaffBank)
+	}
+	return
+}
+
+func (wcStaffBankService *WcStaffBankService) AssembleStaffBank(staffBank weChat.WcStaffBank) (newStaffBank weChat2.WcStaffBankResponse, err error) {
+	newStaffBank.WcStaffBank = staffBank
+
+	//获取员工名称工号
+	var staff weChat.WcStaff
+	err = global.GVA_DB.Table(staff.TableName()).Where("id=?", staffBank.StaffId).First(&staff).Error
+	if err != nil {
+		fmt.Println("AssembleStaffBank Err:", err)
+		return
+	}
+
+	newStaffBank.StaffName = staff.Name
+	newStaffBank.JobNum = staff.JobNum
+
 	return
 }

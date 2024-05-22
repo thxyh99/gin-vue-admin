@@ -1,10 +1,13 @@
 package weChat
 
 import (
+	"fmt"
+	"github.com/flipped-aurora/gin-vue-admin/server/config"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
 	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 )
 
 type WcStaffAgreementService struct {
@@ -42,7 +45,7 @@ func (wcStaffAgreementService *WcStaffAgreementService) GetWcStaffAgreement(ID s
 		return
 	}
 
-	newStaffAgreement, err = weChat2.WcStaffAgreementResponse{}.AssembleStaffAgreement(staffAgreement)
+	newStaffAgreement, err = wcStaffAgreementService.AssembleStaffAgreement(staffAgreement)
 
 	return
 }
@@ -75,6 +78,50 @@ func (wcStaffAgreementService *WcStaffAgreementService) GetWcStaffAgreementInfoL
 		return
 	}
 
-	list, err = weChat2.WcStaffAgreementResponse{}.AssembleStaffAgreementList(wcStaffAgreements)
+	list, err = wcStaffAgreementService.AssembleStaffAgreementList(wcStaffAgreements)
+	return
+}
+
+func (wcStaffAgreementService *WcStaffAgreementService) AssembleStaffAgreementList(staffAgreements []weChat.WcStaffAgreement) (newStaffAgreements []weChat2.WcStaffAgreementResponse, err error) {
+	var newStaffAgreement weChat2.WcStaffAgreementResponse
+	configInfo := config.GetConfigInfo()
+
+	for _, staffAgreement := range staffAgreements {
+		newStaffAgreement.WcStaffAgreement = staffAgreement
+		typeText, _ := utils.Find(configInfo.AgreementType, *staffAgreement.Type)
+		newStaffAgreement.TypeText = typeText
+
+		//获取员工名称工号
+		var staff weChat.WcStaff
+		err = global.GVA_DB.Table(staff.TableName()).Where("id=?", staffAgreement.StaffId).First(&staff).Error
+		if err != nil {
+			fmt.Println("AssembleStaffAgreementList Err:", err)
+			return
+		}
+		newStaffAgreement.StaffName = staff.Name
+		newStaffAgreement.JobNum = staff.JobNum
+
+		newStaffAgreements = append(newStaffAgreements, newStaffAgreement)
+	}
+	return
+}
+
+func (wcStaffAgreementService *WcStaffAgreementService) AssembleStaffAgreement(staffAgreement weChat.WcStaffAgreement) (newStaffAgreement weChat2.WcStaffAgreementResponse, err error) {
+	configInfo := config.GetConfigInfo()
+	newStaffAgreement.WcStaffAgreement = staffAgreement
+	typeText, _ := utils.Find(configInfo.AgreementType, *staffAgreement.Type)
+	newStaffAgreement.TypeText = typeText
+
+	//获取员工名称工号
+	var staff weChat.WcStaff
+	err = global.GVA_DB.Table(staff.TableName()).Where("id=?", staffAgreement.StaffId).First(&staff).Error
+	if err != nil {
+		fmt.Println("AssembleStaffAgreement Err:", err)
+		return
+	}
+
+	newStaffAgreement.StaffName = staff.Name
+	newStaffAgreement.JobNum = staff.JobNum
+
 	return
 }
