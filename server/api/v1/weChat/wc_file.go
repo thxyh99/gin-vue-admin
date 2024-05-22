@@ -174,7 +174,7 @@ func (wcFileApi *WcFileApi) GetWcFilePublic(c *gin.Context) {
 // UploadFile 上传文件
 func (wcFileApi *WcFileApi) UploadFile(c *gin.Context) {
 	var file weChat2.WcFileResponse
-	noSave := c.DefaultQuery("noSave", "0")
+	//noSave := c.DefaultQuery("noSave", "0")
 	fileType, _ := strconv.Atoi(c.PostForm("type"))
 	configInfo := config.GetConfigInfo()
 	if _, ok := utils.Find(configInfo.FileType, fileType); !ok {
@@ -192,7 +192,7 @@ func (wcFileApi *WcFileApi) UploadFile(c *gin.Context) {
 		response.FailWithMessage("接收文件失败", c)
 		return
 	}
-	file, err = wcFileService.UploadFile(header, fileType, staffId, noSave) // 文件上传后拿到文件路径
+	file, err = wcFileService.UploadFile(header, fileType, staffId) // 文件上传后拿到文件路径
 	if err != nil {
 		global.GVA_LOG.Error("修改数据库链接失败!", zap.Error(err))
 		response.FailWithMessage("修改数据库链接失败", c)

@@ -70,8 +70,9 @@ func (wcFileService *WcFileService) GetWcFileInfoList(info weChatReq.WcFileSearc
 	return wcFiles, total, err
 }
 
-func (wcFileService *WcFileService) Upload(file weChat.WcFile) error {
-	return global.GVA_DB.Create(&file).Error
+func (wcFileService *WcFileService) Upload(file weChat.WcFile) (weChat.WcFile, error) {
+	err := global.GVA_DB.Create(&file).Error
+	return file, err
 }
 
 func (wcFileService *WcFileService) FindFile(ID uint) (newFile weChat2.WcFileResponse, err error) {
@@ -130,7 +131,7 @@ func (wcFileService *WcFileService) GetFileRecordInfoList(info request.PageInfo,
 	return newFileLists, total, err
 }
 
-func (wcFileService *WcFileService) UploadFile(header *multipart.FileHeader, fileType, staffId int, noSave string) (newFile weChat2.WcFileResponse, err error) {
+func (wcFileService *WcFileService) UploadFile(header *multipart.FileHeader, fileType, staffId int) (newFile weChat2.WcFileResponse, err error) {
 	oss := upload.NewOss()
 	filePath, key, uploadErr := oss.UploadFile(header)
 	if uploadErr != nil {
@@ -146,13 +147,7 @@ func (wcFileService *WcFileService) UploadFile(header *multipart.FileHeader, fil
 		Type:    &fileType,
 	}
 
-	newFile, err = weChat2.WcFileResponse{}.AssembleFile(f)
-	if err != nil {
-		return newFile, err
-	}
-
-	if noSave == "0" {
-		return newFile, wcFileService.Upload(f)
-	}
-	return newFile, nil
+	newF, err := wcFileService.Upload(f)
+	newFile, err = weChat2.WcFileResponse{}.AssembleFile(newF)
+	return newFile, err
 }
