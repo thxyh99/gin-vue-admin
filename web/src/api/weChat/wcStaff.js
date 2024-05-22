@@ -120,3 +120,11 @@ export const getObtainEmployeeRoster = (params) => {
     params
   })
 }
+
+export const deleteFile = (data) => {
+  return service({
+    url: '/wcFile/deleteFile',
+    method: 'post',
+    data
+  })
+}

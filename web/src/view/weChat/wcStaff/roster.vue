@@ -23,7 +23,7 @@
 					<contractInfo :id="id" :rewcStaffAgreement="rewcStaffAgreement" @updateInfoSuccess="getData" />
 				</el-tab-pane>
 				<el-tab-pane label="材料附件" name="third">
-					<material :rewcStaffMaterials="rewcStaffMaterials" />
+					<material :id="id" :rewcStaffMaterials="rewcStaffMaterials" @updateInfoSuccess="getData" />
 				</el-tab-pane>
 			</el-tabs>
 		</div>

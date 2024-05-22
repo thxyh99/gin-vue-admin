@@ -3,7 +3,7 @@
 		<template v-if="rewcStaffAgreement && rewcStaffAgreement.length">
 			<el-descriptions title="合同信息" border v-for="(item, index) in rewcStaffAgreement" :key="index">
 				<template #extra>
-					<el-button type="primary" size="small">编 辑</el-button>
+					<el-button type="primary" size="small" @click="handleEdit(item, index)">编 辑</el-button>
 					<el-button type="primary" size="small" @click="handleDelete(item.ID)">删 除</el-button>
 				</template>
 				<el-descriptions-item label="合同公司" label-align="right">{{ item.company }}</el-descriptions-item>
@@ -17,7 +17,9 @@
 				<el-descriptions-item label="续签次数" label-align="right">{{ item.times }}</el-descriptions-item>
 				<el-descriptions-item label-align="right"></el-descriptions-item>
 				<el-descriptions-item label="合同附件" label-align="right" :span="3">
-					<el-button type="text">{{ item.attachment.name }}</el-button>
+					<el-button type="text" @click="handlePreview(item.attachment.privateAccessURL)">{{
+						item.attachment.name
+					}}</el-button>
 				</el-descriptions-item>
 			</el-descriptions>
 		</template>
@@ -25,7 +27,7 @@
 		<div class="btn" @click="handleAdd">
 			<span>+ 添加合同</span>
 		</div>
-		<el-drawer size="800" v-model="dialogFormVisible" :show-close="false">
+		<el-drawer size="800" v-model="dialogFormVisible" :show-close="false" @closed="closeDialog">
 			<template #title>
 				<div class="flex justify-between items-center">
 					<span class="text-lg">{{ modeType ? '添加' : '修改' }}</span>
@@ -68,14 +70,14 @@
 				</el-form-item>
 				<el-form-item label="合同附件:" prop="fileId">
 					<el-upload
-						v-model:file-list="fileList"
 						action="/api/wcFile/upload"
-						multiple
+						:file-list="fileList"
 						:data="{ staffId: props.id, type: 1 }"
-						:on-preview="handlePreview"
+						:before-upload="beforeAvatarUpload"
+						:on-remove="handleRemove"
 						:on-success="handleUploadSuccess"
 					>
-						<el-button type="primary">点击上传</el-button>
+						<el-button type="primary" :disabled="fileList.length">点击上传</el-button>
 					</el-upload>
 				</el-form-item>
 			</el-form>
@@ -106,7 +108,10 @@ const emits = defineEmits(['updateInfoSuccess'])
 
 const dialogFormVisible = ref(false)
 const modeType = ref(true)
+const ind = ref(0)
 const formData = ref({})
+
+const fileList = ref([])
 
 const types = [
 	{ label: '固定期限劳动合同', value: 1 },
@@ -164,6 +169,25 @@ const handleAdd = () => {
 	dialogFormVisible.value = true
 }
 
+const handleEdit = (item, index) => {
+	ind.value = index
+	modeType.value = false
+	for (const key in item) {
+		formData.value[key] = item[key]
+	}
+	if (item.attachment.ID) {
+		fileList.value = [
+			{
+				name: item.attachment.name,
+				url: item.attachment.privateAccessURL,
+				id: item.attachment.ID,
+			},
+		]
+	}
+
+	dialogFormVisible.value = true
+}
+
 const handleDelete = (ID) => {
 	ElMessageBox.confirm('是否删除该合同?', '提示', {
 		confirmButtonText: '删除',
@@ -172,7 +196,7 @@ const handleDelete = (ID) => {
 	})
 		.then(async () => {
 			const res = await deleteWcStaffAgreement({ ID })
-			if(res.code === 0) {
+			if (res.code === 0) {
 				emits('updateInfoSuccess')
 			}
 		})
@@ -184,12 +208,34 @@ const handleDelete = (ID) => {
 		})
 }
 
-const handleUploadSuccess = (res) => {
-	console.log(res)
+const handleUploadSuccess = (res, uploadFiles) => {
+	console.log(uploadFiles)
+	fileList.value.push({
+		name: uploadFiles.name,
+		url: uploadFiles.privateAccessURL,
+		ID: uploadFiles.ID,
+	})
 	formData.value.fileId = res.data.ID
 }
 
+const beforeAvatarUpload = () => {
+	if (fileList.value.length > 0) {
+		ElMessage.error('一份合同只能一个附件，请删除后重新上传！')
+		return false
+	}
+}
+
+const handlePreview = (url) => {
+	window.open(url)
+}
+
+const handleRemove = (file) => {
+	fileList.value = []
+}
+
 const closeDialog = () => {
+	formData.value = {}
+	fileList.value = []
 	dialogFormVisible.value = false
 }
 
@@ -197,15 +243,18 @@ const elFormRef = ref()
 const enterDialog = () => {
 	elFormRef.value?.validate(async (valid) => {
 		if (!valid) return
+
 		const res = await updateWcStaffAgreement({
 			...formData.value,
 			fileId: formData.value.fileId ? formData.value.fileId : 0,
 			staffId: Number(props.id),
-			// ID: props.rewcStaffBank.ID,
+			ID: modeType.value ? undefined : props.rewcStaffAgreement[ind.value].ID,
 		})
 		if (res.code === 0) {
 			emits('updateInfoSuccess')
 			dialogFormVisible.value = false
+			formData.value = {}
+			fileList.value = []
 		}
 	})
 }
