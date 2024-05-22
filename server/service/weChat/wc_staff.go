@@ -24,17 +24,6 @@ type WcStaffService struct {
 
 // CreateWcStaff 创建账号信息记录
 func (wcStaffService *WcStaffService) CreateWcStaff(wcStaff *weChat.WcStaff) (err error) {
-	//zero := 0
-	//wcStaff := weChat.WcStaff{
-	//	UserId:  &zero,
-	//	Userid:  wcStaffRequest.Userid,
-	//	JobNum:  wcStaffRequest.JobNum,
-	//	Name:    wcStaffRequest.Name,
-	//	Gender:  wcStaffRequest.Gender,
-	//	Mobile:  wcStaffRequest.Mobile,
-	//	Address: wcStaffRequest.Address,
-	//}
-
 	err = global.GVA_DB.Create(&wcStaff).Error
 	if err != nil {
 		fmt.Println("err1:", err)

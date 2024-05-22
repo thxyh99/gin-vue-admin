@@ -182,11 +182,44 @@ func (wcStaffApi *WcStaffApi) ObtainEmployeeRoster(c *gin.Context) {
 		rewcStaffAgreement = append(rewcStaffAgreement, item)
 	}
 
-	rewcStaffMaterials, err := wcStaffMaterialsService.GetWcStaffMaterials(ID)
+	rewcStaffMaterials := new(weChat2.WcStaffMaterialsResponse)
+	fileList, err := wcFileService.GetFileRecordInfoListByStaffId(staffId)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		global.GVA_LOG.Error("查询证件材料失败!", zap.Error(err))
 		response.FailWithMessage("查询证件材料失败", c)
 	}
+
+	for _, item := range fileList {
+		clonedItem := item
+		if *item.Type == 2 {
+			rewcStaffMaterials.IdCardPortrait = append(rewcStaffMaterials.IdCardPortrait, &clonedItem)
+		}
+		if *item.Type == 3 {
+			rewcStaffMaterials.IdCardNational = append(rewcStaffMaterials.IdCardNational, &clonedItem)
+		}
+		if *item.Type == 4 {
+			rewcStaffMaterials.EducationCertificate = append(rewcStaffMaterials.EducationCertificate, &clonedItem)
+		}
+		if *item.Type == 5 {
+			rewcStaffMaterials.DegreeCertificate = append(rewcStaffMaterials.DegreeCertificate, &clonedItem)
+		}
+		if *item.Type == 6 {
+			rewcStaffMaterials.ResignationCertificate = append(rewcStaffMaterials.ResignationCertificate, &clonedItem)
+		}
+		if *item.Type == 7 {
+			rewcStaffMaterials.OnboardingForm = append(rewcStaffMaterials.OnboardingForm, &clonedItem)
+		}
+		if *item.Type == 8 {
+			rewcStaffMaterials.TrialProvide = append(rewcStaffMaterials.TrialProvide, &clonedItem)
+		}
+		if *item.Type == 9 {
+			rewcStaffMaterials.PersonalResume = append(rewcStaffMaterials.PersonalResume, &clonedItem)
+		}
+		if *item.Type == 10 {
+			rewcStaffMaterials.SkillCertificate = append(rewcStaffMaterials.SkillCertificate, &clonedItem)
+		}
+	}
+
 	response.OkWithData(gin.H{
 		"rewcStaff":          rewcStaff,
 		"rewcStaffJob":       rewcStaffJob,

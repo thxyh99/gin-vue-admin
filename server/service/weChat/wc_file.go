@@ -136,6 +136,19 @@ func (wcFileService *WcFileService) GetFileRecordInfoList(info request.PageInfo,
 	return newFileLists, total, err
 }
 
+// GetFileRecordInfoListByStaffId 通过员工ID获取证件材料
+func (wcFileService *WcFileService) GetFileRecordInfoListByStaffId(staffId int) (list []weChat2.WcFileResponse, err error) {
+	db := global.GVA_DB.Model(&weChat.WcFile{})
+	var fileLists []weChat.WcFile
+	db = db.Where("staff_id=?", staffId)
+	err = db.Find(&fileLists).Error
+	if err != nil {
+		return
+	}
+	list, err = wcFileService.AssembleFileList(fileLists)
+	return
+}
+
 func (wcFileService *WcFileService) UploadFile(header *multipart.FileHeader, fileType, staffId int) (newFile weChat2.WcFileResponse, err error) {
 	oss := upload.NewOss()
 	filePath, key, uploadErr := oss.UploadFile(header)

@@ -37,7 +37,7 @@ func (wcStaffMaterialsService *WcStaffMaterialsService) UpdateWcStaffMaterials(w
 }
 
 // GetWcStaffMaterials 根据员工ID获取证件材料记录
-func (wcStaffMaterialsService *WcStaffMaterialsService) GetWcStaffMaterials(ID string) (newStaffMaterials weChat2.WcStaffMaterialsResponse, err error) {
+func (wcStaffMaterialsService *WcStaffMaterialsService) GetWcStaffMaterials(ID string) (newStaffMaterials weChat2.WcStaffMaterialsResponseDiscard, err error) {
 	var wcStaffMaterials weChat.WcStaffMaterials
 	err = global.GVA_DB.Where("staff_id = ?", ID).First(&wcStaffMaterials).Error
 	if err != nil {
@@ -49,7 +49,7 @@ func (wcStaffMaterialsService *WcStaffMaterialsService) GetWcStaffMaterials(ID s
 }
 
 // GetWcStaffMaterialsInfoList 分页获取证件材料记录
-func (wcStaffMaterialsService *WcStaffMaterialsService) GetWcStaffMaterialsInfoList(info weChatReq.WcStaffMaterialsSearch) (list []weChat2.WcStaffMaterialsResponse, total int64, err error) {
+func (wcStaffMaterialsService *WcStaffMaterialsService) GetWcStaffMaterialsInfoList(info weChatReq.WcStaffMaterialsSearch) (list []weChat2.WcStaffMaterialsResponseDiscard, total int64, err error) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
@@ -77,8 +77,8 @@ func (wcStaffMaterialsService *WcStaffMaterialsService) GetWcStaffMaterialsInfoL
 	return
 }
 
-func (wcStaffMaterialsService *WcStaffMaterialsService) AssembleStaffMaterialsList(staffMaterials []weChat.WcStaffMaterials) (newStaffMaterials []weChat2.WcStaffMaterialsResponse, err error) {
-	var newStaffMater weChat2.WcStaffMaterialsResponse
+func (wcStaffMaterialsService *WcStaffMaterialsService) AssembleStaffMaterialsList(staffMaterials []weChat.WcStaffMaterials) (newStaffMaterials []weChat2.WcStaffMaterialsResponseDiscard, err error) {
+	var newStaffMater weChat2.WcStaffMaterialsResponseDiscard
 
 	for _, staffMaterial := range staffMaterials {
 		newStaffMater.WcStaffMaterials = staffMaterial
@@ -102,7 +102,7 @@ func (wcStaffMaterialsService *WcStaffMaterialsService) AssembleStaffMaterialsLi
 	return
 }
 
-func (wcStaffMaterialsService *WcStaffMaterialsService) AssembleStaffMaterials(staffMaterials weChat.WcStaffMaterials) (newStaffMaterials weChat2.WcStaffMaterialsResponse, err error) {
+func (wcStaffMaterialsService *WcStaffMaterialsService) AssembleStaffMaterials(staffMaterials weChat.WcStaffMaterials) (newStaffMaterials weChat2.WcStaffMaterialsResponseDiscard, err error) {
 	newStaffMaterials.WcStaffMaterials = staffMaterials
 
 	if staffMaterials.SkillCertificate != "" {
