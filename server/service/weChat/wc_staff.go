@@ -235,7 +235,6 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 							zero := 0
 							wd.Name = name
 							wd.Parentid = &parentId
-							wd.DepartmentId = &zero
 							wd.Order = &zero
 							wd.Parentid = &parentId
 							wd.CreatedAt = time.Now()

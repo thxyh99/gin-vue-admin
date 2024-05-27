@@ -13,12 +13,6 @@ import (
 type WcDepartmentApi struct {
 }
 
-type SyncWcDepartmentParams struct {
-	DepartmentID int `json:"department_id"`
-	ParentID     int `json:"parent_id"`
-	Order        int `json:"order"`
-}
-
 var wcDepartmentService = service.ServiceGroupApp.WeChatServiceGroup.WcDepartmentService
 
 // CreateWcDepartment 创建wcDepartment表
@@ -194,24 +188,4 @@ func (wcDepartmentApi *WcDepartmentApi) GetWcDepartmentPublic(c *gin.Context) {
 	response.OkWithDetailed(gin.H{
 		"info": "不需要鉴权的wcDepartment表接口信息",
 	}, "获取成功", c)
-}
-
-func (wcDepartmentApi *WcDepartmentApi) SyncWcDepartment(c *gin.Context, p *SyncWcDepartmentParams) {
-	var wcDepartment weChat.WcDepartment
-	//err := c.ShouldBindJSON(&wcDepartment)
-	//if err != nil {
-	//	response.FailWithMessage(err.Error(), c)
-	//	return
-	//}
-
-	wcDepartment.DepartmentId = &(p.DepartmentID)
-	wcDepartment.Parentid = &(p.ParentID)
-	wcDepartment.Order = &(p.Order)
-
-	if err := wcDepartmentService.SyncWcDepartment(&wcDepartment); err != nil {
-		global.GVA_LOG.Error("同步失败!", zap.Error(err))
-		response.FailWithMessage("同步失败", c)
-	} else {
-		response.OkWithMessage("同步成功", c)
-	}
 }

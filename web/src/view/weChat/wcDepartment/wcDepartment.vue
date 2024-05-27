@@ -40,13 +40,10 @@
         <el-table-column align="left" label="日期" width="180">
             <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
         </el-table-column>
-        
-        <el-table-column align="left" label="部门ID" prop="departmentId" width="180" />
-        <el-table-column align="left" label="部门名称" prop="name" width="180" />
-        <el-table-column align="left" label="英文名称" prop="nameEn" width="180" />
-        <el-table-column align="left" label="部门负责人" prop="departmentLeader" width="180" />
-        <el-table-column align="left" label="父部门ID" prop="parentid" width="180" />
-        <el-table-column align="left" label="排序" prop="order" width="180" />
+        <el-table-column align="left" label="部门名称" prop="fullName" width="300" />
+<!--        <el-table-column align="left" label="部门负责人" prop="departmentLeader" width="180" />-->
+<!--        <el-table-column align="left" label="父部门ID" prop="parentid" width="180" />-->
+<!--        <el-table-column align="left" label="排序" prop="order" width="180" />-->
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -82,24 +79,18 @@
             </template>
 
           <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
-            <el-form-item label="部门ID:"  prop="departmentId" >
-              <el-input v-model.number="formData.departmentId" :clearable="true" placeholder="请输入部门ID" />
-            </el-form-item>
             <el-form-item label="部门名称:"  prop="name" >
               <el-input v-model="formData.name" :clearable="true"  placeholder="请输入部门名称" />
             </el-form-item>
-            <el-form-item label="英文名称:"  prop="nameEn" >
-              <el-input v-model="formData.nameEn" :clearable="true"  placeholder="请输入英文名称" />
-            </el-form-item>
-            <el-form-item label="部门负责人:"  prop="departmentLeader" >
-              <el-input v-model="formData.departmentLeader" :clearable="true"  placeholder="请输入部门负责人" />
-            </el-form-item>
-            <el-form-item label="父部门ID:"  prop="parentid" >
-              <el-input v-model.number="formData.parentid" :clearable="true" placeholder="请输入父部门ID" />
-            </el-form-item>
-            <el-form-item label="排序:"  prop="order" >
-              <el-input v-model.number="formData.order" :clearable="true" placeholder="请输入排序" />
-            </el-form-item>
+<!--            <el-form-item label="部门负责人:"  prop="departmentLeader" >-->
+<!--              <el-input v-model="formData.departmentLeader" :clearable="true"  placeholder="请输入部门负责人" />-->
+<!--            </el-form-item>-->
+<!--            <el-form-item label="父部门ID:"  prop="parentid" >-->
+<!--              <el-input v-model.number="formData.parentid" :clearable="true" placeholder="请输入父部门ID" />-->
+<!--            </el-form-item>-->
+<!--            <el-form-item label="排序:"  prop="order" >-->
+<!--              <el-input v-model.number="formData.order" :clearable="true" placeholder="请输入排序" />-->
+<!--            </el-form-item>-->
           </el-form>
     </el-drawer>
 
@@ -110,24 +101,18 @@
              </div>
          </template>
         <el-descriptions :column="1" border>
-                <el-descriptions-item label="部门ID">
-                        {{ formData.departmentId }}
-                </el-descriptions-item>
                 <el-descriptions-item label="部门名称">
-                        {{ formData.name }}
+                        {{ formData.fullName }}
                 </el-descriptions-item>
-                <el-descriptions-item label="英文名称">
-                        {{ formData.nameEn }}
-                </el-descriptions-item>
-                <el-descriptions-item label="部门负责人">
-                        {{ formData.departmentLeader }}
-                </el-descriptions-item>
-                <el-descriptions-item label="父部门ID">
-                        {{ formData.parentid }}
-                </el-descriptions-item>
-                <el-descriptions-item label="排序">
-                        {{ formData.order }}
-                </el-descriptions-item>
+<!--                <el-descriptions-item label="部门负责人">-->
+<!--                        {{ formData.departmentLeader }}-->
+<!--                </el-descriptions-item>-->
+<!--                <el-descriptions-item label="父部门ID">-->
+<!--                        {{ formData.parentid }}-->
+<!--                </el-descriptions-item>-->
+<!--                <el-descriptions-item label="排序">-->
+<!--                        {{ formData.order }}-->
+<!--                </el-descriptions-item>-->
         </el-descriptions>
     </el-drawer>
   </div>
@@ -147,6 +132,7 @@ import {
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
+import {InfoFilled, QuestionFilled} from "@element-plus/icons-vue";
 
 defineOptions({
     name: 'WcDepartment'
@@ -154,9 +140,8 @@ defineOptions({
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
-        departmentId: 0,
         name: '',
-        nameEn: '',
+        fullName: '',
         departmentLeader: '',
         parentid: 0,
         order: 0,
@@ -165,12 +150,6 @@ const formData = ref({
 
 // 验证规则
 const rule = reactive({
-               departmentId : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-              ],
                name : [{
                    required: true,
                    message: '',
@@ -382,9 +361,8 @@ const getDetails = async (row) => {
 const closeDetailShow = () => {
   detailShow.value = false
   formData.value = {
-          departmentId: 0,
           name: '',
-          nameEn: '',
+          fullName: '',
           departmentLeader: '',
           parentid: 0,
           order: 0,
@@ -402,9 +380,8 @@ const openDialog = () => {
 const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
-        departmentId: 0,
         name: '',
-        nameEn: '',
+        fullName: '',
         departmentLeader: '',
         parentid: 0,
         order: 0,
