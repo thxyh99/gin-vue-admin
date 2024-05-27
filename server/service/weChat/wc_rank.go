@@ -34,7 +34,7 @@ func (wcRankService *WcRankService) CreateWcRank(wcRank *weChat.WcRank) (err err
 // DeleteWcRank 删除职级管理记录
 func (wcRankService *WcRankService) DeleteWcRank(ID string) (err error) {
 	var staffJob weChat.WcStaffJob
-	err = global.GVA_DB.Where("staffJob = ?", ID).First(&staffJob).Error
+	err = global.GVA_DB.Where("rank = ?", ID).First(&staffJob).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return
 	}
