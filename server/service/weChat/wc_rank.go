@@ -3,12 +3,14 @@ package weChat
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
 	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -17,12 +19,28 @@ type WcRankService struct {
 
 // CreateWcRank 创建职级管理记录
 func (wcRankService *WcRankService) CreateWcRank(wcRank *weChat.WcRank) (err error) {
+	var rank weChat.WcRank
+	err = global.GVA_DB.Where("`type` = ? AND name = ?", wcRank.Type, wcRank.Name).First(&rank).Error
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return
+	}
+	if rank.ID > 0 {
+		return errors.New("该职工等级名称已存在！")
+	}
 	err = global.GVA_DB.Create(wcRank).Error
 	return err
 }
 
 // DeleteWcRank 删除职级管理记录
 func (wcRankService *WcRankService) DeleteWcRank(ID string) (err error) {
+	var staffJob weChat.WcStaffJob
+	err = global.GVA_DB.Where("staffJob = ?", ID).First(&staffJob).Error
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return
+	}
+	if staffJob.ID > 0 {
+		return errors.New("该职工等级名称已使用，请勿删除！")
+	}
 	err = global.GVA_DB.Delete(&weChat.WcRank{}, "id = ?", ID).Error
 	return err
 }
@@ -35,6 +53,15 @@ func (wcRankService *WcRankService) DeleteWcRankByIds(IDs []string) (err error) 
 
 // UpdateWcRank 更新职级管理记录
 func (wcRankService *WcRankService) UpdateWcRank(wcRank weChat.WcRank) (err error) {
+	var rank weChat.WcRank
+	err = global.GVA_DB.Where("id != ? AND `type` = ? AND name = ?", wcRank.ID, wcRank.Type, wcRank.Name).First(&rank).Error
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return
+	}
+	if rank.ID > 0 {
+		return errors.New("该职工等级名称已存在！")
+	}
+
 	err = global.GVA_DB.Save(&wcRank).Error
 	return err
 }

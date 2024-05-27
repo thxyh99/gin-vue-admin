@@ -39,7 +39,7 @@ func (wcRankApi *WcRankApi) CreateWcRank(c *gin.Context) {
 	}
 	if err := wcRankService.CreateWcRank(&wcRank); err != nil {
 		global.GVA_LOG.Error("创建失败!", zap.Error(err))
-		response.FailWithMessage("创建失败", c)
+		response.FailWithMessage("创建失败，"+err.Error(), c)
 	} else {
 		response.OkWithMessage("创建成功", c)
 	}
@@ -58,7 +58,7 @@ func (wcRankApi *WcRankApi) DeleteWcRank(c *gin.Context) {
 	ID := c.Query("ID")
 	if err := wcRankService.DeleteWcRank(ID); err != nil {
 		global.GVA_LOG.Error("删除失败!", zap.Error(err))
-		response.FailWithMessage("删除失败", c)
+		response.FailWithMessage("删除失败，"+err.Error(), c)
 	} else {
 		response.OkWithMessage("删除成功", c)
 	}
@@ -101,7 +101,7 @@ func (wcRankApi *WcRankApi) UpdateWcRank(c *gin.Context) {
 
 	if err := wcRankService.UpdateWcRank(wcRank); err != nil {
 		global.GVA_LOG.Error("更新失败!", zap.Error(err))
-		response.FailWithMessage("更新失败", c)
+		response.FailWithMessage("更新失败，"+err.Error(), c)
 	} else {
 		response.OkWithMessage("更新成功", c)
 	}
