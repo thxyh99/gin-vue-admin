@@ -88,19 +88,8 @@ func (wcStaffJobService *WcStaffJobService) DeleteWcStaffJobByIds(IDs []string) 
 
 // UpdateWcStaffJob 更新工作信息记录
 func (wcStaffJobService *WcStaffJobService) UpdateWcStaffJob(wcStaffJobRequest *weChatReq.WcStaffJobRequest) (err error) {
-	var wcStaffJob = weChat.WcStaffJob{
-		StaffId:        wcStaffJobRequest.StaffId,
-		Type:           wcStaffJobRequest.Type,
-		Status:         wcStaffJobRequest.Status,
-		TryPeriod:      wcStaffJobRequest.TryPeriod,
-		RankType:       wcStaffJobRequest.RankType,
-		Rank:           wcStaffJobRequest.Rank,
-		RankSalary:     wcStaffJobRequest.RankSalary,
-		EmploymentDate: wcStaffJobRequest.EmploymentDate,
-		FormalDate:     wcStaffJobRequest.FormalDate,
-		ExpenseAccount: wcStaffJobRequest.ExpenseAccount,
-	}
-	err = global.GVA_DB.Where("id=?", wcStaffJobRequest.ID).Updates(&wcStaffJob).Error
+	wcStaffJob := wcStaffJobRequest.WcStaffJob
+	err = global.GVA_DB.Save(&wcStaffJob).Error
 	if err != nil {
 		return err
 	}
@@ -148,8 +137,6 @@ func (wcStaffJobService *WcStaffJobService) UpdateWcStaffJob(wcStaffJobRequest *
 	}
 
 	return
-	//err = global.GVA_DB.Save(&wcStaffJob).Error
-	//return err
 }
 
 // GetWcStaffJob 根据员工ID获取工作信息记录
