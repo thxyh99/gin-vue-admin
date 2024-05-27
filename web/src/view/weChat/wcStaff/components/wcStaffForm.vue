@@ -388,7 +388,7 @@ const closeDialog = () => {
 const enterDialog = async () => {
 	elFormRef.value?.validate(async (valid) => {
 		if (!valid) return
-		const res = await updateWcStaff({ ...formData.value, ID: props.id })
+		const res = await updateWcStaff({ ...formData.value, ID: Number(props.id) })
 		if (res.code === 0) {
 			emits('updateInfoSuccess')
 			dialogFormVisible.value = false
