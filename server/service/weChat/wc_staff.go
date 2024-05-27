@@ -75,6 +75,11 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
 		db = db.Where("created_at BETWEEN ? AND ?", info.StartCreatedAt, info.EndCreatedAt)
 	}
+	// 添加员工名称、员工工号、手机模糊查询
+	if info.Keyword != "" {
+		keyword := "%" + info.Keyword + "%"
+		db = db.Where("(name LIKE ? OR job_num LIKE ? OR mobile LIKE ?)", keyword, keyword, keyword)
+	}
 	err = db.Count(&total).Error
 	if err != nil {
 		return

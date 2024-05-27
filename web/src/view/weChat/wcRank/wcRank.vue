@@ -16,22 +16,7 @@
       <el-date-picker v-model="searchInfo.endCreatedAt" type="datetime" placeholder="结束日期" :disabled-date="time=> searchInfo.startCreatedAt ? time.getTime() < searchInfo.startCreatedAt.getTime() : false"></el-date-picker>
       </el-form-item>
 
-
-
         <el-form-item label="职工等级类型">
-<!--          <el-select-->
-<!--              v-model="searchInfo.type"-->
-<!--              clearable-->
-<!--              placeholder="请选择"-->
-<!--          >-->
-<!--            <el-option-->
-<!--                v-for="item in methodOptions"-->
-<!--                :key="item.value"-->
-<!--                :label="`${item.label}(${item.value})`"-->
-<!--                :value="item.value"-->
-<!--            />-->
-<!--          </el-select>-->
-
           <SelectRankType v-model="searchInfo.type" clearable  placeholder="请选择">
           </SelectRankType>
         </el-form-item>

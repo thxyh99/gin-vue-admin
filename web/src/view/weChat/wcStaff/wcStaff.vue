@@ -3,20 +3,32 @@
     <div class="gva-search-box">
       <el-form ref="elSearchFormRef" :inline="true" :model="searchInfo" class="demo-form-inline" :rules="searchRule"
                @keyup.enter="onSubmit">
-        <el-form-item label="创建日期" prop="createdAt">
-          <template #label>
-        <span>
-          创建日期
-          <el-tooltip content="搜索范围是开始日期（包含）至结束日期（不包含）">
-            <el-icon><QuestionFilled/></el-icon>
-          </el-tooltip>
-        </span>
-          </template>
-          <el-date-picker v-model="searchInfo.startCreatedAt" type="datetime" placeholder="开始日期"
-                          :disabled-date="time=> searchInfo.endCreatedAt ? time.getTime() > searchInfo.endCreatedAt.getTime() : false"></el-date-picker>
-          —
-          <el-date-picker v-model="searchInfo.endCreatedAt" type="datetime" placeholder="结束日期"
-                          :disabled-date="time=> searchInfo.startCreatedAt ? time.getTime() < searchInfo.startCreatedAt.getTime() : false"></el-date-picker>
+<!--        <el-form-item label="创建日期" prop="createdAt">-->
+<!--          <template #label>-->
+<!--        <span>-->
+<!--          创建日期-->
+<!--          <el-tooltip content="搜索范围是开始日期（包含）至结束日期（不包含）">-->
+<!--            <el-icon><QuestionFilled/></el-icon>-->
+<!--          </el-tooltip>-->
+<!--        </span>-->
+<!--          </template>-->
+<!--          <el-date-picker v-model="searchInfo.startCreatedAt" type="datetime" placeholder="开始日期"-->
+<!--                          :disabled-date="time=> searchInfo.endCreatedAt ? time.getTime() > searchInfo.endCreatedAt.getTime() : false"></el-date-picker>-->
+<!--          —-->
+<!--          <el-date-picker v-model="searchInfo.endCreatedAt" type="datetime" placeholder="结束日期"-->
+<!--                          :disabled-date="time=> searchInfo.startCreatedAt ? time.getTime() < searchInfo.startCreatedAt.getTime() : false"></el-date-picker>-->
+<!--        </el-form-item>-->
+
+<!--        <el-form-item label="所属部门">-->
+<!--          <SelectDepartment v-model="searchInfo.type" clearable  placeholder="请选择">-->
+<!--          </SelectDepartment>-->
+<!--        </el-form-item>-->
+
+        <el-form-item label="关键词">
+          <el-input
+              v-model="searchInfo.keyword"
+              placeholder="输入名称、员工工号、手机"
+          />
         </el-form-item>
 
         <el-form-item>
@@ -273,6 +285,8 @@ import ImportExcel from "@/components/exportExcel/wechat/importExcel.vue";
 import ExportExcel from "@/components/exportExcel/wechat/exportExcel.vue";
 import ExportTemplate from "@/components/exportExcel/wechat/exportTemplate.vue";
 import {InfoFilled, QuestionFilled} from "@element-plus/icons-vue";
+import SelectDepartment from "@/components/selectDepartment/index.vue";
+
 
 defineOptions({
   name: 'WcStaff'
