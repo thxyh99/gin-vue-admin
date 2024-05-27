@@ -27,12 +27,16 @@ var wcRankService = service.ServiceGroupApp.WeChatServiceGroup.WcRankService
 // @Router /wcRank/createWcRank [post]
 func (wcRankApi *WcRankApi) CreateWcRank(c *gin.Context) {
 	var wcRank weChat.WcRank
-	err := c.ShouldBindJSON(&wcRank)
+	var wcRankRequest weChatReq.CreateWcRankRequest
+	err := c.ShouldBindJSON(&wcRankRequest)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-
+	wcRank = weChat.WcRank{
+		Type: wcRankRequest.Type,
+		Name: wcRankRequest.Name,
+	}
 	if err := wcRankService.CreateWcRank(&wcRank); err != nil {
 		global.GVA_LOG.Error("创建失败!", zap.Error(err))
 		response.FailWithMessage("创建失败", c)
@@ -132,21 +136,21 @@ func (wcRankApi *WcRankApi) FindWcRank(c *gin.Context) {
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /wcRank/getWcRankList [get]
 func (wcRankApi *WcRankApi) GetWcRankList(c *gin.Context) {
-	var pageInfo weChatReq.WcRankSearch
-	err := c.ShouldBindQuery(&pageInfo)
+	var params weChatReq.SearchRankParams
+	err := c.ShouldBindQuery(&params)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if list, total, err := wcRankService.GetWcRankInfoList(pageInfo); err != nil {
+	if list, total, err := wcRankService.GetWcRankInfoList(params); err != nil {
 		global.GVA_LOG.Error("获取失败!", zap.Error(err))
 		response.FailWithMessage("获取失败", c)
 	} else {
 		response.OkWithDetailed(response.PageResult{
 			List:     list,
 			Total:    total,
-			Page:     pageInfo.Page,
-			PageSize: pageInfo.PageSize,
+			Page:     params.Page,
+			PageSize: params.PageSize,
 		}, "获取成功", c)
 	}
 }

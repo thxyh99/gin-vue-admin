@@ -15,6 +15,33 @@
        —
       <el-date-picker v-model="searchInfo.endCreatedAt" type="datetime" placeholder="结束日期" :disabled-date="time=> searchInfo.startCreatedAt ? time.getTime() < searchInfo.startCreatedAt.getTime() : false"></el-date-picker>
       </el-form-item>
+
+
+
+        <el-form-item label="职工等级类型">
+<!--          <el-select-->
+<!--              v-model="searchInfo.type"-->
+<!--              clearable-->
+<!--              placeholder="请选择"-->
+<!--          >-->
+<!--            <el-option-->
+<!--                v-for="item in methodOptions"-->
+<!--                :key="item.value"-->
+<!--                :label="`${item.label}(${item.value})`"-->
+<!--                :value="item.value"-->
+<!--            />-->
+<!--          </el-select>-->
+
+          <SelectRankType v-model="searchInfo.type" clearable  placeholder="请选择">
+          </SelectRankType>
+        </el-form-item>
+
+        <el-form-item label="职工等级名称">
+          <el-input
+              v-model="searchInfo.name"
+              placeholder="职工等级名称"
+          />
+        </el-form-item>
       
         <el-form-item>
           <el-button type="primary" icon="search" @click="onSubmit">查询</el-button>
@@ -36,6 +63,9 @@
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
+        <el-table-column align="left" label="创建日期" width="180">
+          <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
+        </el-table-column>
         <el-table-column align="left" label="职工等级ID" prop="ID" width="120" />
         <el-table-column align="left" label="职工等级类型" prop="typeText" width="200" />
         <el-table-column align="left" label="职工等级名称" prop="name" width="240" />

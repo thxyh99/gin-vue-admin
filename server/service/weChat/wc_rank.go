@@ -52,15 +52,24 @@ func (wcRankService *WcRankService) GetWcRank(ID string) (wcRank weChat2.WcRankR
 }
 
 // GetWcRankInfoList 分页获取职级管理记录
-func (wcRankService *WcRankService) GetWcRankInfoList(info weChatReq.WcRankSearch) (list []weChat2.WcRankResponse, total int64, err error) {
+func (wcRankService *WcRankService) GetWcRankInfoList(info weChatReq.SearchRankParams) (list []weChat2.WcRankResponse, total int64, err error) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
+
+	fmt.Println("info", info)
+
 	// 创建db
 	db := global.GVA_DB.Model(&weChat.WcRank{})
 	var wcRanks []weChat.WcRank
 	// 如果有条件搜索 下方会自动创建搜索语句
 	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
 		db = db.Where("created_at BETWEEN ? AND ?", info.StartCreatedAt, info.EndCreatedAt)
+	}
+	if info.Type != nil {
+		db = db.Where("type = ? ", *info.Type)
+	}
+	if info.Name != "" {
+		db = db.Where("name LIKE ? ", "%"+info.Name+"%")
 	}
 	err = db.Count(&total).Error
 	if err != nil {
