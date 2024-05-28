@@ -38,15 +38,15 @@
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
-        <el-table-column align="left" label="成员名称" prop="staffName" width="120" />
+        <el-table-column align="left" label="成员名称" prop="staffName" width="100" />
         <el-table-column align="left" label="员工工号" prop="jobNum" width="120" />
-        <el-table-column align="left" label="账号" prop="account" width="120" />
-        <el-table-column align="left" label="类型" prop="typeText" width="120" />
-        <el-table-column align="left" label="证件类型" prop="credentialTypeText" width="120" />
-        <el-table-column align="left" label="证件号码" prop="credentialNumber" width="120" />
+        <el-table-column align="left" label="账号" prop="account" width="150" />
+        <el-table-column align="left" label="类型" prop="typeText" width="100" />
+        <el-table-column align="left" label="证件类型" prop="credentialTypeText" width="90" />
+        <el-table-column align="left" label="证件号码" prop="credentialNumber" width="200" />
         <el-table-column align="left" label="社保缴费合计" prop="totalSocial" width="120" />
-        <el-table-column align="left" label="社保缴费个人合计" prop="totalSocialSelf" width="120" />
-        <el-table-column align="left" label="社保缴费单位合计" prop="totalSocialUnit" width="120" />
+        <el-table-column align="left" label="社保缴费个人合计" prop="totalSocialSelf" width="150" />
+        <el-table-column align="left" label="社保缴费单位合计" prop="totalSocialUnit" width="150" />
         <el-table-column align="left" label="养老缴纳基数" prop="pensionBase" width="120" />
         <el-table-column align="left" label="养老个人缴费" prop="pensionSelf" width="120" />
         <el-table-column align="left" label="养老单位缴费" prop="pensionUnit" width="120" />
@@ -56,13 +56,13 @@
         <el-table-column align="left" label="失业缴纳基数" prop="unemployedBase" width="120" />
         <el-table-column align="left" label="失业个人缴费" prop="unemployedSelf" width="120" />
         <el-table-column align="left" label="失业单位缴费" prop="unemployedUnit" width="120" />
-        <el-table-column align="left" label="工商保险缴费基数" prop="icInsuranceBase" width="120" />
-        <el-table-column align="left" label="工商保险单位缴费" prop="icInsuranceUnit" width="120" />
-        <el-table-column align="left" label="生育医疗缴费基数" prop="birthBase" width="120" />
-        <el-table-column align="left" label="生育医疗单位缴费" prop="birthUnit" width="120" />
-        <el-table-column align="left" label="公积金缴费合计" prop="totalHousing" width="120" />
-        <el-table-column align="left" label="公积金个人缴费合计" prop="totalHousingSelf" width="120" />
-        <el-table-column align="left" label="公积金公司缴费合计" prop="totalHousingUnit" width="120" />
+        <el-table-column align="left" label="工商保险缴费基数" prop="icInsuranceBase" width="150" />
+        <el-table-column align="left" label="工商保险单位缴费" prop="icInsuranceUnit" width="150" />
+        <el-table-column align="left" label="生育医疗缴费基数" prop="birthBase" width="150" />
+        <el-table-column align="left" label="生育医疗单位缴费" prop="birthUnit" width="150" />
+        <el-table-column align="left" label="公积金缴费合计" prop="totalHousing" width="150" />
+        <el-table-column align="left" label="公积金个人缴费合计" prop="totalHousingSelf" width="150" />
+        <el-table-column align="left" label="公积金公司缴费合计" prop="totalHousingUnit" width="150" />
         <el-table-column align="left" label="缴存基数" prop="housingBase" width="120" />
         <el-table-column align="left" label="个人缴存比例" prop="housingRatioSelf" width="120" />
         <el-table-column align="left" label="单位缴存比例" prop="housingRatioUnit" width="120" />
@@ -108,23 +108,23 @@
               </SelectStaff>
             </el-form-item>
             <el-form-item label="类型:"  prop="type" >
-              <el-select v-model="formData.type" placeholder="选择类型">
+              <el-select v-model="formData.type" placeholder="选择类型" :disabled="type==='update'?'disabled':false">
                 <el-option v-for="type in types" :key="type.value" :label="type.label" :value="type.value"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="证件类型:"  prop="type" >
-              <el-select v-model="formData.credentialType" placeholder="选择类型">
+              <el-select v-model="formData.credentialType" placeholder="选择类型" :disabled="type==='update'?'disabled':false">
                 <el-option v-for="credentialType in credentialTypes" :key="credentialType.value" :label="credentialType.label" :value="credentialType.value"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="证件号码:"  prop="credentialNumber" >
-              <el-input v-model="formData.credentialNumber" :clearable="true"  placeholder="请输入证件号码" />
+              <el-input v-model="formData.credentialNumber" :clearable="true"  placeholder="请输入证件号码" :disabled="type==='update'?'disabled':false"/>
             </el-form-item>
             <el-form-item label="姓名:"  prop="name" >
-              <el-input v-model="formData.name" :clearable="true"  placeholder="请输入姓名" />
+              <el-input v-model="formData.name" :clearable="true"  placeholder="请输入姓名" :disabled="type==='update'?'disabled':false"/>
             </el-form-item>
             <el-form-item label="账号:"  prop="account" >
-              <el-input v-model="formData.account" :clearable="true"  placeholder="请输入账号" />
+              <el-input v-model="formData.account" :clearable="true"  placeholder="请输入账号" :disabled="type==='update'?'disabled':false"/>
             </el-form-item>
             <el-form-item label="社保缴费合计:"  prop="totalSocial" >
               <el-input-number v-model="formData.totalSocial"  style="width:100%" :precision="2" :clearable="true"  />
@@ -208,20 +208,23 @@
              </div>
          </template>
         <el-descriptions :column="1" border>
+          <el-descriptions-item label="成员名称">
+            {{ formData.staffName }}
+          </el-descriptions-item>
+          <el-descriptions-item label="员工工号">
+            {{ formData.jobNum }}
+          </el-descriptions-item>
                 <el-descriptions-item label="账号">
                         {{ formData.account }}
                 </el-descriptions-item>
                 <el-descriptions-item label="类型">
-                        {{ formData.type }}
-                </el-descriptions-item>
-                <el-descriptions-item label="员工ID">
-                        {{ formData.staffId }}
+                        {{ formData.typeText }}
                 </el-descriptions-item>
                 <el-descriptions-item label="姓名">
                         {{ formData.name }}
                 </el-descriptions-item>
                 <el-descriptions-item label="证件类型">
-                        {{ formData.credentialType }}
+                        {{ formData.credentialTypeText }}
                 </el-descriptions-item>
                 <el-descriptions-item label="证件号码">
                         {{ formData.credentialNumber }}

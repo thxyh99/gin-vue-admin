@@ -1,9 +1,13 @@
 package weChat
 
 import (
+	"fmt"
+	"github.com/flipped-aurora/gin-vue-admin/server/config"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
+	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 )
 
 type WcStaffSocialService struct {
@@ -34,13 +38,18 @@ func (wcStaffSocialService *WcStaffSocialService) UpdateWcStaffSocial(wcStaffSoc
 }
 
 // GetWcStaffSocial 根据ID获取社保公积金管理记录
-func (wcStaffSocialService *WcStaffSocialService) GetWcStaffSocial(ID string) (wcStaffSocial weChat.WcStaffSocial, err error) {
-	err = global.GVA_DB.Where("id = ?", ID).First(&wcStaffSocial).Error
+func (wcStaffSocialService *WcStaffSocialService) GetWcStaffSocial(ID string) (wcStaffSocial weChat2.WcStaffSocialResponse, err error) {
+	var staffSocial weChat.WcStaffSocial
+	err = global.GVA_DB.Where("id = ?", ID).First(&staffSocial).Error
+	if err != nil {
+		return
+	}
+	wcStaffSocial, err = wcStaffSocialService.AssembleStaffSocial(staffSocial)
 	return
 }
 
 // GetWcStaffSocialInfoList 分页获取社保公积金管理记录
-func (wcStaffSocialService *WcStaffSocialService) GetWcStaffSocialInfoList(info weChatReq.WcStaffSocialSearch) (list []weChat.WcStaffSocial, total int64, err error) {
+func (wcStaffSocialService *WcStaffSocialService) GetWcStaffSocialInfoList(info weChatReq.WcStaffSocialSearch) (list []weChat2.WcStaffSocialResponse, total int64, err error) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
@@ -70,5 +79,57 @@ func (wcStaffSocialService *WcStaffSocialService) GetWcStaffSocialInfoList(info 
 	}
 
 	err = db.Find(&wcStaffSocials).Error
-	return wcStaffSocials, total, err
+	if err != nil {
+		return
+	}
+	list, err = wcStaffSocialService.AssembleStaffSocialList(wcStaffSocials)
+	return
+}
+
+func (wcStaffSocialService *WcStaffSocialService) AssembleStaffSocialList(staffSocials []weChat.WcStaffSocial) (newStaffSocials []weChat2.WcStaffSocialResponse, err error) {
+	var newStaffSocial weChat2.WcStaffSocialResponse
+	configInfo := config.GetConfigInfo()
+
+	for _, staffSocial := range staffSocials {
+		newStaffSocial.WcStaffSocial = staffSocial
+		socialTypeText, _ := utils.Find(configInfo.SocialType, *staffSocial.Type)
+		newStaffSocial.TypeText = socialTypeText
+		credentialTypeText, _ := utils.Find(configInfo.CredentialType, *staffSocial.CredentialType)
+		newStaffSocial.CredentialTypeText = credentialTypeText
+
+		//获取员工名称工号
+		var staff weChat.WcStaff
+		err = global.GVA_DB.Table(staff.TableName()).Where("id=?", staffSocial.StaffId).First(&staff).Error
+		if err != nil {
+			fmt.Println("AssembleStaffSocialList Err:", err)
+			return
+		}
+		newStaffSocial.StaffName = staff.Name
+		newStaffSocial.JobNum = staff.JobNum
+
+		newStaffSocials = append(newStaffSocials, newStaffSocial)
+	}
+	return
+}
+
+func (wcStaffSocialService *WcStaffSocialService) AssembleStaffSocial(staffSocial weChat.WcStaffSocial) (newStaffSocial weChat2.WcStaffSocialResponse, err error) {
+	configInfo := config.GetConfigInfo()
+	newStaffSocial.WcStaffSocial = staffSocial
+	socialTypeText, _ := utils.Find(configInfo.SocialType, *staffSocial.Type)
+	newStaffSocial.TypeText = socialTypeText
+	credentialTypeText, _ := utils.Find(configInfo.CredentialType, *staffSocial.CredentialType)
+	newStaffSocial.CredentialTypeText = credentialTypeText
+
+	//获取员工名称工号
+	var staff weChat.WcStaff
+	err = global.GVA_DB.Table(staff.TableName()).Where("id=?", staffSocial.StaffId).First(&staff).Error
+	if err != nil {
+		fmt.Println("AssembleStaffSocial Err:", err)
+		return
+	}
+
+	newStaffSocial.StaffName = staff.Name
+	newStaffSocial.JobNum = staff.JobNum
+
+	return
 }
