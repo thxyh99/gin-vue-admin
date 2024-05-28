@@ -96,6 +96,7 @@ func Routers() *gin.Engine {
 		weChatRouter.InitWcStaffAgreementRouter(PrivateGroup, PublicGroup)
 		weChatRouter.InitWcRankRouter(PrivateGroup, PublicGroup)
 		weChatRouter.InitWcFileRouter(PrivateGroup, PublicGroup)
+		weChatRouter.InitWcStaffSocialRouter(PrivateGroup, PublicGroup)
 
 	}
 	{
