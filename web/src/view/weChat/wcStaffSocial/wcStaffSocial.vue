@@ -28,6 +28,30 @@
         <div class="gva-btn-list">
             <el-button type="primary" icon="plus" @click="openDialog">新增</el-button>
             <el-button icon="delete" style="margin-left: 10px;" :disabled="!multipleSelection.length" @click="onDelete">删除</el-button>
+          <ImportExcel
+              template-id="staffSocialSzSb"
+              type="1"
+              @on-success="getTableData"
+              btnName="导入深圳社保"
+          />
+          <ImportExcel
+              template-id="staffSocialSzGjj"
+              type="2"
+              @on-success="getTableData"
+              btnName="导入深圳公积金"
+          />
+          <ImportExcel
+              template-id="staffSocialDgSb"
+              type="3"
+              @on-success="getTableData"
+              btnName="导入东莞社保"
+          />
+          <ImportExcel
+              template-id="staffSocialDgGjj"
+              type="4"
+              @on-success="getTableData"
+              btnName="导入东莞公积金"
+          />
         </div>
         <el-table
         ref="multipleTable"
@@ -322,6 +346,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
 import {InfoFilled, QuestionFilled} from "@element-plus/icons-vue";
 import SelectStaff from "@/components/selectStaff/index.vue";
+import ImportExcel from "@/components/exportExcel/wechat/importSocialExcel.vue";
 
 defineOptions({
     name: 'WcStaffSocial'

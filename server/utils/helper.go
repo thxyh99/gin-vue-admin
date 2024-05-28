@@ -1,5 +1,7 @@
 package utils
 
+import "strings"
+
 // GetKeyByValue 通过value获取key
 func GetKeyByValue(m map[int]string, value string) int {
 	for k, v := range m {
@@ -75,4 +77,11 @@ func HideIdNumber(idNumber string) string {
 
 	hiddenIdNumber := idNumber[:6] + "********" + idNumber[14:]
 	return hiddenIdNumber
+}
+
+// FilterBreaksSpaces 过滤换行跟空格
+func FilterBreaksSpaces(value string) string {
+	filteredText := strings.ReplaceAll(value, "\n", "")
+	filteredText = strings.ReplaceAll(filteredText, " ", "")
+	return filteredText
 }

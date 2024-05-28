@@ -13,32 +13,32 @@
         :rules="searchRule"
         @keyup.enter="onSubmit"
       >
-        <el-form-item
-          label="创建日期"
-          prop="createdAt"
-        >
-          <template #label>
-            <span>
-              创建日期
-              <el-tooltip content="搜索范围是开始日期（包含）至结束日期（不包含）">
-                <el-icon><QuestionFilled /></el-icon>
-              </el-tooltip>
-            </span>
-          </template>
-          <el-date-picker
-            v-model="searchInfo.startCreatedAt"
-            type="datetime"
-            placeholder="开始日期"
-            :disabled-date="time=> searchInfo.endCreatedAt ? time.getTime() > searchInfo.endCreatedAt.getTime() : false"
-          />
-          —
-          <el-date-picker
-            v-model="searchInfo.endCreatedAt"
-            type="datetime"
-            placeholder="结束日期"
-            :disabled-date="time=> searchInfo.startCreatedAt ? time.getTime() < searchInfo.startCreatedAt.getTime() : false"
-          />
-        </el-form-item>
+<!--        <el-form-item-->
+<!--          label="创建日期"-->
+<!--          prop="createdAt"-->
+<!--        >-->
+<!--          <template #label>-->
+<!--            <span>-->
+<!--              创建日期-->
+<!--              <el-tooltip content="搜索范围是开始日期（包含）至结束日期（不包含）">-->
+<!--                <el-icon><QuestionFilled /></el-icon>-->
+<!--              </el-tooltip>-->
+<!--            </span>-->
+<!--          </template>-->
+<!--          <el-date-picker-->
+<!--            v-model="searchInfo.startCreatedAt"-->
+<!--            type="datetime"-->
+<!--            placeholder="开始日期"-->
+<!--            :disabled-date="time=> searchInfo.endCreatedAt ? time.getTime() > searchInfo.endCreatedAt.getTime() : false"-->
+<!--          />-->
+<!--          —-->
+<!--          <el-date-picker-->
+<!--            v-model="searchInfo.endCreatedAt"-->
+<!--            type="datetime"-->
+<!--            placeholder="结束日期"-->
+<!--            :disabled-date="time=> searchInfo.startCreatedAt ? time.getTime() < searchInfo.startCreatedAt.getTime() : false"-->
+<!--          />-->
+<!--        </el-form-item>-->
         <el-form-item
           label="模板名称"
           prop="name"
@@ -109,46 +109,46 @@
           type="selection"
           width="55"
         />
-        <el-table-column
-          align="left"
-          label="日期"
-          width="180"
-        >
-          <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
-        </el-table-column>
-        <el-table-column
-          align="left"
-          label="数据库"
-          prop="name"
-          width="120"
-        >
-          <template #defalut="scope">
-            <span>{{ scope.row.dbNname || "GVA库" }}</span>
-          </template>
-        </el-table-column>
+<!--        <el-table-column-->
+<!--          align="left"-->
+<!--          label="日期"-->
+<!--          width="180"-->
+<!--        >-->
+<!--          <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>-->
+<!--        </el-table-column>-->
+<!--        <el-table-column-->
+<!--          align="left"-->
+<!--          label="数据库"-->
+<!--          prop="name"-->
+<!--          width="120"-->
+<!--        >-->
+<!--          <template #defalut="scope">-->
+<!--            <span>{{ scope.row.dbNname || "GVA库" }}</span>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
         <el-table-column
           align="left"
           label="模板名称"
           prop="name"
-          width="120"
+          width="150"
         />
         <el-table-column
           align="left"
           label="表名称"
           prop="tableName"
-          width="120"
+          width="150"
         />
         <el-table-column
           align="left"
           label="模板标识"
           prop="templateID"
-          width="120"
+          width="150"
         />
         <el-table-column
           align="left"
           label="模板信息"
           prop="templateInfo"
-          min-width="120"
+          min-width="700"
         />
         <el-table-column
           align="left"

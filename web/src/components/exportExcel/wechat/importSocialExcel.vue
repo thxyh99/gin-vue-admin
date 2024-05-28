@@ -23,6 +23,10 @@ const props = defineProps({
     type: String,
     required: true
   },
+  type: {
+    type: Number,
+    required: true
+  },
   btnName: {
     type: String,
     required: true,
@@ -32,7 +36,7 @@ const props = defineProps({
 
 const emit = defineEmits(['on-success'])
 
-const url = `${baseUrl}/wcStaff/importExcel?templateID=${props.templateId}`
+const url = `${baseUrl}/wcStaffSocial/importExcel?templateID=${props.templateId}&type=${props.type}`
 
 const handleSuccess = (res) => {
   if (res.code === 0) {
