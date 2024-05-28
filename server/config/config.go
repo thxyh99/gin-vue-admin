@@ -52,6 +52,8 @@ type CommonConfig struct {
 	ExpenseAccount    []string //费用科目
 	AgreementType     []string //合同类型
 	FileType          []string //合同类型
+	SocialType        []string //社保公积金类型
+	CredentialType    []string //证件类型
 }
 
 var config = CommonConfig{
@@ -210,5 +212,16 @@ var config = CommonConfig{
 		8:  "试用期管理规定",
 		9:  "个人简历",
 		10: "职称/技能证书",
+	},
+	SocialType: []string{
+		1: "深圳社保",
+		2: "深圳公积金",
+		3: "东莞社保",
+		4: "东莞公积金",
+	},
+	CredentialType: []string{
+		0: "其它",
+		1: "身份证",
+		2: "港澳通行证",
 	},
 }

@@ -2,20 +2,22 @@
   <div>
     <div class="gva-search-box">
       <el-form ref="elSearchFormRef" :inline="true" :model="searchInfo" class="demo-form-inline" :rules="searchRule" @keyup.enter="onSubmit">
-      <el-form-item label="创建日期" prop="createdAt">
-      <template #label>
-        <span>
-          创建日期
-          <el-tooltip content="搜索范围是开始日期（包含）至结束日期（不包含）">
-            <el-icon><QuestionFilled /></el-icon>
-          </el-tooltip>
-        </span>
-      </template>
-      <el-date-picker v-model="searchInfo.startCreatedAt" type="datetime" placeholder="开始日期" :disabled-date="time=> searchInfo.endCreatedAt ? time.getTime() > searchInfo.endCreatedAt.getTime() : false"></el-date-picker>
-       —
-      <el-date-picker v-model="searchInfo.endCreatedAt" type="datetime" placeholder="结束日期" :disabled-date="time=> searchInfo.startCreatedAt ? time.getTime() < searchInfo.startCreatedAt.getTime() : false"></el-date-picker>
-      </el-form-item>
-      
+        <el-form-item label="关键词" >
+          <el-input style="width:170px"
+              v-model="searchInfo.keyword"
+              placeholder="请输入账号、证件号码"
+          />
+        </el-form-item>
+        <el-form-item label="选择员工:" prop="staffId">
+          <SelectStaff v-model="searchInfo.staffId" :disabled="type==='update'?'disabled':false">
+          </SelectStaff>
+        </el-form-item>
+        <el-form-item label="类型:"  prop="type" >
+          <el-select v-model="searchInfo.type" placeholder="选择类型">
+            <el-option v-for="type in types" :key="type.value" :label="type.label" :value="type.value"></el-option>
+          </el-select>
+        </el-form-item>
+
         <el-form-item>
           <el-button type="primary" icon="search" @click="onSubmit">查询</el-button>
           <el-button icon="refresh" @click="onReset">重置</el-button>
@@ -36,16 +38,11 @@
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
-        
-        <el-table-column align="left" label="日期" width="180">
-            <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
-        </el-table-column>
-        
-        <el-table-column align="left" label="账号(社保:电脑号|个人社保号 公积金:个人账号)" prop="account" width="120" />
-        <el-table-column align="left" label="类型(1:深圳社保 2:深圳公积金 3:东莞社保 4:东莞公积金)" prop="type" width="120" />
-        <el-table-column align="left" label="员工ID" prop="staffId" width="120" />
-        <el-table-column align="left" label="姓名" prop="name" width="120" />
-        <el-table-column align="left" label="证件类型(1:身份证 2:港澳通行证)" prop="credentialType" width="120" />
+        <el-table-column align="left" label="成员名称" prop="staffName" width="120" />
+        <el-table-column align="left" label="员工工号" prop="jobNum" width="120" />
+        <el-table-column align="left" label="账号" prop="account" width="120" />
+        <el-table-column align="left" label="类型" prop="typeText" width="120" />
+        <el-table-column align="left" label="证件类型" prop="credentialTypeText" width="120" />
         <el-table-column align="left" label="证件号码" prop="credentialNumber" width="120" />
         <el-table-column align="left" label="社保缴费合计" prop="totalSocial" width="120" />
         <el-table-column align="left" label="社保缴费个人合计" prop="totalSocialSelf" width="120" />
@@ -106,23 +103,28 @@
             </template>
 
           <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
-            <el-form-item label="账号(社保:电脑号|个人社保号 公积金:个人账号):"  prop="account" >
-              <el-input v-model="formData.account" :clearable="true"  placeholder="请输入账号(社保:电脑号|个人社保号 公积金:个人账号)" />
+            <el-form-item label="选择员工:" prop="staffId">
+              <SelectStaff v-model="formData.staffId" :disabled="type==='update'?'disabled':false">
+              </SelectStaff>
             </el-form-item>
-            <el-form-item label="类型(1:深圳社保 2:深圳公积金 3:东莞社保 4:东莞公积金):"  prop="type" >
-              <el-input v-model.number="formData.type" :clearable="true" placeholder="请输入类型(1:深圳社保 2:深圳公积金 3:东莞社保 4:东莞公积金)" />
+            <el-form-item label="类型:"  prop="type" >
+              <el-select v-model="formData.type" placeholder="选择类型">
+                <el-option v-for="type in types" :key="type.value" :label="type.label" :value="type.value"></el-option>
+              </el-select>
             </el-form-item>
-            <el-form-item label="员工ID:"  prop="staffId" >
-              <el-input v-model.number="formData.staffId" :clearable="true" placeholder="请输入员工ID" />
+            <el-form-item label="证件类型:"  prop="type" >
+              <el-select v-model="formData.credentialType" placeholder="选择类型">
+                <el-option v-for="credentialType in credentialTypes" :key="credentialType.value" :label="credentialType.label" :value="credentialType.value"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="证件号码:"  prop="credentialNumber" >
+              <el-input v-model="formData.credentialNumber" :clearable="true"  placeholder="请输入证件号码" />
             </el-form-item>
             <el-form-item label="姓名:"  prop="name" >
               <el-input v-model="formData.name" :clearable="true"  placeholder="请输入姓名" />
             </el-form-item>
-            <el-form-item label="证件类型(1:身份证 2:港澳通行证):"  prop="credentialType" >
-              <el-input v-model.number="formData.credentialType" :clearable="true" placeholder="请输入证件类型(1:身份证 2:港澳通行证)" />
-            </el-form-item>
-            <el-form-item label="证件号码:"  prop="credentialNumber" >
-              <el-input v-model="formData.credentialNumber" :clearable="true"  placeholder="请输入证件号码" />
+            <el-form-item label="账号:"  prop="account" >
+              <el-input v-model="formData.account" :clearable="true"  placeholder="请输入账号" />
             </el-form-item>
             <el-form-item label="社保缴费合计:"  prop="totalSocial" >
               <el-input-number v-model="formData.totalSocial"  style="width:100%" :precision="2" :clearable="true"  />
@@ -206,10 +208,10 @@
              </div>
          </template>
         <el-descriptions :column="1" border>
-                <el-descriptions-item label="账号(社保:电脑号|个人社保号 公积金:个人账号)">
+                <el-descriptions-item label="账号">
                         {{ formData.account }}
                 </el-descriptions-item>
-                <el-descriptions-item label="类型(1:深圳社保 2:深圳公积金 3:东莞社保 4:东莞公积金)">
+                <el-descriptions-item label="类型">
                         {{ formData.type }}
                 </el-descriptions-item>
                 <el-descriptions-item label="员工ID">
@@ -218,7 +220,7 @@
                 <el-descriptions-item label="姓名">
                         {{ formData.name }}
                 </el-descriptions-item>
-                <el-descriptions-item label="证件类型(1:身份证 2:港澳通行证)">
+                <el-descriptions-item label="证件类型">
                         {{ formData.credentialType }}
                 </el-descriptions-item>
                 <el-descriptions-item label="证件号码">
@@ -315,18 +317,33 @@ import {
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
+import {InfoFilled, QuestionFilled} from "@element-plus/icons-vue";
+import SelectStaff from "@/components/selectStaff/index.vue";
 
 defineOptions({
     name: 'WcStaffSocial'
 })
 
+const types = ref([
+  { label: '深圳社保', value: 1 },
+  { label: '深圳公积金', value: 2 },
+  { label: '东莞社保', value: 3 },
+  { label: '东莞公积金', value: 4 },
+])
+
+const credentialTypes = ref([
+  { label: '其他', value: 0 },
+  { label: '身份证', value: 1 },
+  { label: '港澳通行证', value: 2 },
+])
+
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
         account: '',
-        type: 0,
-        staffId: 0,
+        type: '',
+        staffId: '',
         name: '',
-        credentialType: 0,
+        credentialType: '',
         credentialNumber: '',
         totalSocial: 0,
         totalSocialSelf: 0,
@@ -352,6 +369,10 @@ const formData = ref({
         housingRatioUnit: 0,
         periodStart: '',
         periodEnd: '',
+        staffName :'',
+        jobNum:'',
+        typeText: '',
+        credentialTypeText: '',
         })
 
 
@@ -751,10 +772,10 @@ const closeDetailShow = () => {
   detailShow.value = false
   formData.value = {
           account: '',
-          type: 0,
-          staffId: 0,
+          type: '',
+          staffId: '',
           name: '',
-          credentialType: 0,
+          credentialType: '',
           credentialNumber: '',
           totalSocial: 0,
           totalSocialSelf: 0,
@@ -780,6 +801,9 @@ const closeDetailShow = () => {
           housingRatioUnit: 0,
           periodStart: '',
           periodEnd: '',
+          jobNum:'',
+          typeText: '',
+          credentialTypeText: '',
           }
 }
 
@@ -795,10 +819,10 @@ const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
         account: '',
-        type: 0,
-        staffId: 0,
+        type: '',
+        staffId: '',
         name: '',
-        credentialType: 0,
+        credentialType: '',
         credentialNumber: '',
         totalSocial: 0,
         totalSocialSelf: 0,
@@ -824,6 +848,9 @@ const closeDialog = () => {
         housingRatioUnit: 0,
         periodStart: '',
         periodEnd: '',
+        jobNum:'',
+        typeText: '',
+        credentialTypeText: '',
         }
 }
 // 弹窗确定
