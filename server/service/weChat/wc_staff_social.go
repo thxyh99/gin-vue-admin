@@ -14,6 +14,7 @@ import (
 	"github.com/xuri/excelize/v2"
 	"gorm.io/gorm"
 	"mime/multipart"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -171,6 +172,7 @@ func (wcStaffSocialService *WcStaffSocialService) ImportExcel(templateID, social
 		for _, row := range values {
 			var item = make(map[string]interface{})
 			var name, credentialNumber, periodStart string
+			var housingBase, housingRatioSelf, housingRatioUnit float64
 			var staffExist weChat.WcStaff
 			var staffSocial weChat.WcStaffSocial
 
@@ -183,6 +185,15 @@ func (wcStaffSocialService *WcStaffSocialService) ImportExcel(templateID, social
 				if key == "credential_number" {
 					credentialNumber = utils.FilterBreaksSpaces(value)
 				}
+				if key == "housing_base" {
+					housingBase, err = strconv.ParseFloat(value, 64)
+				}
+				if key == "housing_ratio_self" {
+					housingRatioSelf, err = strconv.ParseFloat(value, 64)
+				}
+				if key == "housing_ratio_unit" {
+					housingRatioUnit, err = strconv.ParseFloat(value, 64)
+				}
 				if key == "period" {
 					periods := strings.Split(value, "-")
 					periodStart = utils.FilterBreaksSpaces(periods[0])
@@ -193,6 +204,8 @@ func (wcStaffSocialService *WcStaffSocialService) ImportExcel(templateID, social
 				}
 			}
 
+			item["total_housing_self"] = housingBase * housingRatioSelf
+			item["total_housing_unit"] = housingBase * housingRatioUnit
 			item["created_at"] = now
 			item["updated_at"] = now
 
