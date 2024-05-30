@@ -104,7 +104,7 @@
         <el-table-column align="left" label="实发小计" prop="actualPay" width="120" />
         <el-table-column align="left" label="月度提成补发" prop="monthlyCommission" width="120" />
         <el-table-column align="left" label="年度提成" prop="annualCommission" width="120" />
-        <el-table-column align="left" label="子品牌经营绩效奖励" prop="subbrandCommission" width="120" />
+        <el-table-column align="left" label="子品牌经营绩效奖励" prop="subBrandCommission" width="120" />
         <el-table-column align="left" label="奖金点" prop="bonusPoints" width="120" />
         <el-table-column align="left" label="出勤系数" prop="attendanceRatio" width="120" />
         <el-table-column align="left" label="月度评分" prop="monthlyRating" width="120" />
@@ -375,8 +375,8 @@
             <el-form-item label="年度提成:"  prop="annualCommission" >
               <el-input-number v-model="formData.annualCommission"  style="width:100%" :precision="2" :clearable="true"  />
             </el-form-item>
-            <el-form-item label="子品牌经营绩效奖励:"  prop="subbrandCommission" >
-              <el-input-number v-model="formData.subbrandCommission"  style="width:100%" :precision="2" :clearable="true"  />
+            <el-form-item label="子品牌经营绩效奖励:"  prop="subBrandCommission" >
+              <el-input-number v-model="formData.subBrandCommission"  style="width:100%" :precision="2" :clearable="true"  />
             </el-form-item>
             <el-form-item label="奖金点:"  prop="bonusPoints" >
               <el-input-number v-model="formData.bonusPoints"  style="width:100%" :precision="2" :clearable="true"  />
@@ -710,7 +710,7 @@
                         {{ formData.annualCommission }}
                 </el-descriptions-item>
                 <el-descriptions-item label="子品牌经营绩效奖励">
-                        {{ formData.subbrandCommission }}
+                        {{ formData.subBrandCommission }}
                 </el-descriptions-item>
                 <el-descriptions-item label="奖金点">
                         {{ formData.bonusPoints }}
@@ -941,7 +941,7 @@ const formData = ref({
         actualPay: 0,
         monthlyCommission: 0,
         annualCommission: 0,
-        subbrandCommission: 0,
+        subBrandCommission: 0,
         bonusPoints: 0,
         attendanceRatio: 0,
         monthlyRating: 0,
@@ -1259,7 +1259,7 @@ const closeDetailShow = () => {
           actualPay: 0,
           monthlyCommission: 0,
           annualCommission: 0,
-          subbrandCommission: 0,
+          subBrandCommission: 0,
           bonusPoints: 0,
           attendanceRatio: 0,
           monthlyRating: 0,
@@ -1381,7 +1381,7 @@ const closeDialog = () => {
         actualPay: 0,
         monthlyCommission: 0,
         annualCommission: 0,
-        subbrandCommission: 0,
+        subBrandCommission: 0,
         bonusPoints: 0,
         attendanceRatio: 0,
         monthlyRating: 0,

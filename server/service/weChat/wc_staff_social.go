@@ -141,6 +141,11 @@ func (wcStaffSocialService *WcStaffSocialService) ImportExcel(templateID, social
 		db = global.MustGetGlobalDBByDBName(template.DBName)
 	}
 
+	return wcStaffSocialService.importSzGjjExcel(db, rows, titleKeyMap, socialType)
+}
+
+// importSzGjjExcel 导入深圳公积金
+func (wcStaffSocialService *WcStaffSocialService) importSzGjjExcel(db *gorm.DB, rows [][]string, titleKeyMap map[string]string, socialType string) error {
 	now := time.Now().Format("2006-01-02 15:04:05")
 
 	return db.Transaction(func(tx *gorm.DB) error {
@@ -148,23 +153,36 @@ func (wcStaffSocialService *WcStaffSocialService) ImportExcel(templateID, social
 		values := rows[4:]
 
 		//模版校验
-		if socialType == "1" && len(excelTitle) != 20 {
-			return errors.New("导入深圳社保Excel模版异常")
-		} else if socialType == "2" && len(excelTitle) != 8 {
+		//if socialType == "1" && len(excelTitle) != 20 {
+		//	return errors.New("导入深圳社保Excel模版异常")
+		//} else if socialType == "2" && len(excelTitle) != 8 {
+		//	return errors.New("导入深圳公积金Excel模版异常")
+		//} else if socialType == "3" && len(excelTitle) != 24 {
+		//	return errors.New("导入东莞社保Excel模版异常")
+		//} else if socialType == "4" && len(excelTitle) != 12 {
+		//	return errors.New("导入东莞公积金Excel模版异常")
+		//}
+
+		if len(excelTitle) != 8 {
 			return errors.New("导入深圳公积金Excel模版异常")
-		} else if socialType == "3" && len(excelTitle) != 24 {
-			return errors.New("导入东莞社保Excel模版异常")
-		} else if socialType == "4" && len(excelTitle) != 12 {
-			return errors.New("导入东莞公积金Excel模版异常")
 		}
 
 		//参数校验
-		for _, row := range values {
+		for i, row := range values {
+			//每一行最后一列为空要这样判空
+			if len(titleKeyMap) != len(row) {
+				return errors.New(fmt.Sprintf("第%d行有数据缺失", i+5))
+			}
 			for ii, value := range row {
 				key := titleKeyMap[excelTitle[ii]]
-				err = wcStaffSocialService.checkImportParam(key, value)
-				if err != nil {
-					return err
+				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+				fmt.Println("title-key-value", excelTitle[ii], key, value)
+				fmt.Println("length", len(titleKeyMap), len(row))
+				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+				//结合每个字段是否为空判断(最后一列为空的话这种方式判断不出来)
+				if value == "" {
+					return errors.New(excelTitle[ii] + "不能为空")
 				}
 			}
 		}
@@ -176,7 +194,6 @@ func (wcStaffSocialService *WcStaffSocialService) ImportExcel(templateID, social
 			var staffExist weChat.WcStaff
 			var staffSocial weChat.WcStaffSocial
 
-			// 更新员工信息
 			for ii, value := range row {
 				key := titleKeyMap[excelTitle[ii]]
 				if key == "name" {
@@ -185,14 +202,15 @@ func (wcStaffSocialService *WcStaffSocialService) ImportExcel(templateID, social
 				if key == "credential_number" {
 					credentialNumber = utils.FilterBreaksSpaces(value)
 				}
+
 				if key == "housing_base" {
-					housingBase, err = strconv.ParseFloat(value, 64)
+					housingBase, _ = strconv.ParseFloat(value, 64)
 				}
 				if key == "housing_ratio_self" {
-					housingRatioSelf, err = strconv.ParseFloat(value, 64)
+					housingRatioSelf, _ = strconv.ParseFloat(value, 64)
 				}
 				if key == "housing_ratio_unit" {
-					housingRatioUnit, err = strconv.ParseFloat(value, 64)
+					housingRatioUnit, _ = strconv.ParseFloat(value, 64)
 				}
 				if key == "period" {
 					periods := strings.Split(value, "-")
@@ -233,43 +251,6 @@ func (wcStaffSocialService *WcStaffSocialService) ImportExcel(templateID, social
 		}
 		return nil
 	})
-}
-
-// checkImportParam 参数校验
-func (wcStaffSocialService *WcStaffSocialService) checkImportParam(key, value string) error {
-	if key == "name" && value == "" {
-		return errors.New("姓名不能为空")
-	}
-
-	if key == "credential_number" && value == "" {
-		return errors.New("证件号码不能为空")
-	}
-
-	if key == "account" && value == "" {
-		return errors.New("账号不能为空")
-	}
-
-	if key == "period" && value == "" {
-		return errors.New("缴存时段不能为空")
-	}
-
-	if key == "housing_base" && value == "" {
-		return errors.New("缴存基数不能为空")
-	}
-
-	if key == "housing_ratio_unit" && value == "" {
-		return errors.New("单位缴存比例不能为空")
-	}
-
-	if key == "housing_ratio_self" && value == "" {
-		return errors.New("个人缴存比例不能为空")
-	}
-
-	if key == "total_housing" && value == "" {
-		return errors.New("金额合计不能为空")
-	}
-
-	return nil
 }
 
 func (wcStaffSocialService *WcStaffSocialService) AssembleStaffSocialList(staffSocials []weChat.WcStaffSocial) (newStaffSocials []weChat2.WcStaffSocialResponse, err error) {

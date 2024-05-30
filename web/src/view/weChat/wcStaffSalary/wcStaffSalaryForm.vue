@@ -179,8 +179,8 @@
         <el-form-item label="年度提成:" prop="annualCommission">
           <el-input-number v-model="formData.annualCommission" :precision="2" :clearable="true"></el-input-number>
        </el-form-item>
-        <el-form-item label="子品牌经营绩效奖励:" prop="subbrandCommission">
-          <el-input-number v-model="formData.subbrandCommission" :precision="2" :clearable="true"></el-input-number>
+        <el-form-item label="子品牌经营绩效奖励:" prop="subBrandCommission">
+          <el-input-number v-model="formData.subBrandCommission" :precision="2" :clearable="true"></el-input-number>
        </el-form-item>
         <el-form-item label="奖金点:" prop="bonusPoints">
           <el-input-number v-model="formData.bonusPoints" :precision="2" :clearable="true"></el-input-number>
@@ -416,7 +416,7 @@ const formData = ref({
             actualPay: 0,
             monthlyCommission: 0,
             annualCommission: 0,
-            subbrandCommission: 0,
+            subBrandCommission: 0,
             bonusPoints: 0,
             attendanceRatio: 0,
             monthlyRating: 0,
