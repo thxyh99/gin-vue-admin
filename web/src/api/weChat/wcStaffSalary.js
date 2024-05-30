@@ -1,11 +1,11 @@
 import service from '@/utils/request'
 
 // @Tags WcStaffSalary
-// @Summary 创建薪资奖金
+// @Summary 创建工资列表
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body model.WcStaffSalary true "创建薪资奖金"
+// @Param data body model.WcStaffSalary true "创建工资列表"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"创建成功"}"
 // @Router /wcStaffSalary/createWcStaffSalary [post]
 export const createWcStaffSalary = (data) => {
@@ -17,11 +17,11 @@ export const createWcStaffSalary = (data) => {
 }
 
 // @Tags WcStaffSalary
-// @Summary 删除薪资奖金
+// @Summary 删除工资列表
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body model.WcStaffSalary true "删除薪资奖金"
+// @Param data body model.WcStaffSalary true "删除工资列表"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"删除成功"}"
 // @Router /wcStaffSalary/deleteWcStaffSalary [delete]
 export const deleteWcStaffSalary = (params) => {
@@ -33,11 +33,11 @@ export const deleteWcStaffSalary = (params) => {
 }
 
 // @Tags WcStaffSalary
-// @Summary 批量删除薪资奖金
+// @Summary 批量删除工资列表
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body request.IdsReq true "批量删除薪资奖金"
+// @Param data body request.IdsReq true "批量删除工资列表"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"删除成功"}"
 // @Router /wcStaffSalary/deleteWcStaffSalary [delete]
 export const deleteWcStaffSalaryByIds = (params) => {
@@ -49,11 +49,11 @@ export const deleteWcStaffSalaryByIds = (params) => {
 }
 
 // @Tags WcStaffSalary
-// @Summary 更新薪资奖金
+// @Summary 更新工资列表
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body model.WcStaffSalary true "更新薪资奖金"
+// @Param data body model.WcStaffSalary true "更新工资列表"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"更新成功"}"
 // @Router /wcStaffSalary/updateWcStaffSalary [put]
 export const updateWcStaffSalary = (data) => {
@@ -65,11 +65,11 @@ export const updateWcStaffSalary = (data) => {
 }
 
 // @Tags WcStaffSalary
-// @Summary 用id查询薪资奖金
+// @Summary 用id查询工资列表
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data query model.WcStaffSalary true "用id查询薪资奖金"
+// @Param data query model.WcStaffSalary true "用id查询工资列表"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"查询成功"}"
 // @Router /wcStaffSalary/findWcStaffSalary [get]
 export const findWcStaffSalary = (params) => {
@@ -81,11 +81,11 @@ export const findWcStaffSalary = (params) => {
 }
 
 // @Tags WcStaffSalary
-// @Summary 分页获取薪资奖金列表
+// @Summary 分页获取工资列表列表
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data query request.PageInfo true "分页获取薪资奖金列表"
+// @Param data query request.PageInfo true "分页获取工资列表列表"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /wcStaffSalary/getWcStaffSalaryList [get]
 export const getWcStaffSalaryList = (params) => {

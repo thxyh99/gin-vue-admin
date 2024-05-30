@@ -9,7 +9,7 @@ import (
 type WcStaffSalaryRouter struct {
 }
 
-// InitWcStaffSalaryRouter 初始化 薪资奖金 路由信息
+// InitWcStaffSalaryRouter 初始化 工资列表 路由信息
 func (s *WcStaffSalaryRouter) InitWcStaffSalaryRouter(Router *gin.RouterGroup,PublicRouter *gin.RouterGroup) {
 	wcStaffSalaryRouter := Router.Group("wcStaffSalary").Use(middleware.OperationRecord())
 	wcStaffSalaryRouterWithoutRecord := Router.Group("wcStaffSalary")
@@ -17,16 +17,16 @@ func (s *WcStaffSalaryRouter) InitWcStaffSalaryRouter(Router *gin.RouterGroup,Pu
 
 	var wcStaffSalaryApi = v1.ApiGroupApp.WeChatApiGroup.WcStaffSalaryApi
 	{
-		wcStaffSalaryRouter.POST("createWcStaffSalary", wcStaffSalaryApi.CreateWcStaffSalary)   // 新建薪资奖金
-		wcStaffSalaryRouter.DELETE("deleteWcStaffSalary", wcStaffSalaryApi.DeleteWcStaffSalary) // 删除薪资奖金
-		wcStaffSalaryRouter.DELETE("deleteWcStaffSalaryByIds", wcStaffSalaryApi.DeleteWcStaffSalaryByIds) // 批量删除薪资奖金
-		wcStaffSalaryRouter.PUT("updateWcStaffSalary", wcStaffSalaryApi.UpdateWcStaffSalary)    // 更新薪资奖金
+		wcStaffSalaryRouter.POST("createWcStaffSalary", wcStaffSalaryApi.CreateWcStaffSalary)   // 新建工资列表
+		wcStaffSalaryRouter.DELETE("deleteWcStaffSalary", wcStaffSalaryApi.DeleteWcStaffSalary) // 删除工资列表
+		wcStaffSalaryRouter.DELETE("deleteWcStaffSalaryByIds", wcStaffSalaryApi.DeleteWcStaffSalaryByIds) // 批量删除工资列表
+		wcStaffSalaryRouter.PUT("updateWcStaffSalary", wcStaffSalaryApi.UpdateWcStaffSalary)    // 更新工资列表
 	}
 	{
-		wcStaffSalaryRouterWithoutRecord.GET("findWcStaffSalary", wcStaffSalaryApi.FindWcStaffSalary)        // 根据ID获取薪资奖金
-		wcStaffSalaryRouterWithoutRecord.GET("getWcStaffSalaryList", wcStaffSalaryApi.GetWcStaffSalaryList)  // 获取薪资奖金列表
+		wcStaffSalaryRouterWithoutRecord.GET("findWcStaffSalary", wcStaffSalaryApi.FindWcStaffSalary)        // 根据ID获取工资列表
+		wcStaffSalaryRouterWithoutRecord.GET("getWcStaffSalaryList", wcStaffSalaryApi.GetWcStaffSalaryList)  // 获取工资列表列表
 	}
 	{
-	    wcStaffSalaryRouterWithoutAuth.GET("getWcStaffSalaryPublic", wcStaffSalaryApi.GetWcStaffSalaryPublic)  // 获取薪资奖金列表
+	    wcStaffSalaryRouterWithoutAuth.GET("getWcStaffSalaryPublic", wcStaffSalaryApi.GetWcStaffSalaryPublic)  // 获取工资列表列表
 	}
 }

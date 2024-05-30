@@ -14,5 +14,7 @@ type RouterGroup struct {
 	WcRankRouter
 	WcFileRouter
 	WcStaffSocialRouter
+	WcSalaryRouter
 	WcStaffSalaryRouter
+	WcSalaryTemplateRouter
 }
