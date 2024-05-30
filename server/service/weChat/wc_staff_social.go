@@ -143,8 +143,12 @@ func (wcStaffSocialService *WcStaffSocialService) ImportExcel(templateID, social
 
 	if socialType == "1" {
 		return wcStaffSocialService.importSzSbExcel(db, rows, titleKeyMap, socialType)
-	} else {
+	} else if socialType == "2" {
 		return wcStaffSocialService.importSzGjjExcel(db, rows, titleKeyMap, socialType)
+	} else if socialType == "3" {
+		return wcStaffSocialService.importSzGjjExcel(db, rows, titleKeyMap, socialType)
+	} else {
+		return wcStaffSocialService.importDgGjjExcel(db, rows, titleKeyMap, socialType)
 	}
 }
 
@@ -277,13 +281,13 @@ func (wcStaffSocialService *WcStaffSocialService) importSzGjjExcel(db *gorm.DB, 
 		for i, row := range values {
 			//每一行最后一列为空要这样判空
 			if len(titleKeyMap) != len(row) {
+				fmt.Println("length", len(titleKeyMap), len(row))
 				return errors.New(fmt.Sprintf("第%d行有数据缺失", i+5))
 			}
 			for ii, value := range row {
 				key := titleKeyMap[excelTitle[ii]]
 				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 				fmt.Println("title-key-value", excelTitle[ii], key, value)
-				fmt.Println("length", len(titleKeyMap), len(row))
 				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
 				//结合每个字段是否为空判断(最后一列为空的话这种方式判断不出来)
@@ -342,6 +346,107 @@ func (wcStaffSocialService *WcStaffSocialService) importSzGjjExcel(db *gorm.DB, 
 				item["staff_id"] = staffExist.ID
 				item["type"] = socialType
 				item["credential_type"] = 1
+				if staffSocialExist.ID == 0 {
+					cErr := tx.Table(staffSocial.TableName()).Create(&item).Error
+					if cErr != nil {
+						return cErr
+					}
+				} else {
+					cErr := tx.Table(staffSocial.TableName()).Omit("name,account,credential_number,period_start,period_end,type,created_at").Where("id=?", staffSocialExist.ID).Updates(item).Error
+					if cErr != nil {
+						return cErr
+					}
+				}
+			}
+		}
+		return nil
+	})
+}
+
+// importDgGjjExcel 导入东莞公积金
+func (wcStaffSocialService *WcStaffSocialService) importDgGjjExcel(db *gorm.DB, rows [][]string, titleKeyMap map[string]string, socialType string) error {
+	now := time.Now().Format("2006-01-02 15:04:05")
+
+	return db.Transaction(func(tx *gorm.DB) error {
+		excelTitle := rows[1]
+		values := rows[2:]
+
+		if len(excelTitle) != 12 {
+			return errors.New("导入东莞公积金Excel模版异常")
+		}
+
+		//参数校验
+		for i, row := range values {
+			//每一行最后一列为空要这样判空
+			if len(titleKeyMap) != len(row) {
+				fmt.Println("length", len(titleKeyMap), len(row))
+				return errors.New(fmt.Sprintf("第%d行有数据缺失", i+3))
+			}
+			for ii, value := range row {
+				key := titleKeyMap[excelTitle[ii]]
+				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+				fmt.Println("title-key-value", excelTitle[ii], key, value)
+				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+				//结合每个字段是否为空判断(最后一列为空的话这种方式判断不出来)
+				if value == "" {
+					return errors.New(fmt.Sprintf("%s不能为空", excelTitle[ii]))
+				}
+			}
+		}
+
+		for _, row := range values {
+			var item = make(map[string]interface{})
+			var name, credentialNumber, period string
+			var staffExist weChat.WcStaff
+			var staffSocial weChat.WcStaffSocial
+
+			for ii, value := range row {
+				key := titleKeyMap[excelTitle[ii]]
+				if key == "id" {
+					continue
+				}
+				if key == "name" {
+					name = utils.FilterBreaksSpaces(value)
+				}
+				if key == "credential_number" {
+					credentialNumber = utils.FilterBreaksSpaces(value)
+				}
+				if key == "housing_ratio_self" || key == "housing_ratio_unit" {
+					housingRatio := strings.TrimSuffix(value, "%") // 去掉百分号
+					percentage, err := strconv.Atoi(housingRatio)
+					if err != nil {
+						fmt.Println("Error:", err)
+						return err
+					}
+					item[key] = float64(percentage) / 100
+				} else if key == "period" {
+					period = utils.FilterBreaksSpaces(value)
+					period = strings.ReplaceAll(period, "-", "")
+					item["period_start"] = period
+					item["period_end"] = period
+				} else if key == "credential_type" {
+					if value == "港澳通行证" {
+						item["credential_type"] = 2
+					} else {
+						item["credential_type"] = 1
+					}
+				} else {
+					item[key] = utils.FilterBreaksSpaces(value)
+				}
+			}
+
+			item["created_at"] = now
+			item["updated_at"] = now
+
+			tx.Where("id_number=?", credentialNumber).First(&staffExist)
+			if staffExist.ID == 0 {
+				return errors.New(fmt.Sprintf("员工%s不存在", name))
+			} else {
+				var staffSocialExist weChat.WcStaffSocial
+				tx.Where("staff_id=? AND period_start=? AND type=?", staffExist.ID, period, socialType).First(&staffSocialExist)
+				item["staff_id"] = staffExist.ID
+				item["type"] = socialType
 				if staffSocialExist.ID == 0 {
 					cErr := tx.Table(staffSocial.TableName()).Create(&item).Error
 					if cErr != nil {
