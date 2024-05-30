@@ -9,37 +9,37 @@ import (
 type WcStaffSalaryService struct {
 }
 
-// CreateWcStaffSalary 创建薪资奖金记录
+// CreateWcStaffSalary 创建工资列表记录
 func (wcStaffSalaryService *WcStaffSalaryService) CreateWcStaffSalary(wcStaffSalary *weChat.WcStaffSalary) (err error) {
 	err = global.GVA_DB.Create(wcStaffSalary).Error
 	return err
 }
 
-// DeleteWcStaffSalary 删除薪资奖金记录
+// DeleteWcStaffSalary 删除工资列表记录
 func (wcStaffSalaryService *WcStaffSalaryService)DeleteWcStaffSalary(ID string) (err error) {
 	err = global.GVA_DB.Delete(&weChat.WcStaffSalary{},"id = ?",ID).Error
 	return err
 }
 
-// DeleteWcStaffSalaryByIds 批量删除薪资奖金记录
+// DeleteWcStaffSalaryByIds 批量删除工资列表记录
 func (wcStaffSalaryService *WcStaffSalaryService)DeleteWcStaffSalaryByIds(IDs []string) (err error) {
 	err = global.GVA_DB.Delete(&[]weChat.WcStaffSalary{},"id in ?",IDs).Error
 	return err
 }
 
-// UpdateWcStaffSalary 更新薪资奖金记录
+// UpdateWcStaffSalary 更新工资列表记录
 func (wcStaffSalaryService *WcStaffSalaryService)UpdateWcStaffSalary(wcStaffSalary weChat.WcStaffSalary) (err error) {
 	err = global.GVA_DB.Save(&wcStaffSalary).Error
 	return err
 }
 
-// GetWcStaffSalary 根据ID获取薪资奖金记录
+// GetWcStaffSalary 根据ID获取工资列表记录
 func (wcStaffSalaryService *WcStaffSalaryService)GetWcStaffSalary(ID string) (wcStaffSalary weChat.WcStaffSalary, err error) {
 	err = global.GVA_DB.Where("id = ?", ID).First(&wcStaffSalary).Error
 	return
 }
 
-// GetWcStaffSalaryInfoList 分页获取薪资奖金记录
+// GetWcStaffSalaryInfoList 分页获取工资列表记录
 func (wcStaffSalaryService *WcStaffSalaryService)GetWcStaffSalaryInfoList(info weChatReq.WcStaffSalarySearch) (list []weChat.WcStaffSalary, total int64, err error) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
