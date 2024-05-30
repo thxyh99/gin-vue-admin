@@ -201,7 +201,7 @@ func (wcStaffSocialService *WcStaffSocialService) importSzSbExcel(db *gorm.DB, r
 
 		for _, row := range values {
 			var item = make(map[string]interface{})
-			var name, credentialNumber, periodStart string
+			var name, credentialNumber string
 			var staffExist weChat.WcStaff
 			var staffSocial weChat.WcStaffSocial
 
@@ -229,7 +229,7 @@ func (wcStaffSocialService *WcStaffSocialService) importSzSbExcel(db *gorm.DB, r
 				return errors.New(fmt.Sprintf("员工%s不存在", name))
 			} else {
 				var staffSocialExist weChat.WcStaffSocial
-				tx.Where("staff_id=? AND period_start=? AND type=?", staffExist.ID, periodStart, socialType).First(&staffSocialExist)
+				tx.Where("staff_id=? AND period_start=? AND type=?", staffExist.ID, period, socialType).First(&staffSocialExist)
 				item["staff_id"] = staffExist.ID
 				item["type"] = socialType
 				item["credential_type"] = 1
