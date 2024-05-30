@@ -146,7 +146,7 @@ func (wcStaffSocialService *WcStaffSocialService) ImportExcel(templateID, social
 	} else if socialType == "2" {
 		return wcStaffSocialService.importSzGjjExcel(db, rows, titleKeyMap, socialType)
 	} else if socialType == "3" {
-		return wcStaffSocialService.importSzGjjExcel(db, rows, titleKeyMap, socialType)
+		return wcStaffSocialService.importDgSbExcel(db, rows, titleKeyMap, socialType)
 	} else {
 		return wcStaffSocialService.importDgGjjExcel(db, rows, titleKeyMap, socialType)
 	}
@@ -167,17 +167,6 @@ func (wcStaffSocialService *WcStaffSocialService) importSzSbExcel(db *gorm.DB, r
 		period := periodStr[15:19] + periodStr[22:24]
 		excelTitle := rows[4]
 		values := rows[5:]
-
-		//模版校验
-		//if socialType == "1" && len(excelTitle) != 20 {
-		//	return errors.New("导入深圳社保Excel模版异常")
-		//} else if socialType == "2" && len(excelTitle) != 8 {
-		//	return errors.New("导入深圳公积金Excel模版异常")
-		//} else if socialType == "3" && len(excelTitle) != 24 {
-		//	return errors.New("导入东莞社保Excel模版异常")
-		//} else if socialType == "4" && len(excelTitle) != 12 {
-		//	return errors.New("导入东莞公积金Excel模版异常")
-		//}
 
 		if len(excelTitle) != 20 {
 			return errors.New("导入深圳社保Excel模版异常")
@@ -262,17 +251,6 @@ func (wcStaffSocialService *WcStaffSocialService) importSzGjjExcel(db *gorm.DB, 
 		excelTitle := rows[3]
 		values := rows[4:]
 
-		//模版校验
-		//if socialType == "1" && len(excelTitle) != 20 {
-		//	return errors.New("导入深圳社保Excel模版异常")
-		//} else if socialType == "2" && len(excelTitle) != 8 {
-		//	return errors.New("导入深圳公积金Excel模版异常")
-		//} else if socialType == "3" && len(excelTitle) != 24 {
-		//	return errors.New("导入东莞社保Excel模版异常")
-		//} else if socialType == "4" && len(excelTitle) != 12 {
-		//	return errors.New("导入东莞公积金Excel模版异常")
-		//}
-
 		if len(excelTitle) != 8 {
 			return errors.New("导入深圳公积金Excel模版异常")
 		}
@@ -346,6 +324,102 @@ func (wcStaffSocialService *WcStaffSocialService) importSzGjjExcel(db *gorm.DB, 
 				item["staff_id"] = staffExist.ID
 				item["type"] = socialType
 				item["credential_type"] = 1
+				if staffSocialExist.ID == 0 {
+					cErr := tx.Table(staffSocial.TableName()).Create(&item).Error
+					if cErr != nil {
+						return cErr
+					}
+				} else {
+					cErr := tx.Table(staffSocial.TableName()).Omit("name,account,credential_number,period_start,period_end,type,created_at").Where("id=?", staffSocialExist.ID).Updates(item).Error
+					if cErr != nil {
+						return cErr
+					}
+				}
+			}
+		}
+		return nil
+	})
+}
+
+// importDgSbExcel 导入东莞社保
+func (wcStaffSocialService *WcStaffSocialService) importDgSbExcel(db *gorm.DB, rows [][]string, titleKeyMap map[string]string, socialType string) error {
+	now := time.Now().Format("2006-01-02 15:04:05")
+
+	return db.Transaction(func(tx *gorm.DB) error {
+		excelTitle := rows[6][:7]
+		excelTitle = append(excelTitle, rows[7][7:21]...)
+		excelTitle = append(excelTitle, rows[6][21:24]...)
+		values := rows[8:]
+
+		fmt.Println("excelTitle", len(excelTitle), excelTitle)
+
+		if len(excelTitle) != 24 {
+			return errors.New("导入东莞社保Excel模版异常")
+		}
+
+		//参数校验
+		for i, row := range values {
+			//每一行最后一列为空要这样判空
+			if len(titleKeyMap) != len(row) {
+				fmt.Println("length", len(titleKeyMap), len(row))
+				return errors.New(fmt.Sprintf("第%d行有数据缺失", i+6))
+			}
+			for ii, value := range row {
+				key := titleKeyMap[excelTitle[ii]]
+				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+				fmt.Println("title-key-value", excelTitle[ii], key, value)
+				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+				//结合每个字段是否为空判断(最后一列为空的话这种方式判断不出来)
+				if value == "" {
+					return errors.New(fmt.Sprintf("%s不能为空", excelTitle[ii]))
+				}
+			}
+		}
+
+		for _, row := range values {
+			var item = make(map[string]interface{})
+			var name, credentialNumber, period string
+			var staffExist weChat.WcStaff
+			var staffSocial weChat.WcStaffSocial
+
+			for ii, value := range row {
+				key := titleKeyMap[excelTitle[ii]]
+				if key == "id" || key == "pension_base1" || key == "unemployed_base1" || key == "medical_base1" {
+					continue
+				}
+				if key == "name" {
+					name = utils.FilterBreaksSpaces(value)
+				}
+				if key == "credential_number" {
+					credentialNumber = utils.FilterBreaksSpaces(value)
+				}
+
+				if key == "credential_type" {
+					if value == "港澳通行证" {
+						item["credential_type"] = 2
+					} else {
+						item["credential_type"] = 1
+					}
+				} else if key == "period_start" || key == "period_end" {
+					period = strings.ReplaceAll(value, "-", "")
+					item[key] = utils.FilterBreaksSpaces(period)
+				} else {
+					item[key] = utils.FilterBreaksSpaces(value)
+				}
+			}
+
+			item["created_at"] = now
+			item["updated_at"] = now
+
+			tx.Where("id_number=?", credentialNumber).First(&staffExist)
+			if staffExist.ID == 0 {
+				return errors.New(fmt.Sprintf("员工%s不存在", name))
+			} else {
+				var staffSocialExist weChat.WcStaffSocial
+				tx.Where("staff_id=? AND period_start=? AND type=?", staffExist.ID, period, socialType).First(&staffSocialExist)
+				item["staff_id"] = staffExist.ID
+				item["type"] = socialType
 				if staffSocialExist.ID == 0 {
 					cErr := tx.Table(staffSocial.TableName()).Create(&item).Error
 					if cErr != nil {
