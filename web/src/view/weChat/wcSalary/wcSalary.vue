@@ -2,7 +2,7 @@
 	<div>
 		<div class="gva-search-box">
 			<el-form
-				ref="elSearchFormRef"
+				ref="elFormRef"
 				:inline="true"
 				:model="searchInfo"
 				class="demo-form-inline"
@@ -37,7 +37,7 @@
 				<el-table-column align="left" label="发放职级" prop="" />
 				<el-table-column align="left" label="操作">
 					<template #default="scope">
-						<el-button type="primary" link>导入基本工资</el-button>
+            <el-button type="primary" link>导入基本工资</el-button>
 						<el-button type="primary" link>导入记录</el-button>
 						<el-button type="primary" link>删除</el-button>
 					</template>
@@ -62,3 +62,4 @@ const openDialog = () => {
 	drawerRef.value.dialogFormVisible = true
 }
 const tableData = ref([])
+</script>
