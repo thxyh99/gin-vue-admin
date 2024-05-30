@@ -16,4 +16,5 @@ type ServiceGroup struct {
 	WcStaffSocialService
 	WcSalaryService
 	WcStaffSalaryService
+	WcSalaryTemplateService
 }

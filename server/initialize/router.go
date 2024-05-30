@@ -100,6 +100,7 @@ func Routers() *gin.Engine {
 
 		weChatRouter.InitWcSalaryRouter(PrivateGroup, PublicGroup)
 		weChatRouter.InitWcStaffSalaryRouter(PrivateGroup, PublicGroup)
+		weChatRouter.InitWcSalaryTemplateRouter(PrivateGroup, PublicGroup)
 
 	}
 	{
