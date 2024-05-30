@@ -80,8 +80,8 @@
         <el-table-column align="left" label="失业缴纳基数" prop="unemployedBase" width="120" />
         <el-table-column align="left" label="失业个人缴费" prop="unemployedSelf" width="120" />
         <el-table-column align="left" label="失业单位缴费" prop="unemployedUnit" width="120" />
-        <el-table-column align="left" label="工商保险缴费基数" prop="icInsuranceBase" width="150" />
-        <el-table-column align="left" label="工商保险单位缴费" prop="icInsuranceUnit" width="150" />
+        <el-table-column align="left" label="工伤保险缴费基数" prop="injuryInsuranceBase" width="150" />
+        <el-table-column align="left" label="工伤保险单位缴费" prop="injuryInsuranceUnit" width="150" />
         <el-table-column align="left" label="生育医疗缴费基数" prop="birthBase" width="150" />
         <el-table-column align="left" label="生育医疗单位缴费" prop="birthUnit" width="150" />
         <el-table-column align="left" label="公积金缴费合计" prop="totalHousing" width="150" />
@@ -186,11 +186,11 @@
             <el-form-item label="失业单位缴费:"  prop="unemployedUnit" >
               <el-input-number v-model="formData.unemployedUnit"  style="width:100%" :precision="2" :clearable="true"  />
             </el-form-item>
-            <el-form-item label="工商保险缴费基数:"  prop="icInsuranceBase" >
-              <el-input-number v-model="formData.icInsuranceBase"  style="width:100%" :precision="2" :clearable="true"  />
+            <el-form-item label="工商保险缴费基数:"  prop="injuryInsuranceBase" >
+              <el-input-number v-model="formData.injuryInsuranceBase"  style="width:100%" :precision="2" :clearable="true"  />
             </el-form-item>
-            <el-form-item label="工商保险单位缴费:"  prop="icInsuranceUnit" >
-              <el-input-number v-model="formData.icInsuranceUnit"  style="width:100%" :precision="2" :clearable="true"  />
+            <el-form-item label="工商保险单位缴费:"  prop="injuryInsuranceUnit" >
+              <el-input-number v-model="formData.injuryInsuranceUnit"  style="width:100%" :precision="2" :clearable="true"  />
             </el-form-item>
             <el-form-item label="生育医疗缴费基数:"  prop="birthBase" >
               <el-input-number v-model="formData.birthBase"  style="width:100%" :precision="2" :clearable="true"  />
@@ -290,10 +290,10 @@
                         {{ formData.unemployedUnit }}
                 </el-descriptions-item>
                 <el-descriptions-item label="工商保险缴费基数">
-                        {{ formData.icInsuranceBase }}
+                        {{ formData.injuryInsuranceBase }}
                 </el-descriptions-item>
                 <el-descriptions-item label="工商保险单位缴费">
-                        {{ formData.icInsuranceUnit }}
+                        {{ formData.injuryInsuranceUnit }}
                 </el-descriptions-item>
                 <el-descriptions-item label="生育医疗缴费基数">
                         {{ formData.birthBase }}
@@ -385,8 +385,8 @@ const formData = ref({
         unemployedBase: 0,
         unemployedSelf: 0,
         unemployedUnit: 0,
-        icInsuranceBase: 0,
-        icInsuranceUnit: 0,
+        injuryInsuranceBase: 0,
+        injuryInsuranceUnit: 0,
         birthBase: 0,
         birthUnit: 0,
         totalHousing: 0,
@@ -529,13 +529,13 @@ const rule = reactive({
                    trigger: ['input','blur'],
                },
               ],
-               icInsuranceBase : [{
+              injuryInsuranceBase : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
               ],
-               icInsuranceUnit : [{
+              injuryInsuranceUnit : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -817,8 +817,8 @@ const closeDetailShow = () => {
           unemployedBase: 0,
           unemployedSelf: 0,
           unemployedUnit: 0,
-          icInsuranceBase: 0,
-          icInsuranceUnit: 0,
+          injuryInsuranceBase: 0,
+          injuryInsuranceUnit: 0,
           birthBase: 0,
           birthUnit: 0,
           totalHousing: 0,
@@ -864,8 +864,8 @@ const closeDialog = () => {
         unemployedBase: 0,
         unemployedSelf: 0,
         unemployedUnit: 0,
-        icInsuranceBase: 0,
-        icInsuranceUnit: 0,
+        injuryInsuranceBase: 0,
+        injuryInsuranceUnit: 0,
         birthBase: 0,
         birthUnit: 0,
         totalHousing: 0,

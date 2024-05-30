@@ -56,11 +56,11 @@
         <el-form-item label="失业单位缴费:" prop="unemployedUnit">
           <el-input-number v-model="formData.unemployedUnit" :precision="2" :clearable="true"></el-input-number>
        </el-form-item>
-        <el-form-item label="工商保险缴费基数:" prop="icInsuranceBase">
-          <el-input-number v-model="formData.icInsuranceBase" :precision="2" :clearable="true"></el-input-number>
+        <el-form-item label="工商保险缴费基数:" prop="injuryInsuranceBase">
+          <el-input-number v-model="formData.injuryInsuranceBase" :precision="2" :clearable="true"></el-input-number>
        </el-form-item>
-        <el-form-item label="工商保险单位缴费:" prop="icInsuranceUnit">
-          <el-input-number v-model="formData.icInsuranceUnit" :precision="2" :clearable="true"></el-input-number>
+        <el-form-item label="工商保险单位缴费:" prop="injuryInsuranceUnit">
+          <el-input-number v-model="formData.injuryInsuranceUnit" :precision="2" :clearable="true"></el-input-number>
        </el-form-item>
         <el-form-item label="生育医疗缴费基数:" prop="birthBase">
           <el-input-number v-model="formData.birthBase" :precision="2" :clearable="true"></el-input-number>
@@ -141,8 +141,8 @@ const formData = ref({
             unemployedBase: 0,
             unemployedSelf: 0,
             unemployedUnit: 0,
-            icInsuranceBase: 0,
-            icInsuranceUnit: 0,
+            injuryInsuranceBase: 0,
+            injuryInsuranceUnit: 0,
             birthBase: 0,
             birthUnit: 0,
             totalHousing: 0,
@@ -246,12 +246,12 @@ const rule = reactive({
                    message: '',
                    trigger: ['input','blur'],
                }],
-               icInsuranceBase : [{
+                injuryInsuranceBase : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                }],
-               icInsuranceUnit : [{
+                injuryInsuranceUnit : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
