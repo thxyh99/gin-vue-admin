@@ -10,6 +10,7 @@ type WcStaffSocialSearch struct {
 	EndCreatedAt   *time.Time `json:"endCreatedAt" form:"endCreatedAt"`
 	StaffId        *int       `json:"staffId" form:"staffId"`
 	Type           *int       `json:"type" form:"type"`
+	Period         string     `json:"period" form:"period"`
 
 	request.PageInfo
 }

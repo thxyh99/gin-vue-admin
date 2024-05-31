@@ -78,6 +78,9 @@ func (wcStaffSocialService *WcStaffSocialService) GetWcStaffSocialInfoList(info 
 		keyword := "%" + info.Keyword + "%"
 		db = db.Where("(account LIKE ? OR credential_number LIKE ?)", keyword, keyword)
 	}
+	if info.Period != "" {
+		db = db.Where("period_start = ?", info.Period)
+	}
 	err = db.Count(&total).Error
 	if err != nil {
 		return

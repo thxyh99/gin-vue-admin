@@ -683,11 +683,11 @@ const page = ref(1)
 const total = ref(0)
 const pageSize = ref(10)
 const tableData = ref([])
-const searchInfo = ref({})
+const searchInfo = ref({type:1})
 
 // 重置
 const onReset = () => {
-	searchInfo.value = {}
+	searchInfo.value = {type:1}
 	getTableData()
 }
 

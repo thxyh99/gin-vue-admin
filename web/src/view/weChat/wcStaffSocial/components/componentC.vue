@@ -10,7 +10,7 @@
 				@keyup.enter="onSubmit"
 			>
 				<el-form-item label="关键词">
-					<el-input style="width: 190px" v-model="searchInfo.keyword" placeholder="请输入证件号码、个人社保号" />
+					<el-input style="width: 210px" v-model="searchInfo.keyword" placeholder="请输入证件号码、个人社保号" />
 				</el-form-item>
 				<el-form-item label="选择员工:" prop="staffId">
 					<SelectStaff v-model="searchInfo.staffId" :disabled="type === 'update' ? 'disabled' : false"> </SelectStaff>
@@ -683,11 +683,11 @@ const page = ref(1)
 const total = ref(0)
 const pageSize = ref(10)
 const tableData = ref([])
-const searchInfo = ref({})
+const searchInfo = ref({type:3})
 
 // 重置
 const onReset = () => {
-	searchInfo.value = {}
+	searchInfo.value = {type:3}
 	getTableData()
 }
 
