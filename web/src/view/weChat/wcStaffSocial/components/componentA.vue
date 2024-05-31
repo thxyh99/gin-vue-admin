@@ -30,11 +30,11 @@
 		</div>
 		<div class="gva-table-box">
 			<div class="gva-btn-list">
-				<el-button type="primary" icon="plus" @click="openDialog">新增</el-button>
-				<el-button icon="delete" style="margin-left: 10px" :disabled="!multipleSelection.length" @click="onDelete"
-					>删除</el-button
-				>
-				<ImportExcel template-id="staffSocialSzSb" type="1" @on-success="getTableData" btnName="导入深圳社保" />
+<!--				<el-button type="primary" icon="plus" @click="openDialog">新增</el-button>-->
+        <ImportExcel template-id="staffSocialSzSb" type="1" @on-success="getTableData" btnName="导入深圳社保" />
+        <el-button icon="delete" style="margin-left: 10px" :disabled="!multipleSelection.length" @click="onDelete"
+        >删除</el-button
+        >
 			</div>
 			<el-table
 				ref="multipleTable"
@@ -64,17 +64,17 @@
 				<el-table-column align="left" label="失业保险个人交" prop="unemployedSelf" width="150" />
 				<el-table-column align="left" label="失业保险单位交" prop="unemployedUnit" width="150" />
 				<el-table-column align="left" label="生育医疗缴费基数" prop="birthBase" width="150" />
-				<el-table-column align="left" label="生育医疗单位" prop="birthUnit" width="150" />
+				<el-table-column align="left" label="生育医疗单位交" prop="birthUnit" width="150" />
 				<el-table-column align="left" label="台账年月" prop="periodStart" width="120" />
-				<el-table-column align="left" label="操作" fixed="right" min-width="240">
+				<el-table-column align="left" label="操作" fixed="right" min-width="200">
 					<template #default="scope">
 						<el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
 							<el-icon style="margin-right: 5px"><InfoFilled /></el-icon>
 							查看详情
 						</el-button>
-						<el-button type="primary" link icon="edit" class="table-button" @click="updateWcStaffSocialFunc(scope.row)"
-							>变更</el-button
-						>
+<!--						<el-button type="primary" link icon="edit" class="table-button" @click="updateWcStaffSocialFunc(scope.row)"-->
+<!--							>变更</el-button-->
+<!--						>-->
 						<el-button type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>
 					</template>
 				</el-table-column>
@@ -247,92 +247,62 @@
 				<el-descriptions-item label="员工工号">
 					{{ formData.jobNum }}
 				</el-descriptions-item>
-				<el-descriptions-item label="账号">
+				<el-descriptions-item label="电脑号">
 					{{ formData.account }}
 				</el-descriptions-item>
-				<el-descriptions-item label="类型">
-					{{ formData.typeText }}
-				</el-descriptions-item>
-				<el-descriptions-item label="姓名">
-					{{ formData.name }}
-				</el-descriptions-item>
-				<el-descriptions-item label="证件类型">
-					{{ formData.credentialTypeText }}
-				</el-descriptions-item>
-				<el-descriptions-item label="证件号码">
+				<el-descriptions-item label="身份证号">
 					{{ formData.credentialNumber }}
 				</el-descriptions-item>
-				<el-descriptions-item label="社保缴费合计">
+				<el-descriptions-item label="应收合计">
 					{{ formData.totalSocial }}
 				</el-descriptions-item>
-				<el-descriptions-item label="社保缴费个人合计">
+				<el-descriptions-item label="个人合计">
 					{{ formData.totalSocialSelf }}
 				</el-descriptions-item>
-				<el-descriptions-item label="社保缴费单位合计">
+				<el-descriptions-item label="单位合计">
 					{{ formData.totalSocialUnit }}
 				</el-descriptions-item>
-				<el-descriptions-item label="养老缴纳基数">
+				<el-descriptions-item label="养老保险缴费基数">
 					{{ formData.pensionBase }}
 				</el-descriptions-item>
-				<el-descriptions-item label="养老个人缴费">
+				<el-descriptions-item label="养老保险个人交">
 					{{ formData.pensionSelf }}
 				</el-descriptions-item>
-				<el-descriptions-item label="养老单位缴费">
+				<el-descriptions-item label="养老保险单位交">
 					{{ formData.pensionUnit }}
 				</el-descriptions-item>
-				<el-descriptions-item label="医疗缴纳基数">
+				<el-descriptions-item label="医疗保险缴费基数">
 					{{ formData.medicalBase }}
 				</el-descriptions-item>
-				<el-descriptions-item label="医疗个人缴费">
+				<el-descriptions-item label="医疗保险个人交">
 					{{ formData.medicalSelf }}
 				</el-descriptions-item>
-				<el-descriptions-item label="医疗单位缴费">
+				<el-descriptions-item label="医疗保险单位交">
 					{{ formData.medicalUnit }}
 				</el-descriptions-item>
-				<el-descriptions-item label="失业缴纳基数">
+        <el-descriptions-item label="工伤保险缴费基数">
+          {{ formData.injuryInsuranceBase }}
+        </el-descriptions-item>
+        <el-descriptions-item label="工伤保险单位交">
+          {{ formData.injuryInsuranceUnit }}
+        </el-descriptions-item>
+				<el-descriptions-item label="失业保险缴费基数">
 					{{ formData.unemployedBase }}
 				</el-descriptions-item>
-				<el-descriptions-item label="失业个人缴费">
+				<el-descriptions-item label="失业保险个人交">
 					{{ formData.unemployedSelf }}
 				</el-descriptions-item>
-				<el-descriptions-item label="失业单位缴费">
+				<el-descriptions-item label="失业保险单位交">
 					{{ formData.unemployedUnit }}
-				</el-descriptions-item>
-				<el-descriptions-item label="工商保险缴费基数">
-					{{ formData.injuryInsuranceBase }}
-				</el-descriptions-item>
-				<el-descriptions-item label="工商保险单位缴费">
-					{{ formData.injuryInsuranceUnit }}
 				</el-descriptions-item>
 				<el-descriptions-item label="生育医疗缴费基数">
 					{{ formData.birthBase }}
 				</el-descriptions-item>
-				<el-descriptions-item label="生育医疗单位缴费">
+				<el-descriptions-item label="生育医疗单位交">
 					{{ formData.birthUnit }}
 				</el-descriptions-item>
-				<el-descriptions-item label="公积金缴费合计">
-					{{ formData.totalHousing }}
-				</el-descriptions-item>
-				<el-descriptions-item label="公积金个人缴费合计">
-					{{ formData.totalHousingSelf }}
-				</el-descriptions-item>
-				<el-descriptions-item label="公积金公司缴费合计">
-					{{ formData.totalHousingUnit }}
-				</el-descriptions-item>
-				<el-descriptions-item label="缴存基数">
-					{{ formData.housingBase }}
-				</el-descriptions-item>
-				<el-descriptions-item label="个人缴存比例">
-					{{ formData.housingRatioSelf }}
-				</el-descriptions-item>
-				<el-descriptions-item label="单位缴存比例">
-					{{ formData.housingRatioUnit }}
-				</el-descriptions-item>
-				<el-descriptions-item label="费款所属期起">
+				<el-descriptions-item label="台账年月">
 					{{ formData.periodStart }}
-				</el-descriptions-item>
-				<el-descriptions-item label="费款所属期止">
-					{{ formData.periodEnd }}
 				</el-descriptions-item>
 			</el-descriptions>
 		</el-drawer>
