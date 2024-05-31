@@ -361,7 +361,7 @@ const types = ref([
 
 const credentialTypes = ref([
   { label: '其他', value: 0 },
-  { label: '身份证', value: 1 },
+  { label: '居民身份证', value: 1 },
   { label: '港澳通行证', value: 2 },
 ])
 
