@@ -12,10 +12,16 @@
 				<el-form-item label="关键词">
 					<el-input style="width: 180px" v-model="searchInfo.keyword" placeholder="请输入电脑号、身份证号" />
 				</el-form-item>
-				<el-form-item label="选择员工:" prop="staffId">
+				<el-form-item label="选择员工" prop="staffId">
 					<SelectStaff v-model="searchInfo.staffId" :disabled="type === 'update' ? 'disabled' : false"> </SelectStaff>
 				</el-form-item>
-
+        <el-form-item label="缴费年月">
+					<el-date-picker
+            v-model="searchInfo.period"
+            type="month"
+            value-format="YYYYMM"
+          />
+				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" icon="search" @click="onSubmit">查询</el-button>
 					<el-button icon="refresh" @click="onReset">重置</el-button>
