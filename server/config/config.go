@@ -221,7 +221,7 @@ var config = CommonConfig{
 	},
 	CredentialType: []string{
 		0: "其它",
-		1: "身份证",
+		1: "居民身份证",
 		2: "港澳通行证",
 	},
 }

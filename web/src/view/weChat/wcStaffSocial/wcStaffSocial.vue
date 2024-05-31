@@ -66,7 +66,7 @@
         <el-table-column align="left" label="员工工号" prop="jobNum" width="120" />
         <el-table-column align="left" label="账号" prop="account" width="150" />
         <el-table-column align="left" label="类型" prop="typeText" width="100" />
-        <el-table-column align="left" label="证件类型" prop="credentialTypeText" width="90" />
+        <el-table-column align="left" label="证件类型" prop="credentialTypeText" width="120" />
         <el-table-column align="left" label="证件号码" prop="credentialNumber" width="200" />
         <el-table-column align="left" label="社保缴费合计" prop="totalSocial" width="120" />
         <el-table-column align="left" label="社保缴费个人合计" prop="totalSocialSelf" width="150" />
