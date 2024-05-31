@@ -141,14 +141,17 @@ func (wcStaffSocialService *WcStaffSocialService) ImportExcel(templateID, social
 		db = global.MustGetGlobalDBByDBName(template.DBName)
 	}
 
-	if socialType == "1" {
+	switch socialType {
+	case "1":
 		return wcStaffSocialService.importSzSbExcel(db, rows, titleKeyMap, socialType)
-	} else if socialType == "2" {
+	case "2":
 		return wcStaffSocialService.importSzGjjExcel(db, rows, titleKeyMap, socialType)
-	} else if socialType == "3" {
+	case "3":
 		return wcStaffSocialService.importDgSbExcel(db, rows, titleKeyMap, socialType)
-	} else {
+	case "4":
 		return wcStaffSocialService.importDgGjjExcel(db, rows, titleKeyMap, socialType)
+	default:
+		return errors.New("类型异常")
 	}
 }
 
