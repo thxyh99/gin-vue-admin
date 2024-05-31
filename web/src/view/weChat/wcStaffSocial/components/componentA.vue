@@ -10,15 +10,10 @@
 				@keyup.enter="onSubmit"
 			>
 				<el-form-item label="关键词">
-					<el-input style="width: 170px" v-model="searchInfo.keyword" placeholder="请输入账号、证件号码" />
+					<el-input style="width: 180px" v-model="searchInfo.keyword" placeholder="请输入电脑号、身份证号" />
 				</el-form-item>
 				<el-form-item label="选择员工:" prop="staffId">
 					<SelectStaff v-model="searchInfo.staffId" :disabled="type === 'update' ? 'disabled' : false"> </SelectStaff>
-				</el-form-item>
-				<el-form-item label="类型:" prop="type">
-					<el-select v-model="searchInfo.type" placeholder="选择类型">
-						<el-option v-for="type in types" :key="type.value" :label="type.label" :value="type.value"></el-option>
-					</el-select>
 				</el-form-item>
 
 				<el-form-item>
@@ -34,9 +29,6 @@
 					>删除</el-button
 				>
 				<ImportExcel template-id="staffSocialSzSb" type="1" @on-success="getTableData" btnName="导入深圳社保" />
-				<ImportExcel template-id="staffSocialSzGjj" type="2" @on-success="getTableData" btnName="导入深圳公积金" />
-				<ImportExcel template-id="staffSocialDgSb" type="3" @on-success="getTableData" btnName="导入东莞社保" />
-				<ImportExcel template-id="staffSocialDgGjj" type="4" @on-success="getTableData" btnName="导入东莞公积金" />
 			</div>
 			<el-table
 				ref="multipleTable"
@@ -49,34 +41,25 @@
 				<el-table-column type="selection" width="55" />
 				<el-table-column align="left" label="成员名称" prop="staffName" width="100" />
 				<el-table-column align="left" label="员工工号" prop="jobNum" width="120" />
-				<el-table-column align="left" label="账号" prop="account" width="150" />
-				<el-table-column align="left" label="类型" prop="typeText" width="100" />
-				<el-table-column align="left" label="证件类型" prop="credentialTypeText" width="120" />
-				<el-table-column align="left" label="证件号码" prop="credentialNumber" width="200" />
-				<el-table-column align="left" label="社保缴费合计" prop="totalSocial" width="120" />
-				<el-table-column align="left" label="社保缴费个人合计" prop="totalSocialSelf" width="150" />
-				<el-table-column align="left" label="社保缴费单位合计" prop="totalSocialUnit" width="150" />
-				<el-table-column align="left" label="养老缴纳基数" prop="pensionBase" width="120" />
-				<el-table-column align="left" label="养老个人缴费" prop="pensionSelf" width="120" />
-				<el-table-column align="left" label="养老单位缴费" prop="pensionUnit" width="120" />
-				<el-table-column align="left" label="医疗缴纳基数" prop="medicalBase" width="120" />
-				<el-table-column align="left" label="医疗个人缴费" prop="medicalSelf" width="120" />
-				<el-table-column align="left" label="医疗单位缴费" prop="medicalUnit" width="120" />
-				<el-table-column align="left" label="失业缴纳基数" prop="unemployedBase" width="120" />
-				<el-table-column align="left" label="失业个人缴费" prop="unemployedSelf" width="120" />
-				<el-table-column align="left" label="失业单位缴费" prop="unemployedUnit" width="120" />
-				<el-table-column align="left" label="工伤保险缴费基数" prop="injuryInsuranceBase" width="150" />
-				<el-table-column align="left" label="工伤保险单位缴费" prop="injuryInsuranceUnit" width="150" />
+				<el-table-column align="left" label="电脑号" prop="account" width="150" />
+				<el-table-column align="left" label="身份证号" prop="credentialNumber" width="200" />
+				<el-table-column align="left" label="应收合计" prop="totalSocial" width="120" />
+				<el-table-column align="left" label="个人合计" prop="totalSocialSelf" width="150" />
+				<el-table-column align="left" label="单位合计" prop="totalSocialUnit" width="150" />
+				<el-table-column align="left" label="养老保险缴费基数" prop="pensionBase" width="150" />
+				<el-table-column align="left" label="养老保险个人交" prop="pensionSelf" width="150" />
+				<el-table-column align="left" label="养老保险单位交" prop="pensionUnit" width="150" />
+				<el-table-column align="left" label="医疗保险缴费基数" prop="medicalBase" width="150" />
+				<el-table-column align="left" label="医疗保险个人交" prop="medicalSelf" width="150" />
+				<el-table-column align="left" label="医疗保险单位交" prop="medicalUnit" width="150" />
+        <el-table-column align="left" label="工伤保险缴费基数" prop="injuryInsuranceBase" width="150" />
+        <el-table-column align="left" label="工伤保险单位交" prop="injuryInsuranceUnit" width="150" />
+				<el-table-column align="left" label="失业保险缴费基数" prop="unemployedBase" width="150" />
+				<el-table-column align="left" label="失业保险个人交" prop="unemployedSelf" width="150" />
+				<el-table-column align="left" label="失业保险单位交" prop="unemployedUnit" width="150" />
 				<el-table-column align="left" label="生育医疗缴费基数" prop="birthBase" width="150" />
-				<el-table-column align="left" label="生育医疗单位缴费" prop="birthUnit" width="150" />
-				<el-table-column align="left" label="公积金缴费合计" prop="totalHousing" width="150" />
-				<el-table-column align="left" label="公积金个人缴费合计" prop="totalHousingSelf" width="150" />
-				<el-table-column align="left" label="公积金公司缴费合计" prop="totalHousingUnit" width="150" />
-				<el-table-column align="left" label="缴存基数" prop="housingBase" width="120" />
-				<el-table-column align="left" label="个人缴存比例" prop="housingRatioSelf" width="120" />
-				<el-table-column align="left" label="单位缴存比例" prop="housingRatioUnit" width="120" />
-				<el-table-column align="left" label="费款所属期起" prop="periodStart" width="120" />
-				<el-table-column align="left" label="费款所属期止" prop="periodEnd" width="120" />
+				<el-table-column align="left" label="生育医疗单位" prop="birthUnit" width="150" />
+				<el-table-column align="left" label="台账年月" prop="periodStart" width="120" />
 				<el-table-column align="left" label="操作" fixed="right" min-width="240">
 					<template #default="scope">
 						<el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
