@@ -54,6 +54,7 @@ type CommonConfig struct {
 	FileType          []string //合同类型
 	SocialType        []string //社保公积金类型
 	CredentialType    []string //证件类型
+	SalaryType        []string //工资类型
 }
 
 var config = CommonConfig{
@@ -223,5 +224,15 @@ var config = CommonConfig{
 		0: "其它",
 		1: "居民身份证",
 		2: "港澳通行证",
+	},
+	SalaryType: []string{
+		1: "基本工资",
+		2: "集团经营绩效奖励",
+		3: "节日金",
+		4: "半年奖",
+		5: "年度奖金",
+		6: "总部职能体系月度奖金",
+		7: "总部金纳斯市场体系月度奖金",
+		8: "总部调理中心体系月度奖金",
 	},
 }
