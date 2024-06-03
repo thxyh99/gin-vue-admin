@@ -2,20 +2,13 @@
   <div>
     <div class="gva-search-box">
       <el-form ref="elSearchFormRef" :inline="true" :model="searchInfo" class="demo-form-inline" :rules="searchRule" @keyup.enter="onSubmit">
-      <el-form-item label="创建日期" prop="createdAt">
-      <template #label>
-        <span>
-          创建日期
-          <el-tooltip content="搜索范围是开始日期（包含）至结束日期（不包含）">
-            <el-icon><QuestionFilled /></el-icon>
-          </el-tooltip>
-        </span>
-      </template>
-      <el-date-picker v-model="searchInfo.startCreatedAt" type="datetime" placeholder="开始日期" :disabled-date="time=> searchInfo.endCreatedAt ? time.getTime() > searchInfo.endCreatedAt.getTime() : false"></el-date-picker>
-       —
-      <el-date-picker v-model="searchInfo.endCreatedAt" type="datetime" placeholder="结束日期" :disabled-date="time=> searchInfo.startCreatedAt ? time.getTime() < searchInfo.startCreatedAt.getTime() : false"></el-date-picker>
-      </el-form-item>
-      
+
+        <el-form-item label="职工等级类型">
+          <el-select v-model="searchInfo.type" clearable placeholder="请选择工资类型">
+            <el-option v-for="type in types" :key="type.value" :label="type.label" :value="type.value"></el-option>
+          </el-select>
+        </el-form-item>
+
         <el-form-item>
           <el-button type="primary" icon="search" @click="onSubmit">查询</el-button>
           <el-button icon="refresh" @click="onReset">重置</el-button>
@@ -23,10 +16,10 @@
       </el-form>
     </div>
     <div class="gva-table-box">
-        <div class="gva-btn-list">
-            <el-button type="primary" icon="plus" @click="openDialog">新增</el-button>
-            <el-button icon="delete" style="margin-left: 10px;" :disabled="!multipleSelection.length" @click="onDelete">删除</el-button>
-        </div>
+<!--        <div class="gva-btn-list">-->
+<!--            <el-button type="primary" icon="plus" @click="openDialog">新增</el-button>-->
+<!--            <el-button icon="delete" style="margin-left: 10px;" :disabled="!multipleSelection.length" @click="onDelete">删除</el-button>-->
+<!--        </div>-->
         <el-table
         ref="multipleTable"
         style="width: 100%"
@@ -36,25 +29,18 @@
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
-        
-        <el-table-column align="left" label="日期" width="180">
-            <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
-        </el-table-column>
-        
-        <el-table-column align="left" label="员工ID" prop="staffId" width="120" />
-        <el-table-column align="left" label="文件分类(0:其它 1:合同附件 2:身份证(人像) 3:身份证(国徽) 4:学历证书 5:学位证书 6:前公司离职证明 7:员工入职申请表 8:试用期管理规定 9:个人简历 10:职称/技能证书)" prop="type" width="120" />
-        <el-table-column align="left" label="文件名" prop="name" width="120" />
-        <el-table-column align="left" label="文件地址" prop="url" width="120" />
-        <el-table-column align="left" label="文件标签" prop="tag" width="120" />
-        <el-table-column align="left" label="编号" prop="key" width="120" />
+        <el-table-column align="left" label="工资类型" prop="typeText" width="240" />
+        <el-table-column align="left" label="款项字段" prop="field" width="200" />
+        <el-table-column align="left" label="款项定义" prop="name" width="180" />
+        <el-table-column align="left" label="是否必选" prop="isRequiredText" width="120" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
                 <el-icon style="margin-right: 5px"><InfoFilled /></el-icon>
                 查看详情
             </el-button>
-            <el-button type="primary" link icon="edit" class="table-button" @click="updateWcFileFunc(scope.row)">变更</el-button>
-            <el-button type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>
+            <el-button type="primary" link icon="edit" class="table-button" @click="updateWcSalaryTypeFieldFunc(scope.row)">变更</el-button>
+<!--            <el-button type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>-->
             </template>
         </el-table-column>
         </el-table>
@@ -82,23 +68,21 @@
             </template>
 
           <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
-            <el-form-item label="员工ID:"  prop="staffId" >
-              <el-input v-model.number="formData.staffId" :clearable="true" placeholder="请输入员工ID" />
+            <el-form-item label="工资类型:"  prop="type" >
+              <el-select v-model="formData.type" placeholder="请选择工资类型" :disabled="type==='update'?'disabled':false">
+                <el-option v-for="type in types" :key="type.value" :label="type.label" :value="type.value"></el-option>
+              </el-select>
             </el-form-item>
-            <el-form-item label="文件分类(0:其它 1:合同附件 2:身份证(人像) 3:身份证(国徽) 4:学历证书 5:学位证书 6:前公司离职证明 7:员工入职申请表 8:试用期管理规定 9:个人简历 10:职称/技能证书):"  prop="type" >
-              <el-input v-model.number="formData.type" :clearable="true" placeholder="请输入文件分类(0:其它 1:合同附件 2:身份证(人像) 3:身份证(国徽) 4:学历证书 5:学位证书 6:前公司离职证明 7:员工入职申请表 8:试用期管理规定 9:个人简历 10:职称/技能证书)" />
+            <el-form-item label="款项字段:"  prop="field" >
+              <el-input v-model="formData.field" :clearable="true"  placeholder="请输入款项字段" :disabled="type==='update'?'disabled':false"/>
             </el-form-item>
-            <el-form-item label="文件名:"  prop="name" >
-              <el-input v-model="formData.name" :clearable="true"  placeholder="请输入文件名" />
+            <el-form-item label="款项定义:"  prop="name" >
+              <el-input v-model="formData.name" :clearable="true"  placeholder="请输入款项定义" />
             </el-form-item>
-            <el-form-item label="文件地址:"  prop="url" >
-              <el-input v-model="formData.url" :clearable="true"  placeholder="请输入文件地址" />
-            </el-form-item>
-            <el-form-item label="文件标签:"  prop="tag" >
-              <el-input v-model="formData.tag" :clearable="true"  placeholder="请输入文件标签" />
-            </el-form-item>
-            <el-form-item label="编号:"  prop="key" >
-              <el-input v-model="formData.key" :clearable="true"  placeholder="请输入编号" />
+            <el-form-item label="是否必选:"  prop="isRequired" >
+              <el-select v-model="formData.isRequired" placeholder="选择是否必选">
+                <el-option v-for="isRequired in isRequiredS" :key="isRequired.value" :label="isRequired.label" :value="isRequired.value"></el-option>
+              </el-select>
             </el-form-item>
           </el-form>
     </el-drawer>
@@ -110,23 +94,17 @@
              </div>
          </template>
         <el-descriptions :column="1" border>
-                <el-descriptions-item label="员工ID">
-                        {{ formData.staffId }}
-                </el-descriptions-item>
-                <el-descriptions-item label="文件分类(0:其它 1:合同附件 2:身份证(人像) 3:身份证(国徽) 4:学历证书 5:学位证书 6:前公司离职证明 7:员工入职申请表 8:试用期管理规定 9:个人简历 10:职称/技能证书)">
+                <el-descriptions-item label="工资类型">
                         {{ formData.type }}
                 </el-descriptions-item>
-                <el-descriptions-item label="文件名">
+                <el-descriptions-item label="款项字段">
+                        {{ formData.field }}
+                </el-descriptions-item>
+                <el-descriptions-item label="款项定义">
                         {{ formData.name }}
                 </el-descriptions-item>
-                <el-descriptions-item label="文件地址">
-                        {{ formData.url }}
-                </el-descriptions-item>
-                <el-descriptions-item label="文件标签">
-                        {{ formData.tag }}
-                </el-descriptions-item>
-                <el-descriptions-item label="编号">
-                        {{ formData.key }}
+                <el-descriptions-item label="是否必选">
+                        {{ formData.isRequired }}
                 </el-descriptions-item>
         </el-descriptions>
     </el-drawer>
@@ -135,48 +113,70 @@
 
 <script setup>
 import {
-  createWcFile,
-  deleteWcFile,
-  deleteWcFileByIds,
-  updateWcFile,
-  findWcFile,
-  getWcFileList
-} from '@/api/weChat/wcFile'
+  createWcSalaryTypeField,
+  deleteWcSalaryTypeField,
+  deleteWcSalaryTypeFieldByIds,
+  updateWcSalaryTypeField,
+  findWcSalaryTypeField,
+  getWcSalaryTypeFieldList
+} from '@/api/weChat/wcSalaryTypeField'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
-import {QuestionFilled} from "@element-plus/icons-vue";
+import {InfoFilled} from "@element-plus/icons-vue";
+import SelectRankType from "@/components/selectRankType/index.vue";
 
 defineOptions({
-    name: 'WcFile'
+    name: 'WcSalaryTypeField'
 })
+
+const types = ref([
+  { label: '基本工资', value: 1 },
+  { label: '集团经营绩效奖励', value: 2 },
+  { label: '节日金', value: 3 },
+  { label: '半年奖', value: 4 },
+  { label: '年度奖金', value: 5 },
+  { label: '总部职能体系月度奖金', value: 6 },
+  { label: '总部金纳斯市场体系月度奖金', value: 7 },
+  { label: '总部调理中心体系月度奖金', value: 8 },
+])
+
+const isRequiredS = ref([
+  { label: '否', value: 0 },
+  { label: '是', value: 1 },
+])
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
-        staffId: 0,
-        type: 0,
+        type: '',
+        field: '',
         name: '',
-        url: '',
-        tag: '',
-        key: '',
+        isRequired: 1,
+        typeText: '',
+        isRequiredText: '',
         })
 
 
 // 验证规则
 const rule = reactive({
-               staffId : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-              ],
                type : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
+              ],
+               field : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
               ],
                name : [{
                    required: true,
@@ -189,38 +189,11 @@ const rule = reactive({
                    trigger: ['input', 'blur'],
               }
               ],
-               url : [{
+               isRequired : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
-              ],
-               tag : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
-              ],
-               key : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-               {
-                   whitespace: true,
-                   message: '不能只输入空格',
-                   trigger: ['input', 'blur'],
-              }
               ],
 })
 
@@ -280,7 +253,7 @@ const handleCurrentChange = (val) => {
 
 // 查询
 const getTableData = async() => {
-  const table = await getWcFileList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
+  const table = await getWcSalaryTypeFieldList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
   if (table.code === 0) {
     tableData.value = table.data.list
     total.value = table.data.total
@@ -315,7 +288,7 @@ const deleteRow = (row) => {
         cancelButtonText: '取消',
         type: 'warning'
     }).then(() => {
-            deleteWcFileFunc(row)
+            deleteWcSalaryTypeFieldFunc(row)
         })
     }
 
@@ -338,7 +311,7 @@ const onDelete = async() => {
         multipleSelection.value.map(item => {
           IDs.push(item.ID)
         })
-      const res = await deleteWcFileByIds({ IDs })
+      const res = await deleteWcSalaryTypeFieldByIds({ IDs })
       if (res.code === 0) {
         ElMessage({
           type: 'success',
@@ -356,19 +329,19 @@ const onDelete = async() => {
 const type = ref('')
 
 // 更新行
-const updateWcFileFunc = async(row) => {
-    const res = await findWcFile({ ID: row.ID })
+const updateWcSalaryTypeFieldFunc = async(row) => {
+    const res = await findWcSalaryTypeField({ ID: row.ID })
     type.value = 'update'
     if (res.code === 0) {
-        formData.value = res.data.rewcFile
+        formData.value = res.data.rewcSalaryTypeField
         dialogFormVisible.value = true
     }
 }
 
 
 // 删除行
-const deleteWcFileFunc = async (row) => {
-    const res = await deleteWcFile({ ID: row.ID })
+const deleteWcSalaryTypeFieldFunc = async (row) => {
+    const res = await deleteWcSalaryTypeField({ ID: row.ID })
     if (res.code === 0) {
         ElMessage({
                 type: 'success',
@@ -398,9 +371,9 @@ const openDetailShow = () => {
 // 打开详情
 const getDetails = async (row) => {
   // 打开弹窗
-  const res = await findWcFile({ ID: row.ID })
+  const res = await findWcSalaryTypeField({ ID: row.ID })
   if (res.code === 0) {
-    formData.value = res.data.rewcFile
+    formData.value = res.data.rewcSalaryTypeField
     openDetailShow()
   }
 }
@@ -410,12 +383,12 @@ const getDetails = async (row) => {
 const closeDetailShow = () => {
   detailShow.value = false
   formData.value = {
-          staffId: 0,
-          type: 0,
+          type: '',
+          field: '',
           name: '',
-          url: '',
-          tag: '',
-          key: '',
+          isRequired: 1,
+          typeText: '',
+          isRequiredText: '',
           }
 }
 
@@ -430,12 +403,12 @@ const openDialog = () => {
 const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
-        staffId: 0,
-        type: 0,
+        type: '',
+        field: '',
         name: '',
-        url: '',
-        tag: '',
-        key: '',
+        isRequired: 1,
+        typeText: '',
+        isRequiredText: '',
         }
 }
 // 弹窗确定
@@ -445,13 +418,13 @@ const enterDialog = async () => {
               let res
               switch (type.value) {
                 case 'create':
-                  res = await createWcFile(formData.value)
+                  res = await createWcSalaryTypeField(formData.value)
                   break
                 case 'update':
-                  res = await updateWcFile(formData.value)
+                  res = await updateWcSalaryTypeField(formData.value)
                   break
                 default:
-                  res = await createWcFile(formData.value)
+                  res = await createWcSalaryTypeField(formData.value)
                   break
               }
               if (res.code === 0) {

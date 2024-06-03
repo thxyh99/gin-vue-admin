@@ -17,4 +17,5 @@ type ApiGroup struct {
 	WcSalaryApi
 	WcStaffSalaryApi
 	WcSalaryTemplateApi
+	WcSalaryTypeFieldApi
 }

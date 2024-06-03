@@ -55,6 +55,7 @@ type CommonConfig struct {
 	SocialType        []string //社保公积金类型
 	CredentialType    []string //证件类型
 	SalaryType        []string //工资类型
+	IsRequired        []string //是否必选款项
 }
 
 var config = CommonConfig{
@@ -234,5 +235,9 @@ var config = CommonConfig{
 		6: "总部职能体系月度奖金",
 		7: "总部金纳斯市场体系月度奖金",
 		8: "总部调理中心体系月度奖金",
+	},
+	IsRequired: []string{
+		0: "否",
+		1: "是",
 	},
 }
