@@ -40,7 +40,7 @@ func (wcStaffAgreementService *WcStaffAgreementService) UpdateWcStaffAgreement(w
 // GetWcStaffAgreement 根据员工ID获取合同信息记录
 func (wcStaffAgreementService *WcStaffAgreementService) GetWcStaffAgreement(ID string) (newStaffAgreement weChat2.WcStaffAgreementResponse, err error) {
 	var staffAgreement weChat.WcStaffAgreement
-	err = global.GVA_DB.Where("staff_id = ?", ID).First(&staffAgreement).Error
+	err = global.GVA_DB.Where("id = ?", ID).First(&staffAgreement).Error
 	if err != nil {
 		return
 	}
