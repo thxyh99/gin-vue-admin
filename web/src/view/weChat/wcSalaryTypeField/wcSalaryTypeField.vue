@@ -95,7 +95,7 @@
          </template>
         <el-descriptions :column="1" border>
                 <el-descriptions-item label="工资类型">
-                        {{ formData.type }}
+                        {{ formData.typeText }}
                 </el-descriptions-item>
                 <el-descriptions-item label="款项字段">
                         {{ formData.field }}
@@ -104,7 +104,7 @@
                         {{ formData.name }}
                 </el-descriptions-item>
                 <el-descriptions-item label="是否必选">
-                        {{ formData.isRequired }}
+                        {{ formData.isRequiredText }}
                 </el-descriptions-item>
         </el-descriptions>
     </el-drawer>
