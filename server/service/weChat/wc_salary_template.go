@@ -10,7 +10,7 @@ type WcSalaryTemplateService struct {
 }
 
 // CreateWcSalaryTemplate 创建工资单模版记录
-func (wcSalaryTemplateService *WcSalaryTemplateService) CreateWcSalaryTemplate(wcSalaryTemplateRequest *weChatReq.WcSalaryTemplateRequest) (err error) {
+func (wcSalaryTemplateService *WcSalaryTemplateService) CreateWcSalaryTemplate(wcSalaryTemplateRequest *weChatReq.WcSalaryTemplateCreateRequest) (err error) {
 	var wcSalaryTemplate weChat.WcSalaryTemplate
 	wcSalaryTemplate = wcSalaryTemplateRequest.WcSalaryTemplate
 	err = global.GVA_DB.Create(wcSalaryTemplate).Error
@@ -48,9 +48,21 @@ func (wcSalaryTemplateService *WcSalaryTemplateService) DeleteWcSalaryTemplateBy
 }
 
 // UpdateWcSalaryTemplate 更新工资单模版记录
-func (wcSalaryTemplateService *WcSalaryTemplateService) UpdateWcSalaryTemplate(wcSalaryTemplate weChat.WcSalaryTemplate) (err error) {
+func (wcSalaryTemplateService *WcSalaryTemplateService) UpdateWcSalaryTemplate(wcSalaryTemplateRequest weChatReq.WcSalaryTemplateUpdateRequest) (err error) {
+	var wcSalaryTemplate weChat.WcSalaryTemplate
+	wcSalaryTemplate = wcSalaryTemplateRequest.WcSalaryTemplate
 	err = global.GVA_DB.Save(&wcSalaryTemplate).Error
-	return err
+	if err != nil {
+		return err
+	}
+	for _, field := range wcSalaryTemplateRequest.Fields {
+		var wcSalaryTemplateItem weChat.WcSalaryTemplate
+		err = global.GVA_DB.Where("id = ?", field.ID).First(&wcSalaryTemplateItem).Update("is_visible", field.IsVisible).Error
+		if err != nil {
+			return err
+		}
+	}
+	return
 }
 
 // GetWcSalaryTemplate 根据ID获取工资单模版记录

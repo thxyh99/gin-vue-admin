@@ -13,13 +13,23 @@ type WcSalaryTemplateSearch struct {
 	request.PageInfo
 }
 
-type WcSalaryTemplateRequest struct {
+type WcSalaryTemplateCreateRequest struct {
 	weChat.WcSalaryTemplate
-	Fields []WcSalaryTemplateItem `json:"fields" form:"fields"`
+	Fields []WcSalaryTemplateCreateItem `json:"fields" form:"fields"`
 }
 
-type WcSalaryTemplateItem struct {
+type WcSalaryTemplateCreateItem struct {
 	Field     string `json:"field" form:"field" `         //款项字段
 	Name      string `json:"name" form:"name" `           //款项定义
 	IsVisible *int   `json:"isVisible" form:"isVisible" ` //是否可见
+}
+
+type WcSalaryTemplateUpdateRequest struct {
+	weChat.WcSalaryTemplate
+	Fields []WcSalaryTemplateUpdateItem `json:"fields" form:"fields"`
+}
+
+type WcSalaryTemplateUpdateItem struct {
+	ID        *int `json:"id" form:"id" `               //款项ID
+	IsVisible *int `json:"isVisible" form:"isVisible" ` //是否可见
 }

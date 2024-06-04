@@ -3,7 +3,6 @@ package weChat
 import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
-	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/service"
 	"github.com/gin-gonic/gin"
@@ -25,7 +24,7 @@ var wcSalaryTemplateService = service.ServiceGroupApp.WeChatServiceGroup.WcSalar
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"创建成功"}"
 // @Router /wcSalaryTemplate/createWcSalaryTemplate [post]
 func (wcSalaryTemplateApi *WcSalaryTemplateApi) CreateWcSalaryTemplate(c *gin.Context) {
-	var wcSalaryTemplateRequest weChatReq.WcSalaryTemplateRequest
+	var wcSalaryTemplateRequest weChatReq.WcSalaryTemplateCreateRequest
 	err := c.ShouldBindJSON(&wcSalaryTemplateRequest)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
@@ -91,14 +90,19 @@ func (wcSalaryTemplateApi *WcSalaryTemplateApi) DeleteWcSalaryTemplateByIds(c *g
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"更新成功"}"
 // @Router /wcSalaryTemplate/updateWcSalaryTemplate [put]
 func (wcSalaryTemplateApi *WcSalaryTemplateApi) UpdateWcSalaryTemplate(c *gin.Context) {
-	var wcSalaryTemplate weChat.WcSalaryTemplate
-	err := c.ShouldBindJSON(&wcSalaryTemplate)
+	var wcSalaryTemplateRequest weChatReq.WcSalaryTemplateUpdateRequest
+	err := c.ShouldBindJSON(&wcSalaryTemplateRequest)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
 
-	if err := wcSalaryTemplateService.UpdateWcSalaryTemplate(wcSalaryTemplate); err != nil {
+	if len(wcSalaryTemplateRequest.Fields) == 0 {
+		response.FailWithMessage("工资单字段异常", c)
+		return
+	}
+
+	if err := wcSalaryTemplateService.UpdateWcSalaryTemplate(wcSalaryTemplateRequest); err != nil {
 		global.GVA_LOG.Error("更新失败!", zap.Error(err))
 		response.FailWithMessage("更新失败", c)
 	} else {
