@@ -1,9 +1,14 @@
 package weChat
 
 import (
+	"errors"
+	"github.com/flipped-aurora/gin-vue-admin/server/config"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
+	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/utils"
+	"gorm.io/gorm"
 )
 
 type WcSalaryTemplateService struct {
@@ -11,6 +16,16 @@ type WcSalaryTemplateService struct {
 
 // CreateWcSalaryTemplate 创建工资单模版记录
 func (wcSalaryTemplateService *WcSalaryTemplateService) CreateWcSalaryTemplate(wcSalaryTemplateRequest *weChatReq.WcSalaryTemplateCreateRequest) (err error) {
+
+	var wcSalaryTemplateExist weChat.WcSalaryTemplate
+	err = global.GVA_DB.Where("type = ? AND rank_type = ?", wcSalaryTemplateRequest.Type, wcSalaryTemplateRequest.RankType).First(&wcSalaryTemplateExist).Error
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return
+	}
+	if wcSalaryTemplateExist.ID > 0 {
+		return errors.New("该类型模版已经存在，请勿重复创建！")
+	}
+
 	var wcSalaryTemplate weChat.WcSalaryTemplate
 	wcSalaryTemplate = wcSalaryTemplateRequest.WcSalaryTemplate
 	err = global.GVA_DB.Create(wcSalaryTemplate).Error
@@ -66,13 +81,19 @@ func (wcSalaryTemplateService *WcSalaryTemplateService) UpdateWcSalaryTemplate(w
 }
 
 // GetWcSalaryTemplate 根据ID获取工资单模版记录
-func (wcSalaryTemplateService *WcSalaryTemplateService) GetWcSalaryTemplate(ID string) (wcSalaryTemplate weChat.WcSalaryTemplate, err error) {
+func (wcSalaryTemplateService *WcSalaryTemplateService) GetWcSalaryTemplate(ID string) (wcSalaryTemplateResponse weChat2.WcSalaryTemplateResponse, err error) {
+	var wcSalaryTemplate weChat.WcSalaryTemplate
 	err = global.GVA_DB.Where("id = ?", ID).First(&wcSalaryTemplate).Error
+	if err != nil {
+		return
+	}
+
+	wcSalaryTemplateResponse, err = wcSalaryTemplateService.AssembleSalaryTemplate(wcSalaryTemplate)
 	return
 }
 
 // GetWcSalaryTemplateInfoList 分页获取工资单模版记录
-func (wcSalaryTemplateService *WcSalaryTemplateService) GetWcSalaryTemplateInfoList(info weChatReq.WcSalaryTemplateSearch) (list []weChat.WcSalaryTemplate, total int64, err error) {
+func (wcSalaryTemplateService *WcSalaryTemplateService) GetWcSalaryTemplateInfoList(info weChatReq.WcSalaryTemplateSearch) (list []weChat2.WcSalaryTemplateResponse, total int64, err error) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
@@ -92,5 +113,67 @@ func (wcSalaryTemplateService *WcSalaryTemplateService) GetWcSalaryTemplateInfoL
 	}
 
 	err = db.Find(&wcSalaryTemplates).Error
-	return wcSalaryTemplates, total, err
+	if err != nil {
+		return
+	}
+
+	list, err = wcSalaryTemplateService.AssembleSalaryTemplateList(wcSalaryTemplates)
+	return
+}
+
+func (wcSalaryTemplateService *WcSalaryTemplateService) AssembleSalaryTemplateList(salaryTemplates []weChat.WcSalaryTemplate) (newSalaryTemplates []weChat2.WcSalaryTemplateResponse, err error) {
+	var newSalaryTemplate weChat2.WcSalaryTemplateResponse
+	configInfo := config.GetConfigInfo()
+	rankTypeList, err := GetRankTypeList()
+	if err != nil {
+		return
+	}
+	rankTypeMap := make(map[int]string)
+	for _, rankTypeItem := range rankTypeList {
+		rankTypeMap[rankTypeItem.ID] = rankTypeItem.Name
+	}
+
+	for _, salaryTemplate := range salaryTemplates {
+		newSalaryTemplate.WcSalaryTemplate = salaryTemplate
+		typeText, _ := utils.Find(configInfo.SalaryType, *salaryTemplate.Type)
+		newSalaryTemplate.TypeText = typeText
+		rankTypeText, _ := utils.GetValueByKey(rankTypeMap, *salaryTemplate.RankType)
+		newSalaryTemplate.RankTypeText = rankTypeText
+
+		var wcSalaryFields []weChat.WcSalaryField
+		err = global.GVA_DB.Where("template_id=?", salaryTemplate.ID).Find(wcSalaryFields).Error
+		if err != nil {
+			return
+		}
+		newSalaryTemplate.Fields = wcSalaryFields
+
+		newSalaryTemplates = append(newSalaryTemplates, newSalaryTemplate)
+	}
+	return
+}
+
+func (wcSalaryTemplateService *WcSalaryTemplateService) AssembleSalaryTemplate(salaryTemplate weChat.WcSalaryTemplate) (newSalaryTemplate weChat2.WcSalaryTemplateResponse, err error) {
+	newSalaryTemplate.WcSalaryTemplate = salaryTemplate
+	configInfo := config.GetConfigInfo()
+	typeText, _ := utils.Find(configInfo.SalaryType, *salaryTemplate.Type)
+	newSalaryTemplate.TypeText = typeText
+	rankTypeList, err := GetRankTypeList()
+	if err != nil {
+		return
+	}
+	rankTypeMap := make(map[int]string)
+	for _, rankTypeItem := range rankTypeList {
+		rankTypeMap[rankTypeItem.ID] = rankTypeItem.Name
+	}
+	rankTypeText, _ := utils.GetValueByKey(rankTypeMap, *salaryTemplate.RankType)
+	newSalaryTemplate.RankTypeText = rankTypeText
+
+	var wcSalaryFields []weChat.WcSalaryField
+	err = global.GVA_DB.Where("template_id=?", salaryTemplate.ID).Find(wcSalaryFields).Error
+	if err != nil {
+		return
+	}
+	newSalaryTemplate.Fields = wcSalaryFields
+
+	return
 }
