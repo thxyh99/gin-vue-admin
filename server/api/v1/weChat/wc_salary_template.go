@@ -1,6 +1,7 @@
 package weChat
 
 import (
+	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
@@ -154,6 +155,21 @@ func (wcSalaryTemplateApi *WcSalaryTemplateApi) GetWcSalaryTemplateList(c *gin.C
 			Total:    total,
 			Page:     pageInfo.Page,
 			PageSize: pageInfo.PageSize,
+		}, "获取成功", c)
+	}
+}
+
+// GetWcSalaryFieldsByType 通过工资类型获取工资单字段
+func (wcSalaryTemplateApi *WcSalaryTemplateApi) GetWcSalaryFieldsByType(c *gin.Context) {
+	salaryType := c.Query("type")
+	if list, total, err := wcSalaryTemplateService.GetWcSalaryFieldsByType(salaryType); err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+	} else {
+		fmt.Println("list", list)
+		response.OkWithDetailed(response.PageResult{
+			List:  list,
+			Total: total,
 		}, "获取成功", c)
 	}
 }
