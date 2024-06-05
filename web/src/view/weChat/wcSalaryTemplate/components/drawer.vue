@@ -9,7 +9,7 @@
 	>
 		<template #title>
 			<div class="flex justify-between items-center">
-				<span class="text-lg">添 加</span>
+				<span class="text-lg">{{ props.modeType === 'add' ? '添 加' : '编 辑' }}</span>
 				<div>
 					<el-button type="primary" @click="submitForm(ruleFormRef)">确 定</el-button>
 					<el-button @click="resetForm(ruleFormRef)">取 消</el-button>

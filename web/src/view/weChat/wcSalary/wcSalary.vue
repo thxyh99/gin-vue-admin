@@ -1,10 +1,7 @@
 <template>
 	<div>
 		<div class="gva-search-box">
-			<el-form ref="elFormRef" :inline="true" :model="searchInfo" class="demo-form-inline" @keyup.enter="onSubmit">
-				<el-form-item label="发放职级">
-					<el-select style="width: 220px" placeholder="请选择发放职级"></el-select>
-				</el-form-item>
+			<el-form ref="elFormRef" :inline="true" :model="searchInfo" class="demo-form-inline" @keyup.enter="getWcSalary">
 				<el-form-item label="工资月份">
 					<el-date-picker
 						style="width: 220px"
@@ -12,10 +9,13 @@
 						range-separator="至"
 						start-placeholder="开始时间"
 						end-placeholder="结束时间"
+						v-model="dateRange"
+						value-format="YYYYMM"
+						@change="handleDataChange"
 					/>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" icon="search" @click="onSubmit">查询</el-button>
+					<el-button type="primary" icon="search" @click="getWcSalary">查询</el-button>
 					<el-button icon="refresh" @click="onReset">重置</el-button>
 				</el-form-item>
 			</el-form>
@@ -33,13 +33,13 @@
 				v-loading="loading"
 			>
 				<el-table-column type="selection" width="55" />
-				<el-table-column align="left" label="工资月份" prop="" />
-				<el-table-column align="left" label="工资类型" prop="" />
-				<el-table-column align="left" label="发放职级" prop="" />
+				<el-table-column align="left" label="工资月份" prop="month" />
+				<el-table-column align="left" label="工资类型" prop="typeText" />
+				<el-table-column align="left" label="发放职级" prop="rankTypeText" />
 				<el-table-column align="left" label="操作">
 					<template #default="{ row }">
 						<el-button type="primary" link>导入基本工资</el-button>
-						<el-button type="primary" link>导入记录</el-button>
+						<el-button type="primary" link>查看明细</el-button>
 						<el-button type="primary" link @click="haneleDel(row)">删除</el-button>
 					</template>
 				</el-table-column>
@@ -50,7 +50,7 @@
 					:current-page="searchInfo.page"
 					:page-size="searchInfo.pageSize"
 					:page-sizes="[10, 30, 50, 100]"
-					:total="0"
+					:total="total"
 					@current-change="handleCurrentChange"
 					@size-change="handleSizeChange"
 				/>
@@ -74,12 +74,21 @@ const searchInfo = ref({
 	pageSize: 10,
 	monthStart: '',
 	monthEnd: '',
-	templateId: '',
 })
 
 const loading = ref(false)
+const dateRange = ref([])
 
-const onSubmit = () => {}
+const onReset = () => {
+	searchInfo.value = {
+		page: 1,
+		pageSize: 10,
+		monthStart: '',
+		monthEnd: '',
+	}
+	dateRange.value = []
+	getWcSalary()
+}
 
 const drawerRef = ref()
 const modeType = ref('add')
@@ -89,12 +98,24 @@ const openDialog = () => {
 }
 
 const tableData = ref([])
+const total = ref(0)
 const getWcSalary = () => {
 	loading.value = true
 	getWcSalaryList(searchInfo.value).then((res) => {
 		tableData.value = res.data.list || []
+		total.value = res.data.total
 		loading.value = false
 	})
+}
+
+const handleDataChange = (e) => {
+	if (e && e.length) {
+		searchInfo.value.monthStart = e[0]
+		searchInfo.value.monthEnd = e[1]
+	} else {
+		searchInfo.value.monthStart = ''
+		searchInfo.value.monthEnd = ''
+	}
 }
 
 const handleCurrentChange = (page) => {
