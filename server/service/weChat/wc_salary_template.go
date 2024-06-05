@@ -33,7 +33,8 @@ func (wcSalaryTemplateService *WcSalaryTemplateService) CreateWcSalaryTemplate(w
 
 	var wcSalaryTemplate weChat.WcSalaryTemplate
 	wcSalaryTemplate = wcSalaryTemplateRequest.WcSalaryTemplate
-	fmt.Println("CreateWcSalaryTemplate wcSalaryTemplate", wcSalaryTemplate)
+	wcSalaryTemplate.CreatedAt = time.Now()
+	wcSalaryTemplate.UpdatedAt = time.Now()
 	err = global.GVA_DB.Create(&wcSalaryTemplate).Error
 	if err != nil {
 		fmt.Println("CreateWcSalaryTemplate err2", err.Error())
@@ -50,6 +51,8 @@ func (wcSalaryTemplateService *WcSalaryTemplateService) CreateWcSalaryTemplate(w
 		item["field"] = field.Field
 		item["name"] = field.Name
 		item["is_visible"] = field.IsVisible
+		item["created_at"] = time.Now()
+		item["updated_at"] = time.Now()
 		items = append(items, item)
 	}
 
@@ -78,8 +81,8 @@ func (wcSalaryTemplateService *WcSalaryTemplateService) UpdateWcSalaryTemplate(w
 		return err
 	}
 	for _, field := range wcSalaryTemplateRequest.Fields {
-		var wcSalaryTemplateItem weChat.WcSalaryTemplate
-		err = global.GVA_DB.Where("id = ?", field.ID).First(&wcSalaryTemplateItem).Update("is_visible", field.IsVisible).Error
+		var wcSalaryField weChat.WcSalaryField
+		err = global.GVA_DB.Where("id = ?", field.ID).First(&wcSalaryField).Update("is_visible", field.IsVisible).Error
 		if err != nil {
 			return err
 		}
@@ -233,7 +236,7 @@ func (wcSalaryTemplateService *WcSalaryTemplateService) AssembleSalaryTemplate(s
 	newSalaryTemplate.RankTypeText = rankTypeText
 
 	var wcSalaryFields []weChat.WcSalaryField
-	err = global.GVA_DB.Where("template_id=?", salaryTemplate.ID).Find(wcSalaryFields).Error
+	err = global.GVA_DB.Where("template_id=?", salaryTemplate.ID).Find(&wcSalaryFields).Error
 	if err != nil {
 		return
 	}
