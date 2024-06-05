@@ -1,4 +1,4 @@
-<template>
+<!-- <<template>
   <div>
     <div class="gva-search-box">
       <el-form ref="elSearchFormRef" :inline="true" :model="searchInfo" class="demo-form-inline" :rules="searchRule" @keyup.enter="onSubmit">
@@ -1463,4 +1463,45 @@ const enterDialog = async () => {
 
 <style>
 
-</style>
+</style> -->
+<template>
+	<div class="gva-table-box">
+		<el-tabs>
+			<el-tab-pane label="工资表">
+				<componentA />
+			</el-tab-pane>
+			<el-tab-pane label="集团经营绩效奖励">
+				<componentB />
+			</el-tab-pane>
+			<el-tab-pane label="节日金">
+				<componentC />
+			</el-tab-pane>
+			<el-tab-pane label="半年奖">
+				<componentD />
+			</el-tab-pane>
+			<el-tab-pane label="年度奖金">
+				<componentE />
+			</el-tab-pane>
+			<el-tab-pane label="总部职能体系月度奖金">
+				<componentF />
+			</el-tab-pane>
+			<el-tab-pane label="总部金纳斯市场体系月度奖金">
+				<componentG />
+			</el-tab-pane>
+			<el-tab-pane label="总部调理中心体系月度奖金">
+				<componentH />
+			</el-tab-pane>
+		</el-tabs>
+	</div>
+</template>
+
+<script setup>
+import componentA from './components/componentA.vue'
+import componentB from './components/componentB.vue'
+import componentC from './components/componentC.vue'
+import componentD from './components/componentD.vue'
+import componentE from './components/componentE.vue'
+import componentF from './components/componentF.vue'
+import componentG from './components/componentG.vue'
+import componentH from './components/componentH.vue'
+</script>
