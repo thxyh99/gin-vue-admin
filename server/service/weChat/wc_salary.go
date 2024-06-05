@@ -1,6 +1,7 @@
 package weChat
 
 import (
+	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/config"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
@@ -64,11 +65,12 @@ func (wcSalaryService *WcSalaryService) GetWcSalaryInfoList(info weChatReq.WcSal
 	if info.MonthStart != "" && info.MonthEnd != "" {
 		db = db.Where("month BETWEEN ? AND ?", info.MonthStart, info.MonthEnd)
 	}
-	if info.TemplateId != nil {
-		db = db.Where("template_id = ?", info.TemplateId)
+	if *info.TemplateId > 0 {
+		db = db.Where("template_id = ?", *info.TemplateId)
 	}
 	err = db.Count(&total).Error
 	if err != nil {
+		fmt.Println("GetWcSalaryInfoList Err", err.Error())
 		return
 	}
 
@@ -80,6 +82,8 @@ func (wcSalaryService *WcSalaryService) GetWcSalaryInfoList(info weChatReq.WcSal
 	if err != nil {
 		return
 	}
+
+	fmt.Println("wcSalaries", wcSalaries)
 
 	list, err = wcSalaryService.AssembleSalaryList(wcSalaries)
 	return
@@ -115,18 +119,19 @@ func (wcSalaryService *WcSalaryService) AssembleSalaryList(salaries []weChat.WcS
 	configInfo := config.GetConfigInfo()
 	rankTypeList, err := GetRankTypeList()
 	if err != nil {
+		fmt.Println("AssembleSalaryList Err1", err.Error())
 		return
 	}
 	rankTypeMap := make(map[int]string)
 	for _, rankTypeItem := range rankTypeList {
 		rankTypeMap[rankTypeItem.ID] = rankTypeItem.Name
 	}
-
 	for _, salary := range salaries {
 		newSalary.WcSalary = salary
 		var wcSalaryTemplate weChat.WcSalaryTemplate
 		err = global.GVA_DB.Where("id=?", salary.TemplateId).Find(&wcSalaryTemplate).Error
 		if err != nil {
+			fmt.Println("AssembleSalaryList Err2", err.Error())
 			return
 		}
 		newSalary.Name = wcSalaryTemplate.Name
@@ -136,5 +141,5 @@ func (wcSalaryService *WcSalaryService) AssembleSalaryList(salaries []weChat.WcS
 		newSalary.RankTypeText = rankTypeText
 		newSalaries = append(newSalaries, newSalary)
 	}
-	return
+	return newSalaries, err
 }
