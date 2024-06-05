@@ -82,7 +82,9 @@ const submitForm = async (formEl) => {
 		if (valid) {
 			if (props.modeType === 'add') {
 				createWcSalary(formData.value).then((res) => {
-					ElMessage.success('新增成功')
+					if (res.code === 0) {
+						ElMessage.success('新增成功')
+					}
 					emits('onSuccess')
 					resetForm(formEl)
 				})
