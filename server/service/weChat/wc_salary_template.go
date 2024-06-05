@@ -205,7 +205,7 @@ func (wcSalaryTemplateService *WcSalaryTemplateService) AssembleSalaryTemplateLi
 		newSalaryTemplate.RankTypeText = rankTypeText
 
 		var wcSalaryFields []weChat.WcSalaryField
-		err = global.GVA_DB.Where("template_id=?", salaryTemplate.ID).Find(wcSalaryFields).Error
+		err = global.GVA_DB.Where("template_id=?", salaryTemplate.ID).Find(&wcSalaryFields).Error
 		if err != nil {
 			return
 		}
