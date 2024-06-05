@@ -89,7 +89,7 @@ func (wcSalaryService *WcSalaryService) GetWcSalaryInfoList(info weChatReq.WcSal
 		db = db.Limit(limit).Offset(offset)
 	}
 
-	err = db.Find(&wcSalaries).Error
+	err = db.Order("month DESC,updated_at DESC").Find(&wcSalaries).Error
 	if err != nil {
 		return
 	}
