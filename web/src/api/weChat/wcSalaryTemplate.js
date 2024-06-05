@@ -95,3 +95,25 @@ export const getWcSalaryTemplateList = (params) => {
     params
   })
 }
+
+
+/**
+ * 获取职级类型列表
+ */
+export const getRankTypeList = () => {
+  return service({
+    url: '/wcRank/getRankTypeList',
+    method: 'get',
+  })
+}
+
+/**
+ * 通过工资类型获取工资单字段
+ */
+export const getWcSalaryFieldsByType = (params) => {
+  return service({
+    url: '/wcSalaryTemplate/getWcSalaryFieldsByType',
+    method: 'get',
+    params
+  })
+}

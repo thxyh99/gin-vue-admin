@@ -1,36 +1,17 @@
 <template>
 	<div>
-		<!-- <div class="gva-search-box">
-			<el-form
-				ref="elSearchFormRef"
-				:inline="true"
-				:model="searchInfo"
-				class="demo-form-inline"
-				@keyup.enter="onSubmit"
-			>
-				<el-form-item label="发放职级">
-					<el-select style="width: 220px" placeholder="请选择发放职级"></el-select>
-				</el-form-item>
-				<el-form-item label="工资月份">
-					<el-date-picker
-						style="width: 220px"
-						type="monthrange"
-						range-separator="至"
-						start-placeholder="开始时间"
-						end-placeholder="结束时间"
-					/>
-				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" icon="search" @click="onSubmit">查询</el-button>
-					<el-button icon="refresh" @click="onReset">重置</el-button>
-				</el-form-item>
-			</el-form>
-		</div> -->
 		<div class="gva-table-box">
 			<div class="gva-btn-list">
 				<el-button type="primary" icon="plus" @click="openDialog">新建模板</el-button>
 			</div>
-			<el-table ref="multipleTable" style="width: 100%" tooltip-effect="dark" :data="tableData" row-key="ID">
+			<el-table
+				ref="multipleTable"
+				v-loading="loading"
+				style="width: 100%"
+				tooltip-effect="dark"
+				:data="tableData"
+				row-key="ID"
+			>
 				<el-table-column type="selection" width="55" />
 				<el-table-column align="left" label="工资单模板" prop="" />
 				<el-table-column align="left" label="工资类型" prop="" />
@@ -42,23 +23,64 @@
 					</template>
 				</el-table-column>
 			</el-table>
+			<div class="gva-pagination">
+				<el-pagination
+					layout="total, sizes, prev, pager, next, jumper"
+					:current-page="searchInfo.page"
+					:page-size="searchInfo.pageSize"
+					:page-sizes="[10, 30, 50, 100]"
+					:total="0"
+					@current-change="handleCurrentChange"
+					@size-change="handleSizeChange"
+				/>
+			</div>
 		</div>
 
-		<drawer ref="drawerRef" />
+		<drawer ref="drawerRef" :modeType="modeType" :rowInfo="rowInfo" />
 	</div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+
+import { getWcSalaryTemplateList } from '@/api/weChat/wcSalaryTemplate'
+
 import drawer from './components/drawer.vue'
 
-const searchInfo = ref({})
+const searchInfo = ref({
+	page: 1,
+	pageSize: 10,
+	keyword: '',
+})
 
-const onSubmit = () => {}
+const loading = ref(false)
+const rowInfo = ref({})
+const modeType = ref('add')
 
 const drawerRef = ref()
 const openDialog = () => {
 	drawerRef.value.dialogFormVisible = true
 }
+
 const tableData = ref([])
+const getWcSalaryTemplate = () => {
+	loading.value = true
+	getWcSalaryTemplateList(searchInfo.value).then((res) => {
+		loading.value = false
+		tableData.value = res.data.list || []
+	})
+}
+
+const handleCurrentChange = () => {
+	getWcSalaryTemplate()
+}
+
+const handleSizeChange = () => {
+	searchInfo.value.page = 1
+	getWcSalaryTemplate()
+}
+
+onMounted(() => {
+	getWcSalaryTemplate()
+})
 </script>
