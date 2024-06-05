@@ -6,9 +6,10 @@ import (
 	"time"
 )
 
-// 工资列表 结构体  WcStaffSalary
+// WcStaffSalary 工资列表结构体
 type WcStaffSalary struct {
 	global.GVA_MODEL
+	Month                   string     `json:"month" form:"month" gorm:"column:month;comment:工资所属月份(Ym);size:6;"`                                                                          //工资所属月份(Ym)
 	Type                    *int       `json:"type" form:"type" gorm:"column:type;comment:工资类型(1:基本工资 2:集团经营绩效奖励 3:节日金 4:半年奖 5:年度奖金 6:总部职能体系月度奖金 7:总部金纳斯市场体系月度奖金 8:总部调理中心体系月度奖金);size:2;"` //工资类型(1:基本工资 2:集团经营绩效奖励 3:节日金 4:半年奖 5:年度奖金 6:总部职能体系月度奖金 7:总部金纳斯市场体系月度奖金 8:总部调理中心体系月度奖金)
 	StaffId                 *int       `json:"staffId" form:"staffId" gorm:"column:staff_id;comment:员工ID;size:10;" binding:"required"`                                                     //员工ID
 	DepartmentFirst         string     `json:"departmentFirst" form:"departmentFirst" gorm:"column:department_first;comment:一级部门;size:200;"`                                               //一级部门
