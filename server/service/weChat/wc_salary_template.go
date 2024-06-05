@@ -24,6 +24,7 @@ func (wcSalaryTemplateService *WcSalaryTemplateService) CreateWcSalaryTemplate(w
 	var wcSalaryTemplateExist weChat.WcSalaryTemplate
 	err = global.GVA_DB.Where("type = ? AND rank_type = ?", wcSalaryTemplateRequest.Type, wcSalaryTemplateRequest.RankType).First(&wcSalaryTemplateExist).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		fmt.Println("CreateWcSalaryTemplate err1", err.Error())
 		return
 	}
 	if wcSalaryTemplateExist.ID > 0 {
@@ -32,8 +33,10 @@ func (wcSalaryTemplateService *WcSalaryTemplateService) CreateWcSalaryTemplate(w
 
 	var wcSalaryTemplate weChat.WcSalaryTemplate
 	wcSalaryTemplate = wcSalaryTemplateRequest.WcSalaryTemplate
-	err = global.GVA_DB.Create(wcSalaryTemplate).Error
+	fmt.Println("CreateWcSalaryTemplate wcSalaryTemplate", wcSalaryTemplate)
+	err = global.GVA_DB.Create(&wcSalaryTemplate).Error
 	if err != nil {
+		fmt.Println("CreateWcSalaryTemplate err2", err.Error())
 		return err
 	}
 	templateId := wcSalaryTemplate.ID
