@@ -1,6 +1,7 @@
 package weChat
 
 import (
+	"errors"
 	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/config"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
@@ -8,6 +9,7 @@ import (
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
 	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -16,6 +18,15 @@ type WcSalaryService struct {
 
 // CreateWcSalary 创建工资单发放记录
 func (wcSalaryService *WcSalaryService) CreateWcSalary(wcSalary *weChat.WcSalary) (err error) {
+	var salary weChat.WcSalary
+	err = global.GVA_DB.Where("month = ? AND template_id = ?", wcSalary.Month, wcSalary.TemplateId).First(&salary).Error
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return
+	}
+	if salary.ID > 0 {
+		return errors.New("该工资发放已经创建，请勿重复操作！")
+	}
+
 	wcSalary.CreatedAt = time.Now()
 	wcSalary.UpdatedAt = time.Now()
 	err = global.GVA_DB.Create(wcSalary).Error
@@ -65,7 +76,7 @@ func (wcSalaryService *WcSalaryService) GetWcSalaryInfoList(info weChatReq.WcSal
 	if info.MonthStart != "" && info.MonthEnd != "" {
 		db = db.Where("month BETWEEN ? AND ?", info.MonthStart, info.MonthEnd)
 	}
-	if *info.TemplateId > 0 {
+	if info.TemplateId != nil && *info.TemplateId > 0 {
 		db = db.Where("template_id = ?", *info.TemplateId)
 	}
 	err = db.Count(&total).Error
