@@ -13,13 +13,13 @@
 				row-key="ID"
 			>
 				<el-table-column type="selection" width="55" />
-				<el-table-column align="left" label="工资单模板" prop="" />
-				<el-table-column align="left" label="工资类型" prop="" />
-				<el-table-column align="left" label="适用职级体系" prop="" />
+				<el-table-column align="left" label="工资单模板" prop="name" />
+				<el-table-column align="left" label="工资类型" prop="typeText" />
+				<el-table-column align="left" label="适用职级体系" prop="rankTypeText" />
 				<el-table-column align="left" label="操作">
-					<template #default="scope">
-						<el-button type="primary" link>编辑</el-button>
-						<el-button type="primary" link>删除</el-button>
+					<template #default="{ row }">
+						<el-button type="primary" link @click="handleUpdate(row)">编辑</el-button>
+						<el-button type="primary" link @click="handleDel(row)">删除</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -29,21 +29,23 @@
 					:current-page="searchInfo.page"
 					:page-size="searchInfo.pageSize"
 					:page-sizes="[10, 30, 50, 100]"
-					:total="0"
+					:total="total"
 					@current-change="handleCurrentChange"
 					@size-change="handleSizeChange"
 				/>
 			</div>
 		</div>
 
-		<drawer ref="drawerRef" :modeType="modeType" :rowInfo="rowInfo" />
+		<drawer ref="drawerRef" :modeType="modeType" :rowInfo="rowInfo" @onSuccess="getWcSalaryTemplate" />
 	</div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 
-import { getWcSalaryTemplateList } from '@/api/weChat/wcSalaryTemplate'
+import { ElMessage, ElMessageBox } from 'element-plus'
+
+import { getWcSalaryTemplateList, deleteWcSalaryTemplateByIds } from '@/api/weChat/wcSalaryTemplate'
 
 import drawer from './components/drawer.vue'
 
@@ -53,12 +55,15 @@ const searchInfo = ref({
 	keyword: '',
 })
 
+const total = ref(0)
+
 const loading = ref(false)
 const rowInfo = ref({})
 const modeType = ref('add')
 
 const drawerRef = ref()
 const openDialog = () => {
+	modeType.value = 'add'
 	drawerRef.value.dialogFormVisible = true
 }
 
@@ -68,16 +73,38 @@ const getWcSalaryTemplate = () => {
 	getWcSalaryTemplateList(searchInfo.value).then((res) => {
 		loading.value = false
 		tableData.value = res.data.list || []
+		total.value = res.data.total
 	})
 }
 
-const handleCurrentChange = () => {
+const handleCurrentChange = (page) => {
+	searchInfo.value.page = page
 	getWcSalaryTemplate()
 }
 
-const handleSizeChange = () => {
+const handleSizeChange = (pageSize) => {
+	searchInfo.value.pageSize = pageSize
 	searchInfo.value.page = 1
 	getWcSalaryTemplate()
+}
+
+const handleUpdate = (row) => {
+	rowInfo.value = row
+	modeType.value = 'edit'
+	drawerRef.value.dialogFormVisible = true
+}
+
+const handleDel = (row) => {
+	ElMessageBox.confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+		confirmButtonText: '确定',
+		cancelButtonText: '取消',
+		type: 'warning',
+	}).then(() => {
+		deleteWcSalaryTemplateByIds({ IDs: [row.ID] }).then(() => {
+			ElMessage.success('删除成功')
+			getWcSalaryTemplate()
+		})
+	})
 }
 
 onMounted(() => {
