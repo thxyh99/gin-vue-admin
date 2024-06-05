@@ -14,6 +14,11 @@
 						@change="handleDataChange"
 					/>
 				</el-form-item>
+				<el-form-item label="发放模板">
+					<el-select style="width: 220px" v-model="searchInfo.templateId">
+						<el-option v-for="item in templateList" :key="item.ID" :label="item.name" :value="item.ID" />
+					</el-select>
+				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" icon="search" @click="getWcSalary">查询</el-button>
 					<el-button icon="refresh" @click="onReset">重置</el-button>
@@ -36,6 +41,7 @@
 				<el-table-column align="left" label="工资月份" prop="month" />
 				<el-table-column align="left" label="工资类型" prop="typeText" />
 				<el-table-column align="left" label="发放职级" prop="rankTypeText" />
+				<el-table-column align="left" label="发放模板" prop="name" />
 				<el-table-column align="left" label="操作">
 					<template #default="{ row }">
 						<el-button type="primary" link>导入基本工资</el-button>
@@ -66,6 +72,7 @@ import { ref, onMounted } from 'vue'
 import drawer from './components/drawer.vue'
 
 import { getWcSalaryList, deleteWcSalary } from '@/api/weChat/wcSalary'
+import { getWcSalaryTemplateList } from '@/api/weChat/wcSalaryTemplate'
 
 import { ElMessage, ElMessageBox } from 'element-plus'
 
@@ -74,10 +81,12 @@ const searchInfo = ref({
 	pageSize: 10,
 	monthStart: '',
 	monthEnd: '',
+	templateId: undefined,
 })
 
 const loading = ref(false)
 const dateRange = ref([])
+const templateList = ref([])
 
 const onReset = () => {
 	searchInfo.value = {
@@ -85,6 +94,7 @@ const onReset = () => {
 		pageSize: 10,
 		monthStart: '',
 		monthEnd: '',
+		templateId: '',
 	}
 	dateRange.value = []
 	getWcSalary()
@@ -144,5 +154,8 @@ const haneleDel = (row) => {
 
 onMounted(() => {
 	getWcSalary()
+	getWcSalaryTemplateList().then((res) => {
+		templateList.value = res.data.list
+	})
 })
 </script>
