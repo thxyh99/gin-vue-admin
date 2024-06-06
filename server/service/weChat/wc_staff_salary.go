@@ -184,25 +184,99 @@ func (wcStaffSalaryService *WcStaffSalaryService) ImportExcel(templateID, salary
 
 	switch salaryType {
 	case "1":
-		//return wcStaffSalaryService.importExcelA(db, rows, titleKeyMap, salaryType, month)
+		return wcStaffSalaryService.importExcelA(db, rows, titleKeyMap, salaryType, month)
 	case "2":
 		return wcStaffSalaryService.importExcelB(db, rows, titleKeyMap, salaryType, month)
 	case "3":
 		return wcStaffSalaryService.importExcelB(db, rows, titleKeyMap, salaryType, month)
 	case "4":
 		return wcStaffSalaryService.importExcelB(db, rows, titleKeyMap, salaryType, month)
-	//case "5":
-	//	return wcStaffSalaryService.importExcelC(db, rows, titleKeyMap, salaryType, month)
-	//case "6":
-	//	return wcStaffSalaryService.importExcelD(db, rows, titleKeyMap, salaryType, month)
-	//case "7":
-	//	return wcStaffSalaryService.importExcelE(db, rows, titleKeyMap, salaryType, month)
-	//case "8":
-	//	return wcStaffSalaryService.importExcelF(db, rows, titleKeyMap, salaryType, month)
+	case "5":
+		return wcStaffSalaryService.importExcelC(db, rows, titleKeyMap, salaryType, month)
+	case "6":
+		return wcStaffSalaryService.importExcelD(db, rows, titleKeyMap, salaryType, month)
+	case "7":
+		return wcStaffSalaryService.importExcelE(db, rows, titleKeyMap, salaryType, month)
+	case "8":
+		return wcStaffSalaryService.importExcelF(db, rows, titleKeyMap, salaryType, month)
 	default:
 		return errors.New("工资类型异常")
 	}
-	return
+}
+
+// importExcelA 导入基本工资
+func (wcStaffSalaryService *WcStaffSalaryService) importExcelA(db *gorm.DB, rows [][]string, titleKeyMap map[string]string, salaryType, month string) error {
+	now := time.Now().Format("2006-01-02 15:04:05")
+
+	return db.Transaction(func(tx *gorm.DB) error {
+		excelTitle := rows[0]
+		values := rows[1:]
+
+		if len(excelTitle) != 6 {
+			return errors.New("导入Excel模版异常")
+		}
+
+		//参数校验
+		for i, row := range values {
+			//每一行最后一列为空要这样判空
+			if len(titleKeyMap) != len(row) {
+				fmt.Println("length", len(titleKeyMap), len(row))
+				return errors.New(fmt.Sprintf("第%d行有数据缺失", i+2))
+			}
+			for ii, value := range row {
+				key := titleKeyMap[excelTitle[ii]]
+				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+				fmt.Println("title-key-value", excelTitle[ii], key, value)
+				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+				//结合每个字段是否为空判断(最后一列为空的话这种方式判断不出来)
+				if value == "" {
+					return errors.New(fmt.Sprintf("%s不能为空", excelTitle[ii]))
+				}
+			}
+		}
+
+		for _, row := range values {
+			var item = make(map[string]interface{})
+			var name string
+			var staffExist weChat.WcStaff
+			var staffSalary weChat.WcStaffSalary
+
+			for ii, value := range row {
+				key := titleKeyMap[excelTitle[ii]]
+				if key == "name" {
+					name = utils.FilterBreaksSpaces(value)
+				}
+				item[key] = utils.FilterBreaksSpaces(value)
+			}
+
+			item["month"] = month
+			item["type"] = salaryType
+			item["created_at"] = now
+			item["updated_at"] = now
+
+			tx.Where("name=?", name).First(&staffExist)
+			if staffExist.ID == 0 {
+				return errors.New(fmt.Sprintf("员工%s不存在", name))
+			} else {
+				var staffSalaryExist weChat.WcStaffSalary
+				tx.Where("staff_id=? AND month=? AND type=?", staffExist.ID, month, salaryType).First(&staffSalaryExist)
+				item["staff_id"] = staffExist.ID
+				if staffSalaryExist.ID == 0 {
+					cErr := tx.Table(staffSalary.TableName()).Create(&item).Error
+					if cErr != nil {
+						return cErr
+					}
+				} else {
+					cErr := tx.Table(staffSalary.TableName()).Omit("name,type,staff_id,created_at").Where("id=?", staffSalaryExist.ID).Updates(item).Error
+					if cErr != nil {
+						return cErr
+					}
+				}
+			}
+		}
+		return nil
+	})
 }
 
 // importExcelB 导入集团经营绩效奖励|节日金|半年奖
@@ -214,6 +288,314 @@ func (wcStaffSalaryService *WcStaffSalaryService) importExcelB(db *gorm.DB, rows
 		values := rows[1:]
 
 		if len(excelTitle) != 6 {
+			return errors.New("导入Excel模版异常")
+		}
+
+		//参数校验
+		for i, row := range values {
+			//每一行最后一列为空要这样判空
+			if len(titleKeyMap) != len(row) {
+				fmt.Println("length", len(titleKeyMap), len(row))
+				return errors.New(fmt.Sprintf("第%d行有数据缺失", i+2))
+			}
+			for ii, value := range row {
+				key := titleKeyMap[excelTitle[ii]]
+				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+				fmt.Println("title-key-value", excelTitle[ii], key, value)
+				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+				//结合每个字段是否为空判断(最后一列为空的话这种方式判断不出来)
+				if value == "" {
+					return errors.New(fmt.Sprintf("%s不能为空", excelTitle[ii]))
+				}
+			}
+		}
+
+		for _, row := range values {
+			var item = make(map[string]interface{})
+			var name string
+			var staffExist weChat.WcStaff
+			var staffSalary weChat.WcStaffSalary
+
+			for ii, value := range row {
+				key := titleKeyMap[excelTitle[ii]]
+				if key == "name" {
+					name = utils.FilterBreaksSpaces(value)
+				}
+				item[key] = utils.FilterBreaksSpaces(value)
+			}
+
+			item["month"] = month
+			item["type"] = salaryType
+			item["created_at"] = now
+			item["updated_at"] = now
+
+			tx.Where("name=?", name).First(&staffExist)
+			if staffExist.ID == 0 {
+				return errors.New(fmt.Sprintf("员工%s不存在", name))
+			} else {
+				var staffSalaryExist weChat.WcStaffSalary
+				tx.Where("staff_id=? AND month=? AND type=?", staffExist.ID, month, salaryType).First(&staffSalaryExist)
+				item["staff_id"] = staffExist.ID
+				if staffSalaryExist.ID == 0 {
+					cErr := tx.Table(staffSalary.TableName()).Create(&item).Error
+					if cErr != nil {
+						return cErr
+					}
+				} else {
+					cErr := tx.Table(staffSalary.TableName()).Omit("name,type,staff_id,created_at").Where("id=?", staffSalaryExist.ID).Updates(item).Error
+					if cErr != nil {
+						return cErr
+					}
+				}
+			}
+		}
+		return nil
+	})
+}
+
+// importExcelC 导入年度奖金
+func (wcStaffSalaryService *WcStaffSalaryService) importExcelC(db *gorm.DB, rows [][]string, titleKeyMap map[string]string, salaryType, month string) error {
+	now := time.Now().Format("2006-01-02 15:04:05")
+
+	return db.Transaction(func(tx *gorm.DB) error {
+		excelTitle := rows[0]
+		values := rows[1:]
+
+		if len(excelTitle) != 9 {
+			return errors.New("导入Excel模版异常")
+		}
+
+		//参数校验
+		for i, row := range values {
+			//每一行最后一列为空要这样判空
+			if len(titleKeyMap) != len(row) {
+				fmt.Println("length", len(titleKeyMap), len(row))
+				return errors.New(fmt.Sprintf("第%d行有数据缺失", i+2))
+			}
+			for ii, value := range row {
+				key := titleKeyMap[excelTitle[ii]]
+				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+				fmt.Println("title-key-value", excelTitle[ii], key, value)
+				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+				//结合每个字段是否为空判断(最后一列为空的话这种方式判断不出来)
+				if value == "" {
+					return errors.New(fmt.Sprintf("%s不能为空", excelTitle[ii]))
+				}
+			}
+		}
+
+		for _, row := range values {
+			var item = make(map[string]interface{})
+			var name string
+			var staffExist weChat.WcStaff
+			var staffSalary weChat.WcStaffSalary
+
+			for ii, value := range row {
+				key := titleKeyMap[excelTitle[ii]]
+				if key == "name" {
+					name = utils.FilterBreaksSpaces(value)
+				}
+				item[key] = utils.FilterBreaksSpaces(value)
+			}
+
+			item["month"] = month
+			item["type"] = salaryType
+			item["created_at"] = now
+			item["updated_at"] = now
+
+			tx.Where("name=?", name).First(&staffExist)
+			if staffExist.ID == 0 {
+				return errors.New(fmt.Sprintf("员工%s不存在", name))
+			} else {
+				var staffSalaryExist weChat.WcStaffSalary
+				tx.Where("staff_id=? AND month=? AND type=?", staffExist.ID, month, salaryType).First(&staffSalaryExist)
+				item["staff_id"] = staffExist.ID
+				if staffSalaryExist.ID == 0 {
+					cErr := tx.Table(staffSalary.TableName()).Create(&item).Error
+					if cErr != nil {
+						return cErr
+					}
+				} else {
+					cErr := tx.Table(staffSalary.TableName()).Omit("name,type,staff_id,created_at").Where("id=?", staffSalaryExist.ID).Updates(item).Error
+					if cErr != nil {
+						return cErr
+					}
+				}
+			}
+		}
+		return nil
+	})
+}
+
+// importExcelD 导入总部职能体系月度奖金
+func (wcStaffSalaryService *WcStaffSalaryService) importExcelD(db *gorm.DB, rows [][]string, titleKeyMap map[string]string, salaryType, month string) error {
+	now := time.Now().Format("2006-01-02 15:04:05")
+
+	return db.Transaction(func(tx *gorm.DB) error {
+		excelTitle := rows[0]
+		values := rows[1:]
+
+		if len(excelTitle) != 16 {
+			return errors.New("导入Excel模版异常")
+		}
+
+		//参数校验
+		for i, row := range values {
+			//每一行最后一列为空要这样判空
+			if len(titleKeyMap) != len(row) {
+				fmt.Println("length", len(titleKeyMap), len(row))
+				return errors.New(fmt.Sprintf("第%d行有数据缺失", i+2))
+			}
+			for ii, value := range row {
+				key := titleKeyMap[excelTitle[ii]]
+				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+				fmt.Println("title-key-value", excelTitle[ii], key, value)
+				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+				//结合每个字段是否为空判断(最后一列为空的话这种方式判断不出来)
+				if value == "" {
+					return errors.New(fmt.Sprintf("%s不能为空", excelTitle[ii]))
+				}
+			}
+		}
+
+		for _, row := range values {
+			var item = make(map[string]interface{})
+			var name string
+			var staffExist weChat.WcStaff
+			var staffSalary weChat.WcStaffSalary
+
+			for ii, value := range row {
+				key := titleKeyMap[excelTitle[ii]]
+				if key == "id" {
+					continue
+				}
+				if key == "name" {
+					name = utils.FilterBreaksSpaces(value)
+				}
+				item[key] = utils.FilterBreaksSpaces(value)
+			}
+
+			item["month"] = month
+			item["type"] = salaryType
+			item["created_at"] = now
+			item["updated_at"] = now
+
+			tx.Where("name=?", name).First(&staffExist)
+			if staffExist.ID == 0 {
+				return errors.New(fmt.Sprintf("员工%s不存在", name))
+			} else {
+				var staffSalaryExist weChat.WcStaffSalary
+				tx.Where("staff_id=? AND month=? AND type=?", staffExist.ID, month, salaryType).First(&staffSalaryExist)
+				item["staff_id"] = staffExist.ID
+				if staffSalaryExist.ID == 0 {
+					cErr := tx.Table(staffSalary.TableName()).Create(&item).Error
+					if cErr != nil {
+						return cErr
+					}
+				} else {
+					cErr := tx.Table(staffSalary.TableName()).Omit("name,type,staff_id,created_at").Where("id=?", staffSalaryExist.ID).Updates(item).Error
+					if cErr != nil {
+						return cErr
+					}
+				}
+			}
+		}
+		return nil
+	})
+}
+
+// importExcelE 导入总部金纳斯市场体系月度奖金
+func (wcStaffSalaryService *WcStaffSalaryService) importExcelE(db *gorm.DB, rows [][]string, titleKeyMap map[string]string, salaryType, month string) error {
+	now := time.Now().Format("2006-01-02 15:04:05")
+
+	return db.Transaction(func(tx *gorm.DB) error {
+		excelTitle := rows[0][:7]
+		excelTitle = append(excelTitle, rows[1][7:11]...)
+		excelTitle = append(excelTitle, rows[0][11:22]...)
+		values := rows[2:]
+
+		if len(excelTitle) != 22 {
+			return errors.New("导入Excel模版异常")
+		}
+
+		//参数校验
+		for i, row := range values {
+			//每一行最后一列为空要这样判空
+			if len(titleKeyMap) != len(row) {
+				fmt.Println("length", len(titleKeyMap), len(row))
+				return errors.New(fmt.Sprintf("第%d行有数据缺失", i+2))
+			}
+			for ii, value := range row {
+				key := titleKeyMap[excelTitle[ii]]
+				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+				fmt.Println("title-key-value", excelTitle[ii], key, value)
+				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+				//结合每个字段是否为空判断(最后一列为空的话这种方式判断不出来)
+				if value == "" {
+					return errors.New(fmt.Sprintf("%s不能为空", excelTitle[ii]))
+				}
+			}
+		}
+
+		for _, row := range values {
+			var item = make(map[string]interface{})
+			var name string
+			var staffExist weChat.WcStaff
+			var staffSalary weChat.WcStaffSalary
+
+			for ii, value := range row {
+				key := titleKeyMap[excelTitle[ii]]
+				if key == "id" {
+					continue
+				}
+				if key == "name" {
+					name = utils.FilterBreaksSpaces(value)
+				}
+				item[key] = utils.FilterBreaksSpaces(value)
+			}
+
+			item["month"] = month
+			item["type"] = salaryType
+			item["created_at"] = now
+			item["updated_at"] = now
+
+			tx.Where("name=?", name).First(&staffExist)
+			if staffExist.ID == 0 {
+				return errors.New(fmt.Sprintf("员工%s不存在", name))
+			} else {
+				var staffSalaryExist weChat.WcStaffSalary
+				tx.Where("staff_id=? AND month=? AND type=?", staffExist.ID, month, salaryType).First(&staffSalaryExist)
+				item["staff_id"] = staffExist.ID
+				if staffSalaryExist.ID == 0 {
+					cErr := tx.Table(staffSalary.TableName()).Create(&item).Error
+					if cErr != nil {
+						return cErr
+					}
+				} else {
+					cErr := tx.Table(staffSalary.TableName()).Omit("name,type,staff_id,created_at").Where("id=?", staffSalaryExist.ID).Updates(item).Error
+					if cErr != nil {
+						return cErr
+					}
+				}
+			}
+		}
+		return nil
+	})
+}
+
+// importExcelF 导入总部调理中心体系月度奖金
+func (wcStaffSalaryService *WcStaffSalaryService) importExcelF(db *gorm.DB, rows [][]string, titleKeyMap map[string]string, salaryType, month string) error {
+	now := time.Now().Format("2006-01-02 15:04:05")
+
+	return db.Transaction(func(tx *gorm.DB) error {
+		excelTitle := rows[0]
+		values := rows[1:]
+
+		if len(excelTitle) != 8 {
 			return errors.New("导入Excel模版异常")
 		}
 
