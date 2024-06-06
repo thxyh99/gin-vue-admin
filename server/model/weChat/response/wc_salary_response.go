@@ -12,4 +12,5 @@ type WcSalaryResponse struct {
 	TypeText     string `json:"typeText"`     //工资类型
 	RankType     *int   `json:"rankType"`     //职级类型
 	RankTypeText string `json:"rankTypeText"` //职级类型
+	TemplateId   string `json:"templateId"`   //导入ID
 }

@@ -123,12 +123,39 @@ func (wcSalaryService *WcSalaryService) AssembleSalary(salary weChat.WcSalary) (
 	rankTypeText, _ := utils.GetValueByKey(rankTypeMap, *wcSalaryTemplate.RankType)
 	newSalary.RankTypeText = rankTypeText
 	newSalary.RankType = wcSalaryTemplate.RankType
+	switch *wcSalaryTemplate.Type {
+	case 1:
+		newSalary.TemplateId = "staffSalary1"
+		break
+	case 2:
+		newSalary.TemplateId = "staffSalary234"
+		break
+	case 3:
+		newSalary.TemplateId = "staffSalary234"
+		break
+	case 4:
+		newSalary.TemplateId = "staffSalary234"
+		break
+	case 5:
+		newSalary.TemplateId = "staffSalary5"
+		break
+	case 6:
+		newSalary.TemplateId = "staffSalary6"
+		break
+	case 7:
+		newSalary.TemplateId = "staffSalary7"
+		break
+	case 8:
+		newSalary.TemplateId = "staffSalary8"
+		break
+	default:
+		return newSalary, errors.New(fmt.Sprintf("工资类型%d异常", *wcSalaryTemplate.Type))
+	}
 
 	return
 }
 
 func (wcSalaryService *WcSalaryService) AssembleSalaryList(salaries []weChat.WcSalary) (newSalaries []weChat2.WcSalaryResponse, err error) {
-	var newSalary weChat2.WcSalaryResponse
 	configInfo := config.GetConfigInfo()
 	rankTypeList, err := GetRankTypeList()
 	if err != nil {
@@ -140,6 +167,7 @@ func (wcSalaryService *WcSalaryService) AssembleSalaryList(salaries []weChat.WcS
 		rankTypeMap[rankTypeItem.ID] = rankTypeItem.Name
 	}
 	for _, salary := range salaries {
+		var newSalary weChat2.WcSalaryResponse
 		newSalary.WcSalary = salary
 		var wcSalaryTemplate weChat.WcSalaryTemplate
 		err = global.GVA_DB.Where("id=?", salary.TemplateId).Find(&wcSalaryTemplate).Error
@@ -154,6 +182,34 @@ func (wcSalaryService *WcSalaryService) AssembleSalaryList(salaries []weChat.WcS
 		rankTypeText, _ := utils.GetValueByKey(rankTypeMap, *wcSalaryTemplate.RankType)
 		newSalary.RankTypeText = rankTypeText
 		newSalary.RankType = wcSalaryTemplate.RankType
+		switch *wcSalaryTemplate.Type {
+		case 1:
+			newSalary.TemplateId = "staffSalary1"
+			break
+		case 2:
+			newSalary.TemplateId = "staffSalary234"
+			break
+		case 3:
+			newSalary.TemplateId = "staffSalary234"
+			break
+		case 4:
+			newSalary.TemplateId = "staffSalary234"
+			break
+		case 5:
+			newSalary.TemplateId = "staffSalary5"
+			break
+		case 6:
+			newSalary.TemplateId = "staffSalary6"
+			break
+		case 7:
+			newSalary.TemplateId = "staffSalary7"
+			break
+		case 8:
+			newSalary.TemplateId = "staffSalary8"
+			break
+		default:
+			return newSalaries, errors.New(fmt.Sprintf("工资类型%d异常", *wcSalaryTemplate.Type))
+		}
 		newSalaries = append(newSalaries, newSalary)
 	}
 	return newSalaries, err

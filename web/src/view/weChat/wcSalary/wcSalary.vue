@@ -46,7 +46,7 @@
 					<template #default="{ row }">
 						<el-button type="primary" link>
               <el-button type="primary" link>
-                <ImportExcel template-id="staffSalary234" :type="row.type" :month="row.month" :rankType="row.typeText" @on-success="getTableData" btnName="导入" />
+                <ImportExcel :template-id="row.templateId" :type="row.type" :month="row.month" :rankType="row.rankType" @on-success="getTableData" btnName="导入" />
               </el-button>
             </el-button>
 						<el-button type="primary" link>查看明细</el-button>

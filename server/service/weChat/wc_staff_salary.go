@@ -186,7 +186,9 @@ func (wcStaffSalaryService *WcStaffSalaryService) ImportExcel(templateID, salary
 	case "1":
 		//return wcStaffSalaryService.importExcelA(db, rows, titleKeyMap, salaryType, month)
 	case "2":
+		return wcStaffSalaryService.importExcelB(db, rows, titleKeyMap, salaryType, month)
 	case "3":
+		return wcStaffSalaryService.importExcelB(db, rows, titleKeyMap, salaryType, month)
 	case "4":
 		return wcStaffSalaryService.importExcelB(db, rows, titleKeyMap, salaryType, month)
 	//case "5":
@@ -208,8 +210,8 @@ func (wcStaffSalaryService *WcStaffSalaryService) importExcelB(db *gorm.DB, rows
 	now := time.Now().Format("2006-01-02 15:04:05")
 
 	return db.Transaction(func(tx *gorm.DB) error {
-		excelTitle := rows[1]
-		values := rows[2:]
+		excelTitle := rows[0]
+		values := rows[1:]
 
 		if len(excelTitle) != 6 {
 			return errors.New("导入Excel模版异常")
