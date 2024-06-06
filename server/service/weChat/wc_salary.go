@@ -119,8 +119,10 @@ func (wcSalaryService *WcSalaryService) AssembleSalary(salary weChat.WcSalary) (
 	newSalary.Name = wcSalaryTemplate.Name
 	typeText, _ := utils.Find(configInfo.SalaryType, *wcSalaryTemplate.Type)
 	newSalary.TypeText = typeText
+	newSalary.Type = wcSalaryTemplate.Type
 	rankTypeText, _ := utils.GetValueByKey(rankTypeMap, *wcSalaryTemplate.RankType)
 	newSalary.RankTypeText = rankTypeText
+	newSalary.RankType = wcSalaryTemplate.RankType
 
 	return
 }
@@ -148,8 +150,10 @@ func (wcSalaryService *WcSalaryService) AssembleSalaryList(salaries []weChat.WcS
 		newSalary.Name = wcSalaryTemplate.Name
 		typeText, _ := utils.Find(configInfo.SalaryType, *wcSalaryTemplate.Type)
 		newSalary.TypeText = typeText
+		newSalary.Type = wcSalaryTemplate.Type
 		rankTypeText, _ := utils.GetValueByKey(rankTypeMap, *wcSalaryTemplate.RankType)
 		newSalary.RankTypeText = rankTypeText
+		newSalary.RankType = wcSalaryTemplate.RankType
 		newSalaries = append(newSalaries, newSalary)
 	}
 	return newSalaries, err

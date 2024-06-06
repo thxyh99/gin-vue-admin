@@ -21,6 +21,7 @@ func (s *WcStaffSalaryRouter) InitWcStaffSalaryRouter(Router *gin.RouterGroup, P
 		wcStaffSalaryRouter.DELETE("deleteWcStaffSalary", wcStaffSalaryApi.DeleteWcStaffSalary)           // 删除工资单
 		wcStaffSalaryRouter.DELETE("deleteWcStaffSalaryByIds", wcStaffSalaryApi.DeleteWcStaffSalaryByIds) // 批量删除工资单
 		wcStaffSalaryRouter.PUT("updateWcStaffSalary", wcStaffSalaryApi.UpdateWcStaffSalary)              // 更新工资单
+		wcStaffSalaryRouter.POST("importExcel", wcStaffSalaryApi.ImportExcel)                             // 导入工资单
 	}
 	{
 		wcStaffSalaryRouterWithoutRecord.GET("findWcStaffSalary", wcStaffSalaryApi.FindWcStaffSalary)       // 根据ID获取工资单

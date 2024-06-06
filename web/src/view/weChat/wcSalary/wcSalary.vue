@@ -44,7 +44,11 @@
 				<el-table-column align="left" label="发放模板" prop="name" />
 				<el-table-column align="left" label="操作">
 					<template #default="{ row }">
-						<el-button type="primary" link>导入基本工资</el-button>
+						<el-button type="primary" link>
+              <el-button type="primary" link>
+                <ImportExcel template-id="staffSalary234" type="3" month="202402" rankType="1" @on-success="getTableData" btnName="导入" />
+              </el-button>
+            </el-button>
 						<el-button type="primary" link>查看明细</el-button>
 						<el-button type="primary" link @click="haneleDel(row)">删除</el-button>
 					</template>
@@ -75,6 +79,7 @@ import { getWcSalaryList, deleteWcSalary } from '@/api/weChat/wcSalary'
 import { getWcSalaryTemplateList } from '@/api/weChat/wcSalaryTemplate'
 
 import { ElMessage, ElMessageBox } from 'element-plus'
+import ImportExcel from "@/components/exportExcel/wechat/importSalaryExcel.vue";
 
 const searchInfo = ref({
 	page: 1,
