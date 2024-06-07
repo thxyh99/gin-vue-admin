@@ -209,12 +209,20 @@ func (wcStaffSalaryService *WcStaffSalaryService) importExcelA(db *gorm.DB, rows
 	now := time.Now().Format("2006-01-02 15:04:05")
 
 	return db.Transaction(func(tx *gorm.DB) error {
-		excelTitle := rows[0]
-		values := rows[1:]
+		excelTitle := rows[0][:13]
+		excelTitle = append(excelTitle, rows[1][13:26]...)
+		excelTitle = append(excelTitle, rows[2][26:39]...)
+		excelTitle = append(excelTitle, rows[1][39:40]...)
+		excelTitle = append(excelTitle, rows[2][40:43]...)
+		excelTitle = append(excelTitle, rows[1][43:51]...)
+		excelTitle = append(excelTitle, rows[0][51:56]...)
+		values := rows[3:]
 
-		if len(excelTitle) != 6 {
+		if len(excelTitle) != 56 {
 			return errors.New("导入Excel模版异常")
 		}
+
+		fmt.Println(excelTitle)
 
 		//参数校验
 		for i, row := range values {
@@ -244,6 +252,9 @@ func (wcStaffSalaryService *WcStaffSalaryService) importExcelA(db *gorm.DB, rows
 
 			for ii, value := range row {
 				key := titleKeyMap[excelTitle[ii]]
+				if key == "id" {
+					continue
+				}
 				if key == "name" {
 					name = utils.FilterBreaksSpaces(value)
 				}
@@ -263,6 +274,9 @@ func (wcStaffSalaryService *WcStaffSalaryService) importExcelA(db *gorm.DB, rows
 				tx.Where("staff_id=? AND month=? AND type=?", staffExist.ID, month, salaryType).First(&staffSalaryExist)
 				item["staff_id"] = staffExist.ID
 				if staffSalaryExist.ID == 0 {
+					fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+					fmt.Println("item", item)
+					fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 					cErr := tx.Table(staffSalary.TableName()).Create(&item).Error
 					if cErr != nil {
 						return cErr
