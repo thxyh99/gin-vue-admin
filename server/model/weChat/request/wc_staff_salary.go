@@ -10,6 +10,7 @@ type WcStaffSalarySearch struct {
 	EndCreatedAt   *time.Time `json:"endCreatedAt" form:"endCreatedAt"`
 	Month          string     `json:"month" form:"month"`
 	StaffId        *int       `json:"staffId" form:"staffId"`
+	Type           *int       `json:"type" form:"type"`
 
 	request.PageInfo
 }

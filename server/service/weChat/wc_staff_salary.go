@@ -66,6 +66,9 @@ func (wcStaffSalaryService *WcStaffSalaryService) GetWcStaffSalaryInfoList(info 
 	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
 		db = db.Where("created_at BETWEEN ? AND ?", info.StartCreatedAt, info.EndCreatedAt)
 	}
+	if info.Type != nil && *info.Type > 0 {
+		db = db.Where("type = ?", *info.Type)
+	}
 	if info.Month != "" {
 		db = db.Where("month = ?", info.Month)
 	}
