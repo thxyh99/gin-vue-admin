@@ -57,7 +57,7 @@
     <el-table-column align="left" label="职位/职级" prop="position" width="120" />
     <el-table-column align="left" label="学历" prop="education" width="120" />
     <el-table-column align="left" label="等级工资" prop="gradeSalary" width="120" />
-    <el-table-column align="left" label="岗位工资/职称技能津贴" prop="skillSalary" width="120" />
+    <el-table-column align="left" label="岗位工资/职称技能津贴" prop="skillSalary" width="170" />
     <el-table-column align="left" label="保密工资" prop="secrecySalary" width="120" />
     <el-table-column align="left" label="CPI工资" prop="cpiSalary" width="120" />
     <el-table-column align="left" label="津贴" prop="allowancesSalary" width="120" />
@@ -81,19 +81,19 @@
     <el-table-column align="left" label="合计(补助)" prop="totalSubsidy" width="120" />
     <el-table-column align="left" label="加班费" prop="overtimeFee" width="120" />
     <el-table-column align="left" label="缺勤" prop="absenceFee" width="120" />
-    <el-table-column align="left" label="合计(加班及缺勤)" prop="totalFee" width="120" />
+    <el-table-column align="left" label="合计(加班及缺勤)" prop="totalFee" width="140" />
     <el-table-column align="left" label="应发工资" prop="shouldPay" width="120" />
     <el-table-column align="left" label="养老保险" prop="pensionPay" width="120" />
     <el-table-column align="left" label="医疗保险" prop="medicalPay" width="120" />
     <el-table-column align="left" label="失业保险" prop="unemploymentPay" width="120" />
     <el-table-column align="left" label="住房公积金" prop="housingPay" width="120" />
     <el-table-column align="left" label="专项抵扣" prop="specialTax" width="120" />
-    <el-table-column align="left" label="本次应缴税所得额" prop="thisPayTax" width="120" />
-    <el-table-column align="left" label="上次累计应缴预缴所得额" prop="lastTotalPayTax" width="120" />
-    <el-table-column align="left" label="本次累计应缴预缴所得额" prop="thisTotalPayTax" width="120" />
+    <el-table-column align="left" label="本次应缴税所得额" prop="thisPayTax" width="140" />
+    <el-table-column align="left" label="上次累计应缴预缴所得额" prop="lastTotalPayTax" width="180" />
+    <el-table-column align="left" label="本次累计应缴预缴所得额" prop="thisTotalPayTax" width="180" />
     <el-table-column align="left" label="累计税额" prop="totalPayTax" width="120" />
-    <el-table-column align="left" label="上次累计已扣个税" prop="lastTotalPaidTax" width="120" />
-    <el-table-column align="left" label="本次累计已缴个税" prop="thisTotalPaidTax" width="120" />
+    <el-table-column align="left" label="上次累计已扣个税" prop="lastTotalPaidTax" width="140" />
+    <el-table-column align="left" label="本次累计已缴个税" prop="thisTotalPaidTax" width="140" />
     <el-table-column align="left" label="本次应扣个税" prop="thisShouldPayTax" width="120" />
     <el-table-column align="left" label="预存尽孝基金" prop="preFilialSalary" width="120" />
     <el-table-column align="left" label="其他" prop="other" width="120" />
@@ -105,7 +105,7 @@
           <el-icon style="margin-right: 5px"><InfoFilled /></el-icon>
           查看详情
         </el-button>
-        <el-button type="primary" link icon="edit" class="table-button" @click="updateWcStaffSalaryFunc(scope.row)">变更</el-button>
+<!--        <el-button type="primary" link icon="edit" class="table-button" @click="updateWcStaffSalaryFunc(scope.row)">变更</el-button>-->
         <el-button type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>
       </template>
     </el-table-column>

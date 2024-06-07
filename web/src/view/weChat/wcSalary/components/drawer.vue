@@ -20,7 +20,7 @@
 				<el-date-picker style="width: 100%" v-model="formData.month" type="month" value-format="YYYYMM" />
 			</el-form-item>
 			<el-form-item label="工资模板" prop="templateId">
-				<el-select v-model="formData.templateId">
+				<el-select v-model="formData.templateId" filterable>
 					<el-option v-for="item in templateList" :key="item.ID" :label="item.name" :value="item.ID" />
 				</el-select>
 			</el-form-item>
