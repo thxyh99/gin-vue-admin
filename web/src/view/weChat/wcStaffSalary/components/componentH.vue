@@ -135,6 +135,13 @@ defineOptions({
   name: 'WcStaffSalary'
 })
 
+const props = defineProps({
+	month: {
+		type: String,
+		default: '',
+	},
+})
+
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
   type: 0,
@@ -317,7 +324,12 @@ const getTableData = async() => {
   }
 }
 
-getTableData()
+if (props.month) {
+	searchInfo.value.month = props.month
+	getTableData()
+} else {
+	getTableData()
+}
 
 // ============== 表格控制部分结束 ===============
 

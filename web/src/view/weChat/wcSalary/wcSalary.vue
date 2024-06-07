@@ -49,7 +49,7 @@
                 <ImportExcel :template-id="row.templateId" :type="row.type" :month="row.month" :rankType="row.rankType" @on-success="getTableData" btnName="导入" />
               </el-button>
             </el-button>
-						<el-button type="primary" link>查看明细</el-button>
+						<el-button type="primary" link @click="getDetail(row)">查看明细</el-button>
 						<el-button type="primary" link @click="handleDel(row)">删除</el-button>
 					</template>
 				</el-table-column>
@@ -74,12 +74,15 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import drawer from './components/drawer.vue'
+import { useRouter } from 'vue-router'
 
 import { getWcSalaryList, deleteWcSalary } from '@/api/weChat/wcSalary'
 import { getWcSalaryTemplateList } from '@/api/weChat/wcSalaryTemplate'
 
 import { ElMessage, ElMessageBox } from 'element-plus'
 import ImportExcel from "@/components/exportExcel/wechat/importSalaryExcel.vue";
+
+const router = useRouter()
 
 const searchInfo = ref({
 	page: 1,
@@ -154,6 +157,16 @@ const handleDel = (row) => {
 			ElMessage.success('删除成功')
 			getWcSalary()
 		})
+	})
+}
+
+const getDetail = (row) => {
+	router.push({
+		path: '/layout/salary/wcStaffSalary',
+		query: {
+			type: row.type,
+			month: row.month,
+		},
 	})
 }
 

@@ -20,7 +20,7 @@
 			<el-form-item label="工资单模板名称" prop="name">
 				<el-input v-model="formData.name" />
 			</el-form-item>
-			<el-form-item label="工资类型">
+			<el-form-item label="工资类型" prop="type">
 				<el-select v-model="formData.type" @change="getWcSalaryFields" :disabled="props.modeType === 'edit'">
 					<el-option label="基本工资" :value="1"></el-option>
 					<el-option label="集团经营绩效奖励" :value="2"></el-option>

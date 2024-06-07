@@ -1466,36 +1466,39 @@ const enterDialog = async () => {
 </style> -->
 <template>
 	<div class="gva-table-box">
-		<el-tabs>
-			<el-tab-pane label="工资表">
-				<componentA />
+		<el-tabs v-model="activeName">
+			<el-tab-pane label="工资表" name="1">
+				<componentA :month="month" />
 			</el-tab-pane>
-			<el-tab-pane label="集团经营绩效奖励">
-				<componentB />
+			<el-tab-pane label="集团经营绩效奖励" name="2">
+				<componentB :month="month" />
 			</el-tab-pane>
-			<el-tab-pane label="节日金">
-				<componentC />
+			<el-tab-pane label="节日金" name="3">
+				<componentC :month="month" />
 			</el-tab-pane>
-			<el-tab-pane label="半年奖">
-				<componentD />
+			<el-tab-pane label="半年奖" name="4"> 
+				<componentD :month="month" />
 			</el-tab-pane>
-			<el-tab-pane label="年度奖金">
-				<componentE />
+			<el-tab-pane label="年度奖金" name="5">
+				<componentE :month="month" />
 			</el-tab-pane>
-			<el-tab-pane label="总部职能体系月度奖金">
-				<componentF />
+			<el-tab-pane label="总部职能体系月度奖金" name="6">
+				<componentF :month="month" />
 			</el-tab-pane>
-			<el-tab-pane label="总部金纳斯市场体系月度奖金">
-				<componentG />
+			<el-tab-pane label="总部金纳斯市场体系月度奖金" name="7">
+				<componentG :month="month" />
 			</el-tab-pane>
-			<el-tab-pane label="总部调理中心体系月度奖金">
-				<componentH />
+			<el-tab-pane label="总部调理中心体系月度奖金" name="8">
+				<componentH :month="month" />
 			</el-tab-pane>
 		</el-tabs>
 	</div>
 </template>
 
 <script setup>
+import { ref, watchEffect } from 'vue'
+
+import { useRoute } from 'vue-router'
 import componentA from './components/componentA.vue'
 import componentB from './components/componentB.vue'
 import componentC from './components/componentC.vue'
@@ -1504,4 +1507,17 @@ import componentE from './components/componentE.vue'
 import componentF from './components/componentF.vue'
 import componentG from './components/componentG.vue'
 import componentH from './components/componentH.vue'
+
+const route = useRoute()
+
+const activeName = ref('1')
+const month = ref('')
+
+watchEffect(() => {
+  console.log(route)
+  activeName.value = route.query.type
+  if (route.query.month) {
+    month.value = route.query.month
+  }
+})
 </script>
