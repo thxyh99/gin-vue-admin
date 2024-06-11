@@ -272,6 +272,7 @@ const formData = ref({
         departmentIds:[],
         position:'',
         positionIds:[],
+        leaderId:'',
         })
 
 
@@ -568,6 +569,7 @@ const closeDetailShow = () => {
             departmentIds:[],
             position:'',
             positionIds:[],
+            leaderId:'',
           }
 }
 
@@ -604,6 +606,7 @@ const closeDialog = () => {
           departmentIds:[],
           position:'',
           positionIds:[],
+          leaderId:'',
         }
 }
 // 弹窗确定

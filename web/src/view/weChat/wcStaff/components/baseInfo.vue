@@ -17,8 +17,9 @@
 			}}</el-descriptions-item>
 			<el-descriptions-item label-align="right" label="籍贯">{{ rewcStaff.nativePlace }}</el-descriptions-item>
 			<el-descriptions-item label-align="right" label="民族">{{ rewcStaff.nationText }}</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="身高">{{ rewcStaff.height }}</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="体重">{{ rewcStaff.weight }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="性别">{{ rewcStaff.genderText }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="身高(cm)">{{ rewcStaff.height }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="体重(kg)">{{ rewcStaff.weight }}</el-descriptions-item>
 			<el-descriptions-item label-align="right" label="婚否">{{ rewcStaff.marriageText }}</el-descriptions-item>
 			<el-descriptions-item label-align="right" label="政治面貌">{{ rewcStaff.politicalOutlookText }}</el-descriptions-item>
 			<el-descriptions-item label-align="right" label="常住地址">{{ rewcStaff.address }}</el-descriptions-item>
@@ -34,15 +35,16 @@
 			<el-descriptions-item label-align="right" label="员工类型">{{ rewcStaffJob.typeText }}</el-descriptions-item>
 			<el-descriptions-item label-align="right" label="员工状态">{{ rewcStaffJob.statusText }}</el-descriptions-item>
 			<el-descriptions-item label-align="right" label="部门">{{ rewcStaffJob.department }}</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="职位">{{ rewcStaffJob.position }}</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="职级">{{ rewcStaffJob.rankText }}</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="等级工资">{{ rewcStaffJob.rankSalary }}</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="费用科目">{{ rewcStaffJob.expenseAccountText }}</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="入职日期">{{ formatDate(rewcStaffJob.employmentDate) }}</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="试用期">{{ rewcStaffJob.tryPeriodText }}</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="转正日期">{{ formatDate(rewcStaffJob.formalDate) }}</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="司龄（系统计算）">{{ getDateYearSub(formatDate(rewcStaffJob.employmentDate)) }}年</el-descriptions-item>
-		</el-descriptions>
+      <el-descriptions-item label-align="right" label="职位">{{ rewcStaffJob.position }}</el-descriptions-item>
+      <el-descriptions-item label-align="right" label="职级">{{ rewcStaffJob.rankText }}</el-descriptions-item>
+      <el-descriptions-item label-align="right" label="等级工资">{{ rewcStaffJob.rankSalary }}</el-descriptions-item>
+      <el-descriptions-item label-align="right" label="费用科目">{{ rewcStaffJob.expenseAccountText }}</el-descriptions-item>
+      <el-descriptions-item label-align="right" label="入职日期">{{ formatDate(rewcStaffJob.employmentDate) }}</el-descriptions-item>
+      <el-descriptions-item label-align="right" label="试用期">{{ rewcStaffJob.tryPeriodText }}</el-descriptions-item>
+      <el-descriptions-item label-align="right" label="转正日期">{{ formatDate(rewcStaffJob.formalDate) }}</el-descriptions-item>
+      <el-descriptions-item label-align="right" label="司龄（系统计算）">{{ getDateYearSub(formatDate(rewcStaffJob.employmentDate)) }}年</el-descriptions-item>
+      <el-descriptions-item label-align="right" label="直属领导">{{ rewcStaffJob.leader }}</el-descriptions-item>
+    </el-descriptions>
 		<el-divider></el-divider>
 		<el-descriptions title="学历信息" border>
 			<template #extra>

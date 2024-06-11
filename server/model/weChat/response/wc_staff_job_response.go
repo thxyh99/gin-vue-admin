@@ -19,4 +19,5 @@ type WcStaffJobResponse struct {
 	DepartmentIds      []int  `json:"departmentIds"`      //部门信息编号
 	RankTypeText       string `json:"rankTypeText"`       //职级类型
 	RankText           string `json:"rankText"`           //职级
+	Leader             string `json:"leader"`             //直属领导
 }

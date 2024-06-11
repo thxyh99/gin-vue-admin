@@ -17,6 +17,10 @@ type WcStaffJobService struct {
 
 // CreateWcStaffJob 创建工作信息记录
 func (wcStaffJobService *WcStaffJobService) CreateWcStaffJob(wcStaffJobRequest *weChatReq.WcStaffJobRequest) (err error) {
+	if wcStaffJobRequest.LeaderId == nil {
+		zero := 0
+		wcStaffJobRequest.LeaderId = &zero
+	}
 	var wcStaffJob = weChat.WcStaffJob{
 		StaffId:        wcStaffJobRequest.StaffId,
 		Type:           wcStaffJobRequest.Type,
@@ -28,6 +32,7 @@ func (wcStaffJobService *WcStaffJobService) CreateWcStaffJob(wcStaffJobRequest *
 		EmploymentDate: wcStaffJobRequest.EmploymentDate,
 		FormalDate:     wcStaffJobRequest.FormalDate,
 		ExpenseAccount: wcStaffJobRequest.ExpenseAccount,
+		LeaderId:       wcStaffJobRequest.LeaderId,
 	}
 	err = global.GVA_DB.Create(wcStaffJob).Error
 
@@ -89,6 +94,11 @@ func (wcStaffJobService *WcStaffJobService) DeleteWcStaffJobByIds(IDs []string) 
 // UpdateWcStaffJob 更新工作信息记录
 func (wcStaffJobService *WcStaffJobService) UpdateWcStaffJob(wcStaffJobRequest *weChatReq.WcStaffJobRequest) (err error) {
 	wcStaffJob := wcStaffJobRequest.WcStaffJob
+	// 直属领导非必填可以为空
+	if wcStaffJob.LeaderId == nil {
+		zero := 0
+		wcStaffJob.LeaderId = &zero
+	}
 	err = global.GVA_DB.Save(&wcStaffJob).Error
 	if err != nil {
 		return err
@@ -195,7 +205,7 @@ func (wcStaffJobService *WcStaffJobService) AssembleStaffJobList(staffInfos []we
 		newStaffJob.ExpenseAccountText = expenseAccountText
 
 		var wg = sync.WaitGroup{}
-		wg.Add(5)
+		wg.Add(6)
 		go func(item weChat.WcStaffJob) {
 			defer wg.Done()
 
@@ -306,6 +316,21 @@ func (wcStaffJobService *WcStaffJobService) AssembleStaffJobList(staffInfos []we
 			newStaffJob.JobNum = staff.JobNum
 		}(staffJob)
 
+		go func(item weChat.WcStaffJob) {
+			defer wg.Done()
+
+			fmt.Println("staffJob.LeaderId", staffJob.LeaderId)
+
+			//获取员工直属领导
+			var staffLeader weChat.WcStaff
+			err = global.GVA_DB.Table(staffLeader.TableName()).Where("id=?", staffJob.LeaderId).First(&staffLeader).Error
+			if err != nil {
+				fmt.Println("AssembleStaffJobList Err:", err)
+				return
+			}
+			newStaffJob.Leader = staffLeader.Name
+		}(staffJob)
+
 		wg.Wait()
 
 		newStaffInfos = append(newStaffInfos, newStaffJob)
@@ -326,7 +351,7 @@ func (wcStaffJobService *WcStaffJobService) AssembleStaffJob(staffJob weChat.WcS
 	newStaffJob.ExpenseAccountText = expenseAccountText
 
 	var wg = sync.WaitGroup{}
-	wg.Add(5)
+	wg.Add(6)
 	go func(item weChat.WcStaffJob) {
 		defer wg.Done()
 
@@ -435,6 +460,21 @@ func (wcStaffJobService *WcStaffJobService) AssembleStaffJob(staffJob weChat.WcS
 		}
 		newStaffJob.StaffName = staff.Name
 		newStaffJob.JobNum = staff.JobNum
+	}(staffJob)
+
+	go func(item weChat.WcStaffJob) {
+		defer wg.Done()
+
+		fmt.Println("staffJob.LeaderId", staffJob.LeaderId)
+
+		//获取员工直属领导
+		var staffLeader weChat.WcStaff
+		err = global.GVA_DB.Table(staffLeader.TableName()).Where("id=?", staffJob.LeaderId).First(&staffLeader).Error
+		if err != nil {
+			fmt.Println("AssembleStaffJobList Err:", err)
+			return
+		}
+		newStaffJob.Leader = staffLeader.Name
 	}(staffJob)
 
 	wg.Wait()

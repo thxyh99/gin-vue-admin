@@ -80,6 +80,10 @@
 					:clearable="true"
 				/>
 			</el-form-item>
+      <el-form-item label="直属领导:" prop="leaderId">
+        <SelectStaff v-model="formData.leaderId">
+        </SelectStaff>
+      </el-form-item>
 		</el-form>
 	</el-drawer>
 </template>
@@ -92,6 +96,7 @@ import SelectPosition from '@/components/selectPosition/index.vue'
 import SelectRankType from '@/components/selectRankType/index.vue'
 import SelectRank from '@/components/selectRank/index.vue'
 import { updateWcStaffJob } from '@/api/weChat/wcStaffJob'
+import SelectStaff from "@/components/selectStaff/index.vue";
 
 const props = defineProps({
 	rewcStaffJob: {
@@ -199,6 +204,13 @@ const rule = reactive({
 			trigger: ['input', 'blur'],
 		},
 	],
+  leaderId: [
+    {
+      required: false,
+      message: '',
+      trigger: ['input', 'blur'],
+    },
+  ],
 })
 
 watchEffect(() => {

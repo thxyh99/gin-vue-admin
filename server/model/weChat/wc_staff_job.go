@@ -19,6 +19,7 @@ type WcStaffJob struct {
 	EmploymentDate *time.Time `json:"employmentDate" form:"employmentDate" gorm:"column:employment_date;comment:入职日期;" binding:"required"`                                     //入职日期
 	FormalDate     *time.Time `json:"formalDate" form:"formalDate" gorm:"column:formal_date;comment:转正日期;" binding:"required"`                                                 //转正日期
 	ExpenseAccount *int       `json:"expenseAccount" form:"expenseAccount" gorm:"column:expense_account;comment:费用科目(1:管理费用 2:研发费用 3:生产费用 4:销售费用);size:1;" binding:"required"` //费用科目(1:管理费用 2:研发费用 3:生产费用 4:销售费用)
+	LeaderId       *int       `json:"leaderId" form:"leaderId" gorm:"column:leader_id;comment:直属领导ID;size:200;"`                                                               //直属领导ID
 }
 
 // TableName 工作信息 WcStaffJob自定义表名 wc_staff_job
