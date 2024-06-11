@@ -38,6 +38,16 @@ func Find(slice []string, index int) (string, bool) {
 	return "", false
 }
 
+// FindKeyByValue 检测切片是否存在value值并且返回key
+func FindKeyByValue(slice []string, value string) (int, bool) {
+	for i, item := range slice {
+		if item == value {
+			return i, true
+		}
+	}
+	return -1, false
+}
+
 // FindStringValue 检测切片是否存在value值并返回value
 func FindStringValue(slice []string, value string) (string, bool) {
 	for _, item := range slice {

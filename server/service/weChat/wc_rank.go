@@ -128,6 +128,11 @@ func (wcRankService *WcRankService) GetRankTypeList(_ weChatReq.WcRankSearch) (l
 
 // GetRankListByRankType 分页获取职级记录
 func (wcRankService *WcRankService) GetRankListByRankType(rankType string) (list []weChat2.WcRankItem, total int64, err error) {
+	return GetRankListByRankTypeCommon(rankType)
+}
+
+// GetRankListByRankTypeCommon 分页获取职级记录
+func GetRankListByRankTypeCommon(rankType string) (list []weChat2.WcRankItem, total int64, err error) {
 	cacheKey := fmt.Sprintf("GetRankListByRankType:%s", rankType)
 	cacheValue, err := global.GVA_REDIS.Get(context.Background(), cacheKey).Result()
 	if err != nil {

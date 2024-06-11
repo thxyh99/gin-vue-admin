@@ -176,12 +176,79 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 		db = global.MustGetGlobalDBByDBName(template.DBName)
 	}
 
-	configInfo := config.GetConfigInfo()
 	now := time.Now().Format("2006-01-02 15:04:05")
 
 	return db.Transaction(func(tx *gorm.DB) error {
 		excelTitle := rows[0]
 		values := rows[1:]
+
+		//模版校验
+		if len(excelTitle) != 49 {
+			return errors.New("导入花名册Excel模版异常")
+		}
+
+		rankTypeList, err := GetRankTypeList()
+		if err != nil {
+			return errors.New("职级类型异常:" + err.Error())
+		}
+
+		rankTypeMap := make(map[int]string)
+		for _, rankTypeItem := range rankTypeList {
+			rankTypeMap[rankTypeItem.ID] = rankTypeItem.Name
+		}
+
+		//参数校验
+		for i, row := range values {
+			//每一行最后一列为空要这样判空
+			if len(titleKeyMap) != len(row) && len(titleKeyMap) != len(row)-1 {
+				fmt.Println("length", len(titleKeyMap), len(row))
+				return errors.New(fmt.Sprintf("第%d行有数据缺失", i+2))
+			}
+			var rankTypeValue, rankValue string
+			for ii, value := range row {
+				key := titleKeyMap[excelTitle[ii]]
+				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+				fmt.Println("title-key-value", excelTitle[ii], key, value)
+				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+				//结合每个字段是否为空判断(最后一列为空的话这种方式判断不出来)
+				noRequired := []string{"社保电脑号",
+					"公积金账号",
+					"社保公积金缴纳地",
+					"费用科目",
+					"试用期",
+					"转正日期",
+					"职称/技能证书",
+					"联系人常住地址",
+					"合同公司",
+					"合同类型",
+					"续签次数",
+					"合同附件"}
+				if value == "" && utils.InArray(noRequired, excelTitle[ii]) {
+					return errors.New(fmt.Sprintf("%s不能为空", excelTitle[ii]))
+				}
+
+				if key == "rank_type" {
+					rankTypeValue = value
+				}
+
+				if key == "rank" {
+					rankValue = value
+				}
+
+				err = checkImportParam(key, value, rankTypeList)
+				if err != nil {
+					return err
+				}
+			}
+
+			err = checkImportParamRank(rankTypeValue, rankValue, rankTypeMap)
+			if err != nil {
+				return err
+			}
+		}
+
+		//获取部门 职位信息
 		departmentMaps := make(map[string]int)
 		positionMaps := make(map[string]int)
 		var ds []weChat.WcDepartment
@@ -197,13 +264,10 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 			positionMaps[psItem.Name] = int(psItem.ID)
 		}
 
+		//更新操作
 		for _, row := range values {
 			for ii, value := range row {
 				key := titleKeyMap[excelTitle[ii]]
-				err = wcStaffService.checkImportParam(key, value)
-				if err != nil {
-					return err
-				}
 				// 更新部门信息
 				if key == "department" && value != "" {
 					departmentsMultiple := strings.Split(value, ";")
@@ -241,7 +305,6 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 							wd.Name = name
 							wd.Parentid = &parentId
 							wd.Order = &zero
-							wd.Parentid = &parentId
 							wd.CreatedAt = time.Now()
 							wd.UpdatedAt = time.Now()
 							tx.Table(wd.TableName()).Create(&wd)
@@ -269,39 +332,117 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 			}
 		}
 
+		staffFields := []string{"name", "job_num", "userid", "mobile", "gender", "height", "weight", "birthday", "native_place", "nation", "marriage", "political_outlook", "id_number", "id_address", "household_type", "address", "social_number", "account_number", "payment_place"}
+		staffJobFields := []string{"job_type", "status", "employment_date", "try_period", "formal_date", "leader" /**"department", "position",**/, "rank_type", "rank", "rank_salary", "expense_account"}
+		staffBankFields := []string{"bank", "card_number"}
+		staffEducationFields := []string{"education", "education_pay", "school", "date", "major", "certificate", "skill_pay"}
+		staffContactFields := []string{"contact_name", "relationship", "contact_mobile", "contact_address"}
+		staffAgreementFields := []string{"company", "agreement_type", "start_day", "end_day", "times"}
+		configInfo := config.GetConfigInfo()
+
 		for _, row := range values {
-			var item = make(map[string]interface{})
-			var name, jobNum string
+			var itemBase = make(map[string]interface{})
+			var itemJob = make(map[string]interface{})
+			var itemBank = make(map[string]interface{})
+			var itemEducation = make(map[string]interface{})
+			var itemContact = make(map[string]interface{})
+			var itemAgreement = make(map[string]interface{})
+			var name string
 			var lastDepartments, positions []string
 			var staffExist, staff weChat.WcStaff
+			var staffJob weChat.WcStaffJob
+			var staffBank weChat.WcStaffBank
+			var staffEducation weChat.WcStaffEducation
+			var staffContact weChat.WcStaffContact
+			var staffAgreement weChat.WcStaffAgreement
 
 			// 更新员工信息
 			for ii, value := range row {
 				key := titleKeyMap[excelTitle[ii]]
-				if key == "job_num" {
-					jobNum = value
-				}
 				if key == "name" {
 					name = value
 				}
-				if key == "gender" {
-					if gender, ok := utils.FindStringValueKey(configInfo.StaffGender, value); ok {
-						value = strconv.Itoa(gender)
+				if utils.InArray(staffFields, key) {
+					if key == "gender" {
+						gender, _ := utils.FindKeyByValue(configInfo.StaffGender, value)
+						itemBase[key] = gender
+					} else if key == "nation" {
+						nation, _ := utils.FindKeyByValue(configInfo.Nation, value)
+						itemBase[key] = nation
+					} else if key == "marriage" {
+						marriage, _ := utils.FindKeyByValue(configInfo.Marriage, value)
+						itemBase[key] = marriage
+					} else if key == "political_outlook" {
+						politicalOutlook, _ := utils.FindKeyByValue(configInfo.PoliticalOutlook, value)
+						itemBase[key] = politicalOutlook
+					} else if key == "household_type" {
+						householdType, _ := utils.FindKeyByValue(configInfo.HouseholdType, value)
+						itemBase[key] = householdType
 					} else {
-						return errors.New("性别值异常:" + value)
+						itemBase[key] = value
 					}
 				}
-				if key == "is_leader" {
-					if isLeader, ok := utils.FindStringValueKey(configInfo.StaffIsLeader, value); ok {
-						value = strconv.Itoa(isLeader)
+				if utils.InArray(staffJobFields, key) {
+					if key == "job_type" {
+						jobType, _ := utils.FindKeyByValue(configInfo.StaffJobType, value)
+						itemJob[key] = jobType
+					} else if key == "status" {
+						jobStatus, _ := utils.FindKeyByValue(configInfo.StaffJobStatus, value)
+						itemJob[key] = jobStatus
+					} else if key == "try_period" {
+						tryPeriod, _ := utils.FindKeyByValue(configInfo.StaffJobTryPeriod, value)
+						itemJob[key] = tryPeriod
+					} else if key == "leader" {
+						if value != "" {
+							itemJob["leader_id"] = 1 //todo
+						} else {
+							itemJob["leader_id"] = 0
+						}
+					} else if key == "rank_type" {
+						itemJob[key] = 0 //todo
+					} else if key == "rank" {
+						itemJob[key] = 0 //todo
+					} else if key == "expense_account" {
+						expenseAccount, _ := utils.FindKeyByValue(configInfo.ExpenseAccount, value)
+						itemJob[key] = expenseAccount
 					} else {
-						return errors.New("是否领导值异常:" + value)
+						itemJob[key] = value
+					}
+				}
+				if utils.InArray(staffBankFields, key) {
+					itemBank[key] = value
+				}
+				if utils.InArray(staffEducationFields, key) {
+					if key == "education" {
+						education, _ := utils.FindKeyByValue(configInfo.Education, value)
+						itemEducation[key] = education
+					} else {
+						itemEducation[key] = value
+					}
+				}
+				if utils.InArray(staffContactFields, key) {
+					if key == "contact_name" {
+						itemContact["name"] = value
+					} else if key == "relationship" {
+						relationship, _ := utils.FindKeyByValue(configInfo.Relationship, value)
+						itemContact[key] = relationship
+					} else if key == "contact_mobile" {
+						itemContact["mobile"] = value
+					} else if key == "contact_address" {
+						itemContact["address"] = value
+					} else {
+						itemContact[key] = value
+					}
+				}
+				if utils.InArray(staffAgreementFields, key) {
+					if key == "agreement_type" {
+						agreementType, _ := utils.FindKeyByValue(configInfo.AgreementType, value)
+						itemAgreement[key] = agreementType
+					} else {
+						itemAgreement[key] = value
 					}
 				}
 
-				if key != "department" && key != "position" {
-					item[key] = value
-				}
 				if key == "department" {
 					departmentMany := strings.Split(value, ";")
 					for _, departmentOne := range departmentMany {
@@ -315,90 +456,241 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 				}
 			}
 
-			item["created_at"] = now
-			item["updated_at"] = now
+			{
+				itemBase["created_at"] = now
+				itemBase["updated_at"] = now
 
-			tx.Table(staff.TableName()).Where("name=?", name).First(&staffExist)
-			if staffExist.ID == 0 {
-				// 新增员工
-				cErr := tx.Table(staff.TableName()).Create(&item).Error
-				if cErr != nil {
-					return cErr
+				tx.Table(staff.TableName()).Where("name=?", name).First(&staffExist)
+				if staffExist.ID == 0 {
+					// 新增员工
+					cErr := tx.Table(staff.TableName()).Create(&itemBase).Error
+					if cErr != nil {
+						return cErr
+					}
+				} else {
+					// 更新员工
+					cErr := tx.Table(staff.TableName()).Omit("name,created_at").Where("id=?", staffExist.ID).Updates(itemBase).Error
+					if cErr != nil {
+						return cErr
+					}
 				}
-			} else {
-				// 更新员工
-				cErr := tx.Table(staff.TableName()).Omit("name,created_at").Where("id=?", staffExist.ID).Updates(item).Error
-				if cErr != nil {
-					return cErr
-				}
-			}
 
-			tx.Table(staff.TableName()).Where("job_num=?", jobNum).First(&staff)
+				tx.Table(staff.TableName()).Where("name=?", name).First(&staff)
 
-			// 更新员工部门信息
-			if len(lastDepartments) > 0 {
-				tx.Where("staff_id=?", staff.ID).Unscoped().Delete(&weChat.WcStaffDepartment{})
-				fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-				fmt.Println("lastDepartments", lastDepartments)
-				for _, lastDepartment := range lastDepartments {
-					var sdItem = make(map[string]interface{})
-					departmentId, ok := departmentMaps[lastDepartment]
-					fmt.Println("lastDepartment", lastDepartment)
-					fmt.Println("departmentId", departmentId)
+				// 更新员工部门信息
+				if len(lastDepartments) > 0 {
+					tx.Where("staff_id=?", staff.ID).Unscoped().Delete(&weChat.WcStaffDepartment{})
 					fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-					if ok {
-						sdItem["staff_id"] = staff.ID
-						sdItem["department_id"] = departmentId
-						sdItem["created_at"] = now
-						sdItem["updated_at"] = now
-						sdErr := tx.Table(weChat.WcStaffDepartment{}.TableName()).Create(&sdItem).Error
-						if sdErr != nil {
-							return sdErr
+					fmt.Println("lastDepartments", lastDepartments)
+					for _, lastDepartment := range lastDepartments {
+						var sdItem = make(map[string]interface{})
+						departmentId, ok := departmentMaps[lastDepartment]
+						fmt.Println("lastDepartment", lastDepartment)
+						fmt.Println("departmentId", departmentId)
+						fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+						if ok {
+							sdItem["staff_id"] = staff.ID
+							sdItem["department_id"] = departmentId
+							sdItem["created_at"] = now
+							sdItem["updated_at"] = now
+							sdErr := tx.Table(weChat.WcStaffDepartment{}.TableName()).Create(&sdItem).Error
+							if sdErr != nil {
+								return sdErr
+							}
+						}
+					}
+				}
+
+				// 更新员工职务信息
+				if len(positions) > 0 {
+					tx.Where("staff_id=?", staff.ID).Unscoped().Delete(&weChat.WcStaffPosition{})
+					for _, pItem := range positions {
+						positionId, ok := positionMaps[pItem]
+						var spItem = make(map[string]interface{})
+						if ok {
+							spItem["staff_id"] = staff.ID
+							spItem["position_id"] = positionId
+							spItem["created_at"] = now
+							spItem["updated_at"] = now
+							spErr := tx.Table(weChat.WcStaffPosition{}.TableName()).Create(&spItem).Error
+							if spErr != nil {
+								return spErr
+							}
 						}
 					}
 				}
 			}
 
-			// 更新员工职务信息
-			if len(positions) > 0 {
-				tx.Where("staff_id=?", staff.ID).Unscoped().Delete(&weChat.WcStaffPosition{})
-				for _, pItem := range positions {
-					positionId, ok := positionMaps[pItem]
-					var spItem = make(map[string]interface{})
-					if ok {
-						spItem["staff_id"] = staff.ID
-						spItem["position_id"] = positionId
-						spItem["created_at"] = now
-						spItem["updated_at"] = now
-						spErr := tx.Table(weChat.WcStaffPosition{}.TableName()).Create(&spItem).Error
-						if spErr != nil {
-							return spErr
-						}
+			{
+				itemJob["created_at"] = now
+				itemJob["updated_at"] = now
+
+				tx.Table(staffJob.TableName()).Where("staff_id=?", staff.ID).First(&staffJob)
+				if staffJob.ID == 0 {
+					cErr := tx.Table(staffJob.TableName()).Create(&itemJob).Error
+					if cErr != nil {
+						return cErr
+					}
+				} else {
+					cErr := tx.Table(staffJob.TableName()).Omit("name,created_at").Where("id=?", staffJob.ID).Updates(itemJob).Error
+					if cErr != nil {
+						return cErr
 					}
 				}
 			}
+
+			{
+				itemBank["created_at"] = now
+				itemBank["updated_at"] = now
+
+				tx.Table(staffBank.TableName()).Where("staff_id=?", staff.ID).First(&staffBank)
+				if staffBank.ID == 0 {
+					cErr := tx.Table(staffBank.TableName()).Create(&itemBank).Error
+					if cErr != nil {
+						return cErr
+					}
+				} else {
+					cErr := tx.Table(staffBank.TableName()).Omit("name,created_at").Where("id=?", staffBank.ID).Updates(itemBank).Error
+					if cErr != nil {
+						return cErr
+					}
+				}
+			}
+
+			{
+				itemEducation["created_at"] = now
+				itemEducation["updated_at"] = now
+
+				tx.Table(staffEducation.TableName()).Where("staff_id=?", staff.ID).First(&staffEducation)
+				if staffEducation.ID == 0 {
+					cErr := tx.Table(staffJob.TableName()).Create(&itemEducation).Error
+					if cErr != nil {
+						return cErr
+					}
+				} else {
+					cErr := tx.Table(staffEducation.TableName()).Omit("name,created_at").Where("id=?", staffEducation.ID).Updates(itemEducation).Error
+					if cErr != nil {
+						return cErr
+					}
+				}
+			}
+
+			{
+				itemContact["created_at"] = now
+				itemContact["updated_at"] = now
+
+				tx.Table(staffContact.TableName()).Where("staff_id=?", staff.ID).First(&staffContact)
+				if staffContact.ID == 0 {
+					cErr := tx.Table(staffContact.TableName()).Create(&itemContact).Error
+					if cErr != nil {
+						return cErr
+					}
+				} else {
+					cErr := tx.Table(staffContact.TableName()).Omit("name,created_at").Where("id=?", staffContact.ID).Updates(itemContact).Error
+					if cErr != nil {
+						return cErr
+					}
+				}
+			}
+
+			{
+				itemAgreement["created_at"] = now
+				itemAgreement["updated_at"] = now
+
+				tx.Table(staffAgreement.TableName()).Where("staff_id=?", staff.ID).First(&staffAgreement)
+				if staffJob.ID == 0 {
+					cErr := tx.Table(staffAgreement.TableName()).Create(&itemAgreement).Error
+					if cErr != nil {
+						return cErr
+					}
+				} else {
+					cErr := tx.Table(staffAgreement.TableName()).Omit("name,created_at").Where("id=?", staffAgreement.ID).Updates(itemAgreement).Error
+					if cErr != nil {
+						return cErr
+					}
+				}
+			}
+
 		}
 		return nil
 	})
 }
 
 // checkImportParam 参数校验
-func (wcStaffService *WcStaffService) checkImportParam(key, value string) error {
-	if key == "name" && value == "" {
-		return errors.New("成员名称不能为空")
-	}
-
-	if key == "job_num" && value == "" {
-		return errors.New("员工工号不能为空")
-	}
-
+func checkImportParam(key, value string, rankTypeList []weChat2.WcRankTypeResponse) error {
 	configInfo := config.GetConfigInfo()
 	if key == "gender" && !utils.InArray(configInfo.StaffGender, value) {
 		return errors.New("性别异常:" + value)
 	}
 
-	if key == "is_leader" && !utils.InArray(configInfo.StaffIsLeader, value) {
-		return errors.New("是否领导异常:" + value)
+	if key == "nation" && !utils.InArray(configInfo.Nation, value) {
+		return errors.New("民族异常:" + value)
+	}
+
+	if key == "marriage" && !utils.InArray(configInfo.Marriage, value) {
+		return errors.New("婚姻状况异常:" + value)
+	}
+
+	if key == "political_outlook" && !utils.InArray(configInfo.PoliticalOutlook, value) {
+		return errors.New("政治面貌异常:" + value)
+	}
+
+	if key == "household_type" && !utils.InArray(configInfo.HouseholdType, value) {
+		return errors.New("户口类型异常:" + value)
+	}
+
+	if key == "job_type" && !utils.InArray(configInfo.StaffJobType, value) {
+		return errors.New("员工类型异常:" + value)
+	}
+
+	if key == "status" && !utils.InArray(configInfo.StaffJobStatus, value) {
+		return errors.New("员工状态异常:" + value)
+	}
+
+	if key == "try_period" && !utils.InArray(configInfo.StaffJobTryPeriod, value) {
+		return errors.New("试用期异常:" + value)
+	}
+
+	if key == "rank_type" {
+		var rankTypes []string
+		for _, rankTypeItem := range rankTypeList {
+			rankTypes = append(rankTypes, rankTypeItem.Name)
+		}
+		if !utils.InArray(rankTypes, value) {
+			return errors.New("职级类型异常:" + value)
+		}
+	}
+
+	if key == "education" && !utils.InArray(configInfo.Education, value) {
+		return errors.New("学历异常:" + value)
+	}
+
+	if key == "relationship" && !utils.InArray(configInfo.Relationship, value) {
+		return errors.New("紧急联系人关系异常:" + value)
+	}
+
+	if key == "agreement_type" && !utils.InArray(configInfo.AgreementType, value) {
+		return errors.New("合同类型异常:" + value)
+	}
+	return nil
+}
+
+// checkImportParamRank 参数校验
+func checkImportParamRank(rankTypeValue, rankValue string, rankTypeMap map[int]string) error {
+	rankType := utils.GetKeyByValue(rankTypeMap, rankTypeValue)
+	rankList, _, err := GetRankListByRankTypeCommon(strconv.Itoa(rankType))
+	if err != nil {
+		return errors.New("职级异常:" + err.Error())
+	}
+	var rankArray []string
+	for _, rankTypeItem := range rankList {
+		rankArray = append(rankArray, rankTypeItem.Name)
+	}
+
+	fmt.Println("rankArray-rankType-value", rankArray, rankType, rankValue)
+
+	if !utils.InArray(rankArray, rankValue) {
+		return errors.New("职级异常:" + rankValue)
 	}
 
 	return nil
