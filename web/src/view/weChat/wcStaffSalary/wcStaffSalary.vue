@@ -1515,7 +1515,7 @@ const month = ref('')
 
 watchEffect(() => {
   console.log(route)
-  activeName.value = route.query.type
+  activeName.value = route.query.type || '1'
   if (route.query.month) {
     month.value = route.query.month
   }

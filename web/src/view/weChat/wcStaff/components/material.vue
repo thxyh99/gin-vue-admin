@@ -29,7 +29,6 @@
 						v-model:file-list="educationCertificate"
 						:staffId="props.id"
 						:type="4"
-						:limit="1"
 						@updateInfoSuccess="updateInfoSuccess"
 					/>
 				</el-form-item>
@@ -42,7 +41,6 @@
 						v-model:file-list="degreeCertificate"
 						:staffId="props.id"
 						:type="5"
-						:limit="1"
 						@updateInfoSuccess="updateInfoSuccess"
 					/>
 				</el-form-item>

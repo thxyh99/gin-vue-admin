@@ -7,7 +7,12 @@
 		:on-preview="handlePreview"
 		:on-success="handleSuccess"
 	>
-		<el-button size="small" type="primary" :disabled="props.type !== 10 && uploadList.length">点击上传</el-button>
+		<el-button
+			size="small"
+			type="primary"
+			:disabled="props.type !== 10 && props.type !== 4 && props.type !== 5 && uploadList.length"
+			>点击上传</el-button
+		>
 	</el-upload>
 </template>
 
