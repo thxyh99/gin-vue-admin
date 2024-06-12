@@ -481,3 +481,69 @@ func (wcStaffJobService *WcStaffJobService) AssembleStaffJob(staffJob weChat.WcS
 
 	return
 }
+
+// GetStaffPosition 获取员工职位
+func GetStaffPosition(id int) (positionText string) {
+	//拼接员工职位信息
+	var sPosition weChat.WcStaffPosition
+	var positionIds []int
+	pRows, err := global.GVA_DB.Table(sPosition.TableName()+" as sp").Select("p.id,p.name").
+		Joins("left join wc_position as p on p.id = sp.position_id").Where("sp.staff_id=?", id).Rows()
+	if err != nil {
+		fmt.Println("AssembleStaffJobList Position1 Err:", err)
+		return
+	} else {
+		for pRows.Next() {
+			var id int
+			var name string
+			err = pRows.Scan(&id, &name)
+			if err != nil {
+				fmt.Println("AssembleStaffJobList Position2 Err:", err)
+				return
+			} else {
+				positionIds = append(positionIds, id)
+				if positionText != "" {
+					positionText += ";" + name
+				} else {
+					positionText = name
+				}
+			}
+		}
+	}
+	return
+}
+
+// GetStaffDepartment 获取员工部门信息
+func GetStaffDepartment(id int) (departmentText string) {
+	//拼接员工部门信息
+	var sDepartment weChat.WcStaffDepartment
+	var departmentIds []int
+	dRows, err := global.GVA_DB.Table(sDepartment.TableName()).Select("department_id").Where("staff_id=?", id).Rows()
+	if err != nil {
+		fmt.Println("AssembleStaffJobList Department1 Err:", err)
+		return
+	} else {
+		for dRows.Next() {
+			var departmentId int
+			err = dRows.Scan(&departmentId)
+			if err != nil {
+				fmt.Println("AssembleStaffJobList Department2 Err:", err)
+				return
+			} else {
+				fullName := weChat.GetFullDepartmentById(departmentId)
+				if err != nil {
+					fmt.Println("AssembleStaffJobList Department3 Err:", err)
+					return
+				} else {
+					departmentIds = append(departmentIds, departmentId)
+					if departmentText != "" {
+						departmentText += ";" + fullName
+					} else {
+						departmentText = fullName
+					}
+				}
+			}
+		}
+	}
+	return
+}

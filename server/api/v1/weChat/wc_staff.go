@@ -9,9 +9,11 @@ import (
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
 	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/service"
+	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"net/http"
 	"strconv"
 )
 
@@ -330,5 +332,29 @@ func (wcStaffApi *WcStaffApi) ImportExcel(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 	} else {
 		response.OkWithMessage("导入成功", c)
+	}
+}
+
+// ExportExcel 导出表格
+// @Tags SysExportTemplate
+// @Summary 导出表格
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Router /wcStaff/exportExcel [get]
+func (wcStaffApi *WcStaffApi) ExportExcel(c *gin.Context) {
+	templateID := c.Query("templateID")
+	queryParams := c.Request.URL.Query()
+	if templateID == "" {
+		response.FailWithMessage("模板ID不能为空", c)
+		return
+	}
+	if file, name, err := wcStaffService.ExportExcel(templateID, queryParams); err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+	} else {
+		c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", name+utils.RandomString(6)+".xlsx")) // 对下载的文件重命名
+		c.Header("success", "true")
+		c.Data(http.StatusOK, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", file.Bytes())
 	}
 }

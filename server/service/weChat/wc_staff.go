@@ -1,6 +1,7 @@
 package weChat
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,12 +15,24 @@ import (
 	"github.com/xuri/excelize/v2"
 	"gorm.io/gorm"
 	"mime/multipart"
+	"net/url"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
 )
 
 type WcStaffService struct {
+}
+
+type TransferParams struct {
+	StaffId     int
+	ConfigInfo  config.CommonConfig
+	Column      string
+	Value       interface{}
+	StaffMap    map[int]string
+	RankTypeMap map[int]string
+	RankMap     map[int]string
 }
 
 // CreateWcStaff 创建账号信息记录
@@ -701,6 +714,303 @@ func checkAndReturnRank(rankTypeValue, rankValue string, rankTypeMap map[int]str
 	}
 
 	return 0, 0, errors.New("职级与职级类型不匹配:" + rankValue)
+}
+
+// ExportExcel 导出Excel
+func (wcStaffService *WcStaffService) ExportExcel(templateID string, values url.Values) (file *bytes.Buffer, name string, err error) {
+	var template system.SysExportTemplate
+	err = global.GVA_DB.Preload("Conditions").Preload("JoinTemplate").First(&template, "template_id = ?", templateID).Error
+	if err != nil {
+		return nil, "", err
+	}
+	f := excelize.NewFile()
+	defer func() {
+		if err := f.Close(); err != nil {
+			fmt.Println(err)
+		}
+	}()
+	// Create a new sheet.
+	index, err := f.NewSheet("Sheet1")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	var templateInfoMap = make(map[string]string)
+	columns, err := utils.GetJSONKeys(template.TemplateInfo)
+	if err != nil {
+		return nil, "", err
+	}
+	err = json.Unmarshal([]byte(template.TemplateInfo), &templateInfoMap)
+	if err != nil {
+		return nil, "", err
+	}
+	var tableTitle []string
+	for _, key := range columns {
+		tableTitle = append(tableTitle, templateInfoMap[key])
+	}
+
+	// 员工名称map  直属领导
+	var staffAll []weChat.WcStaff
+	staffMap := make(map[int]string)
+	err = global.GVA_DB.Debug().Find(&staffAll).Error
+	if err != nil {
+		return nil, "", err
+	}
+	for _, staffItem := range staffAll {
+		staffMap[int(staffItem.ID)] = staffItem.Name
+	}
+	fmt.Println("staffMap", staffMap)
+	// 配置文件
+	configInfo := config.GetConfigInfo()
+	// 职级类型
+	rankTypeMap := make(map[int]string)
+	rankMap := make(map[int]string)
+	rankTypeList, err := GetRankTypeList()
+	if err != nil {
+		return nil, "", err
+	}
+	for _, item := range rankTypeList {
+		rankTypeMap[item.ID] = item.Name
+	}
+
+	var tableMap []map[string]interface{}
+	db := global.GVA_DB
+
+	fields := `a.id, a.name, a.job_num, a.userid, a.mobile, a.gender, a.height, a.weight, a.birthday, a.native_place, a.nation, marriage, 
+a.political_outlook, a.id_number, a.id_address, a.household_type, a.address, a.social_number, a.account_number, a.payment_place, 
+b.type AS job_type, b.status, b.employment_date, b.try_period, b.formal_date, b.leader_id as leader, b.rank_type, b.rank, 
+b.rank_salary, b.expense_account, c.bank, c.card_number, d.education, d.education_pay, d.school, d.date, d.major, d.certificate, 
+d.skill_pay, e.name AS contact_name, e.relationship, e.mobile AS contact_mobile, e.address AS contact_address, 
+f.company, f.type AS agreement_type, f.start_day, f.end_day, f.times `
+	where := `1`
+	keyword := values.Get("keyword")
+	if keyword != "" {
+		keyword = "%" + keyword + "%"
+		where += fmt.Sprintf(" AND (a.name LIKE %s OR a.job_num LIKE %s OR a.mobile LIKE %s)", keyword, keyword, keyword)
+	}
+	sql := fmt.Sprintf(`SELECT %s FROM wc_staff AS a 
+LEFT JOIN wc_staff_job AS b ON a.id = b.staff_id AND b.deleted_at IS NULL
+LEFT JOIN wc_staff_bank AS c ON a.id = c.staff_id AND c.deleted_at IS NULL
+LEFT JOIN wc_staff_education AS d ON a.id = d.staff_id AND d.deleted_at IS NULL
+LEFT JOIN wc_staff_contact AS e ON a.id = e.staff_id AND e.deleted_at IS NULL
+LEFT JOIN wc_staff_agreement AS f ON a.id = f.staff_id AND f.deleted_at IS NULL
+WHERE %s ORDER BY a.id ASC,f.id ASC`, fields, where)
+
+	fmt.Println("sql", sql)
+
+	db.Debug().Raw(sql).Scan(&tableMap)
+
+	var rows [][]string
+	rows = append(rows, tableTitle)
+	for _, table := range tableMap {
+
+		if intVal64, ok := table["rank_type"].(int64); ok {
+			rankType := strconv.Itoa(int(intVal64))
+			rankList, _, err := GetRankListByRankTypeCommon(rankType)
+			if err != nil {
+				return nil, "", err
+			}
+			for _, item := range rankList {
+				rankMap[item.ID] = item.Name
+			}
+		}
+
+		staffId := 0
+		fmt.Println("type-value", reflect.TypeOf(table["id"]), table["id"])
+		if staffIdUInt32, ok := table["id"].(uint32); ok {
+			fmt.Println("staffIdUInt32, ok", staffIdUInt32, ok)
+			staffId = int(staffIdUInt32)
+		} else {
+			fmt.Println("staffIdUInt32, ok", staffIdUInt32, ok)
+			return nil, "", err
+
+		}
+
+		var row []string
+		for _, column := range columns {
+			if column == "id" {
+				continue
+			}
+			transferParams := &TransferParams{
+				StaffId:     staffId,
+				ConfigInfo:  configInfo,
+				Column:      column,
+				Value:       table[column],
+				StaffMap:    staffMap,
+				RankTypeMap: rankTypeMap,
+				RankMap:     rankMap,
+			}
+			if tableColumnValue, ok := transferText(transferParams); ok {
+				table[column] = tableColumnValue
+			}
+			row = append(row, fmt.Sprintf("%v", table[column]))
+		}
+		rows = append(rows, row)
+	}
+	for i, row := range rows {
+		for j, colCell := range row {
+			err := f.SetCellValue("Sheet1", fmt.Sprintf("%s%d", utils.GetColumnName(j+1), i+1), colCell)
+			if err != nil {
+				return nil, "", err
+			}
+		}
+	}
+	f.SetActiveSheet(index)
+	file, err = f.WriteToBuffer()
+	if err != nil {
+		return nil, "", err
+	}
+
+	return file, template.Name, nil
+}
+
+func transferText(t *TransferParams) (text string, ok bool) {
+	if t.Value != nil && (t.Column == "rank" || t.Column == "rank_type" || t.Column == "leader") {
+		fmt.Println("column-type-value", t.Column, reflect.TypeOf(t.Value), t.Value)
+	}
+
+	switch t.Column {
+	case "gender":
+		if intVal64, ok := t.Value.(int64); ok {
+			intVal := int(intVal64)
+			text = t.ConfigInfo.StaffGender[intVal]
+			return text, true
+		} else {
+			return "", true
+		}
+	case "nation":
+		if intVal8, ok := t.Value.(int8); ok {
+			intVal := int(intVal8)
+			text = t.ConfigInfo.Nation[intVal]
+			return text, true
+		} else {
+			return "", true
+		}
+	case "marriage":
+		if intVal8, ok := t.Value.(int8); ok {
+			intVal := int(intVal8)
+			text = t.ConfigInfo.Marriage[intVal]
+			return text, true
+		} else {
+			return "", true
+		}
+	case "political_outlook":
+		if intVal8, ok := t.Value.(int8); ok {
+			intVal := int(intVal8)
+			text = t.ConfigInfo.PoliticalOutlook[intVal]
+			return text, true
+		} else {
+			return "", true
+		}
+	case "household_type":
+		if intVal8, ok := t.Value.(int8); ok {
+			intVal := int(intVal8)
+			text = t.ConfigInfo.HouseholdType[intVal]
+			return text, true
+		} else {
+			return "", true
+		}
+	case "job_type":
+		if intVal64, ok := t.Value.(int64); ok {
+			intVal := int(intVal64)
+			text = t.ConfigInfo.StaffJobType[intVal]
+			return text, true
+		} else {
+			return "", true
+		}
+	case "status":
+		if intVal64, ok := t.Value.(int64); ok {
+			intVal := int(intVal64)
+			text = t.ConfigInfo.StaffJobStatus[intVal]
+			return text, true
+		} else {
+			return "", true
+		}
+	case "try_period":
+		if intVal64, ok := t.Value.(int64); ok {
+			intVal := int(intVal64)
+			text = t.ConfigInfo.StaffJobTryPeriod[intVal]
+			return text, true
+		} else {
+			return "", true
+		}
+	case "expense_account":
+		if intVal64, ok := t.Value.(int64); ok {
+			intVal := int(intVal64)
+			text = t.ConfigInfo.ExpenseAccount[intVal]
+			return text, true
+		} else {
+			return "", true
+		}
+	case "education":
+		if intVal64, ok := t.Value.(int64); ok {
+			intVal := int(intVal64)
+			text = t.ConfigInfo.Education[intVal]
+			return text, true
+		} else {
+			return "", true
+		}
+	case "relationship":
+		if intVal64, ok := t.Value.(int64); ok {
+			intVal := int(intVal64)
+			text = t.ConfigInfo.Relationship[intVal]
+			return text, true
+		} else {
+			return "", true
+		}
+	case "agreement_type":
+		if intVal64, ok := t.Value.(int64); ok {
+			intVal := int(intVal64)
+			text = t.ConfigInfo.AgreementType[intVal]
+			return text, true
+		} else {
+			return "", true
+		}
+	case "leader":
+		if intVal64, ok := t.Value.(int64); ok {
+			intVal := int(intVal64)
+			if text, exist := t.StaffMap[intVal]; exist {
+				return text, true
+			} else {
+				return "", true
+			}
+		} else {
+			return "", true
+		}
+	case "rank_type":
+		if intVal64, ok := t.Value.(int64); ok {
+			intVal := int(intVal64)
+			if text, exist := t.RankTypeMap[intVal]; exist {
+				return text, true
+			} else {
+				return "", true
+			}
+		} else {
+			return "", true
+		}
+	case "rank":
+		if intVal64, ok := t.Value.(int64); ok {
+			intVal := int(intVal64)
+			if text, exist := t.RankMap[intVal]; exist {
+				return text, true
+			} else {
+				return "", true
+			}
+		} else {
+			return "", true
+		}
+	case "department":
+		text = GetStaffDepartment(t.StaffId)
+		return text, true
+	case "position":
+		text = GetStaffPosition(t.StaffId)
+		return text, true
+	default:
+		if t.Value == nil {
+			return "", true
+		}
+	}
+	return "", false
 }
 
 func (wcStaffService *WcStaffService) AssembleStaffList(staffs []weChat.WcStaff) (newStaffs []weChat2.WcStaffResponse, err error) {

@@ -95,3 +95,14 @@ func FilterBreaksSpaces(value string) string {
 	filteredText = strings.ReplaceAll(filteredText, " ", "")
 	return filteredText
 }
+
+// GetColumnName 获取表头名称
+func GetColumnName(n int) string {
+	columnName := ""
+	for n > 0 {
+		n--
+		columnName = string(rune('A'+n%26)) + columnName
+		n /= 26
+	}
+	return columnName
+}

@@ -28,6 +28,7 @@ func (s *WcStaffRouter) InitWcStaffRouter(Router *gin.RouterGroup, PublicRouter 
 		wcStaffRouterWithoutRecord.GET("getWcStaffList", wcStaffApi.GetWcStaffList)             // 获取账号信息列表
 		wcStaffRouterWithoutRecord.GET("getSimpleStaffList", wcStaffApi.GetSimpleStaffList)     // 获取账号信息列表
 		wcStaffRouterWithoutRecord.GET("obtainEmployeeRoster", wcStaffApi.ObtainEmployeeRoster) // 获取员工花名册
+		wcStaffRouterWithoutRecord.GET("exportExcel", wcStaffApi.ExportExcel)                   // 导出表格
 	}
 	{
 		wcStaffRouterWithoutAuth.GET("getWcStaffPublic", wcStaffApi.GetWcStaffPublic) // 获取账号信息列表

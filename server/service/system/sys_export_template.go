@@ -21,28 +21,24 @@ type SysExportTemplateService struct {
 }
 
 // CreateSysExportTemplate 创建导出模板记录
-
 func (sysExportTemplateService *SysExportTemplateService) CreateSysExportTemplate(sysExportTemplate *system.SysExportTemplate) (err error) {
 	err = global.GVA_DB.Create(sysExportTemplate).Error
 	return err
 }
 
 // DeleteSysExportTemplate 删除导出模板记录
-
 func (sysExportTemplateService *SysExportTemplateService) DeleteSysExportTemplate(sysExportTemplate system.SysExportTemplate) (err error) {
 	err = global.GVA_DB.Delete(&sysExportTemplate).Error
 	return err
 }
 
 // DeleteSysExportTemplateByIds 批量删除导出模板记录
-
 func (sysExportTemplateService *SysExportTemplateService) DeleteSysExportTemplateByIds(ids request.IdsReq) (err error) {
 	err = global.GVA_DB.Delete(&[]system.SysExportTemplate{}, "id in ?", ids.Ids).Error
 	return err
 }
 
 // UpdateSysExportTemplate 更新导出模板记录
-
 func (sysExportTemplateService *SysExportTemplateService) UpdateSysExportTemplate(sysExportTemplate system.SysExportTemplate) (err error) {
 	return global.GVA_DB.Transaction(func(tx *gorm.DB) error {
 		conditions := sysExportTemplate.Conditions
@@ -80,14 +76,12 @@ func (sysExportTemplateService *SysExportTemplateService) UpdateSysExportTemplat
 }
 
 // GetSysExportTemplate 根据id获取导出模板记录
-
 func (sysExportTemplateService *SysExportTemplateService) GetSysExportTemplate(id uint) (sysExportTemplate system.SysExportTemplate, err error) {
 	err = global.GVA_DB.Where("id = ?", id).Preload("JoinTemplate").Preload("Conditions").First(&sysExportTemplate).Error
 	return
 }
 
 // GetSysExportTemplateInfoList 分页获取导出模板记录
-
 func (sysExportTemplateService *SysExportTemplateService) GetSysExportTemplateInfoList(info systemReq.SysExportTemplateSearch) (list []system.SysExportTemplate, total int64, err error) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
@@ -121,7 +115,6 @@ func (sysExportTemplateService *SysExportTemplateService) GetSysExportTemplateIn
 }
 
 // ExportExcel 导出Excel
-
 func (sysExportTemplateService *SysExportTemplateService) ExportExcel(templateID string, values url.Values) (file *bytes.Buffer, name string, err error) {
 	var template system.SysExportTemplate
 	err = global.GVA_DB.Preload("Conditions").Preload("JoinTemplate").First(&template, "template_id = ?", templateID).Error
@@ -233,7 +226,7 @@ func (sysExportTemplateService *SysExportTemplateService) ExportExcel(templateID
 	}
 	for i, row := range rows {
 		for j, colCell := range row {
-			err := f.SetCellValue("Sheet1", fmt.Sprintf("%s%d", getColumnName(j+1), i+1), colCell)
+			err := f.SetCellValue("Sheet1", fmt.Sprintf("%s%d", utils.GetColumnName(j+1), i+1), colCell)
 			if err != nil {
 				return nil, "", err
 			}
@@ -249,7 +242,6 @@ func (sysExportTemplateService *SysExportTemplateService) ExportExcel(templateID
 }
 
 // ExportTemplate 导出Excel模板
-
 func (sysExportTemplateService *SysExportTemplateService) ExportTemplate(templateID string) (file *bytes.Buffer, name string, err error) {
 	var template system.SysExportTemplate
 	err = global.GVA_DB.First(&template, "template_id = ?", templateID).Error
@@ -282,7 +274,7 @@ func (sysExportTemplateService *SysExportTemplateService) ExportTemplate(templat
 		tableTitle = append(tableTitle, templateInfoMap[key])
 	}
 	for i := range tableTitle {
-		fErr := f.SetCellValue("Sheet1", fmt.Sprintf("%s%d", getColumnName(i+1), 1), tableTitle[i])
+		fErr := f.SetCellValue("Sheet1", fmt.Sprintf("%s%d", utils.GetColumnName(i+1), 1), tableTitle[i])
 		if fErr != nil {
 			return nil, "", fErr
 		}
@@ -297,7 +289,6 @@ func (sysExportTemplateService *SysExportTemplateService) ExportTemplate(templat
 }
 
 // ImportExcel 导入Excel
-
 func (sysExportTemplateService *SysExportTemplateService) ImportExcel(templateID string, file *multipart.FileHeader) (err error) {
 	var template system.SysExportTemplate
 	err = global.GVA_DB.First(&template, "template_id = ?", templateID).Error
@@ -364,14 +355,4 @@ func (sysExportTemplateService *SysExportTemplateService) ImportExcel(templateID
 		cErr := tx.Table(template.TableName).CreateInBatches(&items, 1000).Error
 		return cErr
 	})
-}
-
-func getColumnName(n int) string {
-	columnName := ""
-	for n > 0 {
-		n--
-		columnName = string(rune('A'+n%26)) + columnName
-		n /= 26
-	}
-	return columnName
 }

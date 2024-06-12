@@ -51,7 +51,7 @@ const exportExcelFunc = async() => {
   const params = Object.entries(paramsCopy)
     .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
     .join('&')
-  const url = `${baseUrl}/sysExportTemplate/exportExcel?templateID=${props.templateId}${params ? '&' + params : ''}`
+  const url = `${baseUrl}/wcStaff/exportExcel?templateID=${props.templateId}${params ? '&' + params : ''}`
 
   window.open(url, '_blank')
 }
