@@ -206,7 +206,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 		//参数校验
 		for i, row := range values {
 			//每一行最后一列为空要这样判空
-			if len(titleKeyMap) != len(row) && len(titleKeyMap) != len(row)-1 {
+			if len(titleKeyMap) != len(row) && len(titleKeyMap) != len(row)+1 {
 				fmt.Println("length", len(titleKeyMap), len(row))
 				return errors.New(fmt.Sprintf("第%d行有数据缺失", i+2))
 			}

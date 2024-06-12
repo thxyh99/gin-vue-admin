@@ -7,7 +7,7 @@
         <el-form-item label="关键词">
           <el-input
               v-model="searchInfo.keyword"
-              placeholder="输入名称、员工工号、手机"
+              placeholder="输入名称、员工编码、手机"
           />
         </el-form-item>
 
@@ -20,14 +20,14 @@
     <div class="gva-table-box">
       <div class="gva-btn-list">
         <el-button type="primary" icon="plus" @click="openDialog">新增</el-button>
-        <el-button icon="delete" style="margin-left: 10px;" :disabled="!multipleSelection.length" @click="onDelete">
-          删除
-        </el-button>
+<!--        <el-button icon="delete" style="margin-left: 10px;" :disabled="!multipleSelection.length" @click="onDelete">-->
+<!--          删除-->
+<!--        </el-button>-->
         <ExportTemplate
-            template-id="staff"
+            template-id="roster"
         />
         <ExportExcel
-            template-id="staff"
+            template-id="roster"
             :limit="9999"
         />
         <ImportExcel
@@ -44,17 +44,14 @@
           @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55"/>
-        <el-table-column align="left" label="成员名称" prop="name" width="120">
+        <el-table-column align="left" label="姓名" prop="name" width="120">
           <template #default="scope">
             <el-link type="primary" @click="jumpRoute(scope.row)">{{ scope.row.name }}</el-link>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="员工工号" prop="jobNum" width="120"/>
-        <el-table-column align="left" label="企微账号" prop="userid" width="120"/>
-        <el-table-column align="left" label="手机" prop="mobile" width="120"/>
-        <!--        <el-table-column align="left" label="身份证号" prop="idNumber" width="90"/>-->
-        <!--        <el-table-column align="left" label="身份证地址" prop="idAddress" width="90"/>-->
-        <el-table-column align="left" label="户籍类型" prop="householdTypeText" width="120"/>
+        <el-table-column align="left" label="员工编码" prop="jobNum" width="120"/>
+        <el-table-column align="left" label="手机" prop="mobile" width="140"/>
+        <el-table-column align="left" label="户籍类型" prop="householdTypeText" width="150"/>
         <el-table-column align="left" label="性别" prop="genderText" width="60"/>
         <el-table-column align="left" label="出生日期" width="100">
           <template #default="scope">{{ formatDate(scope.row.birthday) }}</template>
@@ -63,12 +60,8 @@
         <el-table-column align="left" label="民族" prop="nationText" width="60" />
         <el-table-column align="left" label="身高(cm)" prop="height" width="90" />
         <el-table-column align="left" label="体重(kg)" prop="weight" width="90" />
-        <el-table-column align="left" label="婚否" prop="marriageText" width="60" />
+        <el-table-column align="left" label="婚姻状况" prop="marriageText" width="90" />
         <el-table-column align="left" label="政治面貌" prop="politicalOutlookText" width="90" />
-        <!--        <el-table-column align="left" label="常住地址" prop="address" width="120" />-->
-        <!--        <el-table-column align="left" label="社保电脑号" prop="socialNumber" width="120" />-->
-        <!--        <el-table-column align="left" label="公积金账号" prop="accountNumber" width="120" />-->
-        <!--        <el-table-column align="left" label="社保公积金缴纳地" prop="paymentPlace" width="120" />-->
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
           <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -77,9 +70,7 @@
               </el-icon>
               查看详情
             </el-button>
-            <el-button type="primary" link icon="edit" class="table-button" @click="updateWcStaffFunc(scope.row)">变更
-            </el-button>
-            <el-button type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>
+<!--            <el-button type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>-->
           </template>
         </el-table-column>
       </el-table>
@@ -107,11 +98,11 @@
       </template>
 
       <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
-        <el-form-item label="成员名称:" prop="name">
-          <el-input v-model="formData.name" :clearable="true" placeholder="请输入成员名称"/>
+        <el-form-item label="姓名:" prop="name">
+          <el-input v-model="formData.name" :clearable="true" placeholder="请输入姓名"/>
         </el-form-item>
-        <el-form-item label="员工工号:" prop="jobNum">
-          <el-input v-model="formData.jobNum" :clearable="true" placeholder="请输入员工工号"/>
+        <el-form-item label="员工编码:" prop="jobNum">
+          <el-input v-model="formData.jobNum" :clearable="true" placeholder="请输入员工编码"/>
         </el-form-item>
         <el-form-item label="企微账号:" prop="userid">
           <el-input v-model="formData.userid" :clearable="true" placeholder="请输入企微账号"/>
@@ -152,8 +143,8 @@
         <el-form-item label="体重(kg):"  prop="weight" >
           <el-input-number v-model="formData.weight"  style="width:100%" :precision="1" :clearable="true"  />
         </el-form-item>
-        <el-form-item label="婚否:"  prop="marriage" >
-          <el-select v-model="formData.marriage" placeholder="选择婚否">
+        <el-form-item label="婚姻状况:"  prop="marriage" >
+          <el-select v-model="formData.marriage" placeholder="选择婚姻状况">
             <el-option v-for="marriage in marriages" :key="marriage.value" :label="marriage.label" :value="marriage.value"></el-option>
           </el-select>
         </el-form-item>
@@ -162,8 +153,8 @@
             <el-option v-for="politicalOutlook in politicalOutlooks" :key="politicalOutlook.value" :label="politicalOutlook.label" :value="politicalOutlook.value"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="常住地址:"  prop="address" >
-          <el-input v-model="formData.address" :clearable="true"  placeholder="请输入常住地址" />
+        <el-form-item label="现居住地址:"  prop="address" >
+          <el-input v-model="formData.address" :clearable="true"  placeholder="请输入现居住地址" />
         </el-form-item>
         <el-form-item label="社保电脑号:"  prop="socialNumber" >
           <el-input v-model="formData.socialNumber" :clearable="true"  placeholder="请输入社保电脑号" />
@@ -184,10 +175,10 @@
         </div>
       </template>
       <el-descriptions :column="1" border>
-        <el-descriptions-item label="成员名称">
+        <el-descriptions-item label="姓名">
           {{ formData.name }}
         </el-descriptions-item>
-        <el-descriptions-item label="员工工号">
+        <el-descriptions-item label="员工编码">
           {{ formData.jobNum }}
         </el-descriptions-item>
         <el-descriptions-item label="企微账号">
@@ -223,13 +214,13 @@
         <el-descriptions-item label="体重(kg)">
           {{ formData.weight }}
         </el-descriptions-item>
-        <el-descriptions-item label="婚否">
+        <el-descriptions-item label="婚姻状况">
           {{ formData.marriageText }}
         </el-descriptions-item>
         <el-descriptions-item label="政治面貌">
           {{ formData.politicalOutlookText }}
         </el-descriptions-item>
-        <el-descriptions-item label="常住地址">
+        <el-descriptions-item label="现居住地址">
           {{ formData.address }}
         </el-descriptions-item>
         <el-descriptions-item label="社保电脑号">
