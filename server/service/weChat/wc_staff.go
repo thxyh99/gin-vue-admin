@@ -177,6 +177,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 	}
 
 	now := time.Now().Format("2006-01-02 15:04:05")
+	configInfo := config.GetConfigInfo()
 
 	return db.Transaction(func(tx *gorm.DB) error {
 		excelTitle := rows[0]
@@ -190,6 +191,11 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 		rankTypeList, err := GetRankTypeList()
 		if err != nil {
 			return errors.New("职级类型异常:" + err.Error())
+		}
+
+		var rankTypes []string
+		for _, rankTypeItem := range rankTypeList {
+			rankTypes = append(rankTypes, rankTypeItem.Name)
 		}
 
 		rankTypeMap := make(map[int]string)
@@ -224,7 +230,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 					"合同类型",
 					"续签次数",
 					"合同附件"}
-				if value == "" && utils.InArray(noRequired, excelTitle[ii]) {
+				if value == "" && !utils.InArray(noRequired, excelTitle[ii]) {
 					return errors.New(fmt.Sprintf("%s不能为空", excelTitle[ii]))
 				}
 
@@ -236,13 +242,13 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 					rankValue = value
 				}
 
-				err = checkImportParam(key, value, rankTypeList)
+				err = checkImportParam(key, value, configInfo, rankTypes)
 				if err != nil {
 					return err
 				}
 			}
 
-			err = checkImportParamRank(rankTypeValue, rankValue, rankTypeMap)
+			_, _, err = checkAndReturnRank(rankTypeValue, rankValue, rankTypeMap)
 			if err != nil {
 				return err
 			}
@@ -338,7 +344,6 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 		staffEducationFields := []string{"education", "education_pay", "school", "date", "major", "certificate", "skill_pay"}
 		staffContactFields := []string{"contact_name", "relationship", "contact_mobile", "contact_address"}
 		staffAgreementFields := []string{"company", "agreement_type", "start_day", "end_day", "times"}
-		configInfo := config.GetConfigInfo()
 
 		for _, row := range values {
 			var itemBase = make(map[string]interface{})
@@ -347,7 +352,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 			var itemEducation = make(map[string]interface{})
 			var itemContact = make(map[string]interface{})
 			var itemAgreement = make(map[string]interface{})
-			var name string
+			var name, rankValue, rankTypeValue string
 			var lastDepartments, positions []string
 			var staffExist, staff weChat.WcStaff
 			var staffJob weChat.WcStaffJob
@@ -385,7 +390,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 				if utils.InArray(staffJobFields, key) {
 					if key == "job_type" {
 						jobType, _ := utils.FindKeyByValue(configInfo.StaffJobType, value)
-						itemJob[key] = jobType
+						itemJob["type"] = jobType
 					} else if key == "status" {
 						jobStatus, _ := utils.FindKeyByValue(configInfo.StaffJobStatus, value)
 						itemJob[key] = jobStatus
@@ -394,14 +399,20 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 						itemJob[key] = tryPeriod
 					} else if key == "leader" {
 						if value != "" {
-							itemJob["leader_id"] = 1 //todo
+							var staffLeader weChat.WcStaff
+							tx.Table(staffLeader.TableName()).Where("name=?", value).First(&staffLeader)
+							if staffLeader.ID > 0 {
+								itemJob["leader_id"] = staffLeader.ID
+							} else {
+								itemJob["leader_id"] = 0
+							}
 						} else {
 							itemJob["leader_id"] = 0
 						}
 					} else if key == "rank_type" {
-						itemJob[key] = 0 //todo
+						rankTypeValue = value
 					} else if key == "rank" {
-						itemJob[key] = 0 //todo
+						rankValue = value
 					} else if key == "expense_account" {
 						expenseAccount, _ := utils.FindKeyByValue(configInfo.ExpenseAccount, value)
 						itemJob[key] = expenseAccount
@@ -437,7 +448,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 				if utils.InArray(staffAgreementFields, key) {
 					if key == "agreement_type" {
 						agreementType, _ := utils.FindKeyByValue(configInfo.AgreementType, value)
-						itemAgreement[key] = agreementType
+						itemAgreement["type"] = agreementType
 					} else {
 						itemAgreement[key] = value
 					}
@@ -525,6 +536,13 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 				itemJob["created_at"] = now
 				itemJob["updated_at"] = now
 
+				rankType, rank, err := checkAndReturnRank(rankTypeValue, rankValue, rankTypeMap)
+				if err != nil {
+					return err
+				}
+				itemJob["rank_type"] = rankType
+				itemJob["rank"] = rank
+
 				tx.Table(staffJob.TableName()).Where("staff_id=?", staff.ID).First(&staffJob)
 				if staffJob.ID == 0 {
 					cErr := tx.Table(staffJob.TableName()).Create(&itemJob).Error
@@ -532,7 +550,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 						return cErr
 					}
 				} else {
-					cErr := tx.Table(staffJob.TableName()).Omit("name,created_at").Where("id=?", staffJob.ID).Updates(itemJob).Error
+					cErr := tx.Table(staffJob.TableName()).Omit("created_at").Where("id=?", staffJob.ID).Updates(itemJob).Error
 					if cErr != nil {
 						return cErr
 					}
@@ -550,7 +568,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 						return cErr
 					}
 				} else {
-					cErr := tx.Table(staffBank.TableName()).Omit("name,created_at").Where("id=?", staffBank.ID).Updates(itemBank).Error
+					cErr := tx.Table(staffBank.TableName()).Omit("created_at").Where("id=?", staffBank.ID).Updates(itemBank).Error
 					if cErr != nil {
 						return cErr
 					}
@@ -568,7 +586,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 						return cErr
 					}
 				} else {
-					cErr := tx.Table(staffEducation.TableName()).Omit("name,created_at").Where("id=?", staffEducation.ID).Updates(itemEducation).Error
+					cErr := tx.Table(staffEducation.TableName()).Omit("created_at").Where("id=?", staffEducation.ID).Updates(itemEducation).Error
 					if cErr != nil {
 						return cErr
 					}
@@ -586,7 +604,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 						return cErr
 					}
 				} else {
-					cErr := tx.Table(staffContact.TableName()).Omit("name,created_at").Where("id=?", staffContact.ID).Updates(itemContact).Error
+					cErr := tx.Table(staffContact.TableName()).Omit("created_at").Where("id=?", staffContact.ID).Updates(itemContact).Error
 					if cErr != nil {
 						return cErr
 					}
@@ -597,14 +615,14 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 				itemAgreement["created_at"] = now
 				itemAgreement["updated_at"] = now
 
-				tx.Table(staffAgreement.TableName()).Where("staff_id=?", staff.ID).First(&staffAgreement)
-				if staffJob.ID == 0 {
+				tx.Table(staffAgreement.TableName()).Where("staff_id=? AND start_day =? AND end_day =?", staff.ID, itemAgreement["start_day"], itemAgreement["end_day"]).First(&staffAgreement)
+				if staffAgreement.ID == 0 {
 					cErr := tx.Table(staffAgreement.TableName()).Create(&itemAgreement).Error
 					if cErr != nil {
 						return cErr
 					}
 				} else {
-					cErr := tx.Table(staffAgreement.TableName()).Omit("name,created_at").Where("id=?", staffAgreement.ID).Updates(itemAgreement).Error
+					cErr := tx.Table(staffAgreement.TableName()).Omit("start_day,end_day,created_at").Where("id=?", staffAgreement.ID).Updates(itemAgreement).Error
 					if cErr != nil {
 						return cErr
 					}
@@ -617,8 +635,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 }
 
 // checkImportParam 参数校验
-func checkImportParam(key, value string, rankTypeList []weChat2.WcRankTypeResponse) error {
-	configInfo := config.GetConfigInfo()
+func checkImportParam(key, value string, configInfo config.CommonConfig, rankTypes []string) error {
 	if key == "gender" && !utils.InArray(configInfo.StaffGender, value) {
 		return errors.New("性别异常:" + value)
 	}
@@ -651,14 +668,8 @@ func checkImportParam(key, value string, rankTypeList []weChat2.WcRankTypeRespon
 		return errors.New("试用期异常:" + value)
 	}
 
-	if key == "rank_type" {
-		var rankTypes []string
-		for _, rankTypeItem := range rankTypeList {
-			rankTypes = append(rankTypes, rankTypeItem.Name)
-		}
-		if !utils.InArray(rankTypes, value) {
-			return errors.New("职级类型异常:" + value)
-		}
+	if key == "rank_type" && !utils.InArray(rankTypes, value) {
+		return errors.New("职级类型异常:" + value)
 	}
 
 	if key == "education" && !utils.InArray(configInfo.Education, value) {
@@ -675,25 +686,21 @@ func checkImportParam(key, value string, rankTypeList []weChat2.WcRankTypeRespon
 	return nil
 }
 
-// checkImportParamRank 参数校验
-func checkImportParamRank(rankTypeValue, rankValue string, rankTypeMap map[int]string) error {
-	rankType := utils.GetKeyByValue(rankTypeMap, rankTypeValue)
+// checkAndReturnRank 参数校验
+func checkAndReturnRank(rankTypeValue, rankValue string, rankTypeMap map[int]string) (rankType, rank int, err error) {
+	rankType = utils.GetKeyByValue(rankTypeMap, rankTypeValue)
 	rankList, _, err := GetRankListByRankTypeCommon(strconv.Itoa(rankType))
 	if err != nil {
-		return errors.New("职级异常:" + err.Error())
-	}
-	var rankArray []string
-	for _, rankTypeItem := range rankList {
-		rankArray = append(rankArray, rankTypeItem.Name)
+		return 0, 0, errors.New("职级异常:" + err.Error())
 	}
 
-	fmt.Println("rankArray-rankType-value", rankArray, rankType, rankValue)
-
-	if !utils.InArray(rankArray, rankValue) {
-		return errors.New("职级异常:" + rankValue)
+	for _, rankItem := range rankList {
+		if rankItem.Name == rankValue {
+			return rankType, rankItem.ID, nil
+		}
 	}
 
-	return nil
+	return 0, 0, errors.New("职级与职级类型不匹配:" + rankValue)
 }
 
 func (wcStaffService *WcStaffService) AssembleStaffList(staffs []weChat.WcStaff) (newStaffs []weChat2.WcStaffResponse, err error) {
