@@ -7,8 +7,11 @@ import (
 )
 
 type WcStaffSearch struct {
-	StartCreatedAt *time.Time `json:"startCreatedAt" form:"startCreatedAt"`
-	EndCreatedAt   *time.Time `json:"endCreatedAt" form:"endCreatedAt"`
+	StartCreatedAt      *time.Time `json:"startCreatedAt" form:"startCreatedAt"`
+	EndCreatedAt        *time.Time `json:"endCreatedAt" form:"endCreatedAt"`
+	StaffId             *int       `json:"staffId" form:"staffId"`
+	EmploymentDateStart string     `json:"employmentDateStart" form:"employmentDateStart"`
+	EmploymentDateEnd   string     `json:"employmentDateEnd" form:"employmentDateEnd"`
 
 	request.PageInfo
 }

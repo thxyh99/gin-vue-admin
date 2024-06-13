@@ -88,6 +88,28 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
 		db = db.Where("created_at BETWEEN ? AND ?", info.StartCreatedAt, info.EndCreatedAt)
 	}
+	//选择员工
+	if info.StaffId != nil {
+		db = db.Where("id = ?", *info.StaffId)
+	}
+	//入职日期
+	if info.EmploymentDateStart != "" && info.EmploymentDateEnd != "" {
+		var staffJobs []weChat.WcStaffJob
+		global.GVA_DB.Where("employment_date >= ? AND employment_date <= ?", info.EmploymentDateStart, info.EmploymentDateEnd).Find(&staffJobs)
+		if len(staffJobs) == 0 {
+			db = db.Where("id = -1")
+		} else {
+			ids := ""
+			for _, staffJob := range staffJobs {
+				if ids == "" {
+					ids += strconv.Itoa(*staffJob.StaffId)
+				} else {
+					ids += "," + strconv.Itoa(*staffJob.StaffId)
+				}
+			}
+			db = db.Where("id IN (?)", ids)
+		}
+	}
 	// 添加员工名称、员工工号、手机模糊查询
 	if info.Keyword != "" {
 		keyword := "%" + info.Keyword + "%"

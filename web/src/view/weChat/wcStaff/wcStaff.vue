@@ -76,6 +76,23 @@
 					<el-input v-model="searchInfo.keyword" placeholder="输入名称、员工编码、手机" />
 				</el-form-item>
 
+        <el-form-item label="选择员工" prop="staffId">
+          <SelectStaff v-model="searchInfo.staffId" :disabled="type === 'update' ? 'disabled' : false"> </SelectStaff>
+        </el-form-item>
+
+        <el-form-item label="入职日期">
+          <el-date-picker
+              style="width: 220px"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="开始时间"
+              end-placeholder="结束时间"
+              v-model="dateRange"
+              value-format="YYYY-MM-DD"
+              @change="handleDataChange"
+          />
+        </el-form-item>
+
 				<el-form-item>
 					<el-button type="primary" icon="search" @click="onSubmit">查询</el-button>
 					<el-button icon="refresh" @click="onReset">重置</el-button>
@@ -345,6 +362,7 @@ import ExportExcel from '@/components/exportExcel/wechat/exportExcel.vue'
 import ExportTemplate from '@/components/exportExcel/wechat/exportTemplate.vue'
 import { InfoFilled, QuestionFilled } from '@element-plus/icons-vue'
 import SelectDepartment from '@/components/selectDepartment/index.vue'
+import SelectStaff from "@/components/selectStaff/index.vue";
 
 defineOptions({
 	name: 'WcStaff',
@@ -691,6 +709,16 @@ const handleSizeChange = (val) => {
 const handleCurrentChange = (val) => {
 	page.value = val
 	getTableData()
+}
+
+const handleDataChange = (e) => {
+  if (e && e.length) {
+    searchInfo.value.employmentDateStart = e[0]
+    searchInfo.value.employmentDateEnd = e[1]
+  } else {
+    searchInfo.value.employmentDateStart = ''
+    searchInfo.value.employmentDateEnd = ''
+  }
 }
 
 // 查询
