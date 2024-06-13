@@ -92,6 +92,21 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 	if info.StaffId != nil {
 		db = db.Where("id = ?", *info.StaffId)
 	}
+	//选择部门
+	if info.DepartmentIds != nil && len(info.DepartmentIds) > 0 {
+		var staffDepartments []weChat.WcStaffDepartment
+		global.GVA_DB.Where("department_id IN (?)", info.DepartmentIds).Find(&staffDepartments)
+		fmt.Println("staffDepartments", staffDepartments)
+		if len(staffDepartments) == 0 {
+			db = db.Where("id = -1")
+		} else {
+			var ids []int
+			for _, staffDepartment := range staffDepartments {
+				ids = append(ids, *staffDepartment.StaffId)
+			}
+			db = db.Where("id IN (?)", ids)
+		}
+	}
 	//入职日期
 	if info.EmploymentDateStart != "" && info.EmploymentDateEnd != "" {
 		var staffJobs []weChat.WcStaffJob
@@ -99,13 +114,23 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 		if len(staffJobs) == 0 {
 			db = db.Where("id = -1")
 		} else {
-			ids := ""
+			var ids []int
 			for _, staffJob := range staffJobs {
-				if ids == "" {
-					ids += strconv.Itoa(*staffJob.StaffId)
-				} else {
-					ids += "," + strconv.Itoa(*staffJob.StaffId)
-				}
+				ids = append(ids, *staffJob.StaffId)
+			}
+			db = db.Where("id IN (?)", ids)
+		}
+	}
+	//历史日期(快照节点):入职日期<=DATE && (离职日期为空 || 离职日期>DATE)
+	if info.HistoryDate != "" {
+		var staffJobs []weChat.WcStaffJob
+		global.GVA_DB.Debug().Where("employment_date <= ? AND (leave_date > ? OR leave_date IS NULL)", info.HistoryDate, info.HistoryDate).Find(&staffJobs)
+		if len(staffJobs) == 0 {
+			db = db.Where("id = -1")
+		} else {
+			var ids []int
+			for _, staffJob := range staffJobs {
+				ids = append(ids, *staffJob.StaffId)
 			}
 			db = db.Where("id IN (?)", ids)
 		}
@@ -124,7 +149,7 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 		db = db.Limit(limit).Offset(offset)
 	}
 
-	err = db.Find(&wcStaffs).Error
+	err = db.Debug().Find(&wcStaffs).Error
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	fmt.Println("GetWcStaffInfoList err", err)

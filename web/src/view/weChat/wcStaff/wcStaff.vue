@@ -76,8 +76,13 @@
 					<el-input v-model="searchInfo.keyword" placeholder="输入名称、员工编码、手机" />
 				</el-form-item>
 
-        <el-form-item label="选择员工" prop="staffId">
+        <el-form-item label="员工" prop="staffId">
           <SelectStaff v-model="searchInfo.staffId" :disabled="type === 'update' ? 'disabled' : false"> </SelectStaff>
+        </el-form-item>
+
+        <el-form-item label="部门" prop="departmentIds">
+          <SelectDepartment v-model="searchInfo.departmentIds" style="width: 300px;">
+          </SelectDepartment>
         </el-form-item>
 
         <el-form-item label="入职日期">
@@ -87,9 +92,17 @@
               range-separator="至"
               start-placeholder="开始时间"
               end-placeholder="结束时间"
-              v-model="dateRange"
+              v-model="searchInfo.employmentDateRange"
               value-format="YYYY-MM-DD"
               @change="handleDataChange"
+          />
+        </el-form-item>
+
+        <el-form-item label="历史日期">
+          <el-date-picker
+              v-model="searchInfo.historyDate"
+              type="date"
+              value-format="YYYY-MM-DD"
           />
         </el-form-item>
 

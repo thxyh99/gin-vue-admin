@@ -12,6 +12,8 @@ type WcStaffSearch struct {
 	StaffId             *int       `json:"staffId" form:"staffId"`
 	EmploymentDateStart string     `json:"employmentDateStart" form:"employmentDateStart"`
 	EmploymentDateEnd   string     `json:"employmentDateEnd" form:"employmentDateEnd"`
+	HistoryDate         string     `json:"historyDate" form:"historyDate"`
+	DepartmentIds       []int      `json:"departmentIds[]" form:"departmentIds[]"`
 
 	request.PageInfo
 }
