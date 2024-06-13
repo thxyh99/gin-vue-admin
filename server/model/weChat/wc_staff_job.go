@@ -18,6 +18,7 @@ type WcStaffJob struct {
 	RankSalary     float64    `json:"rankSalary" form:"rankSalary" gorm:"column:rank_salary;comment:等级工资;size:10;" binding:"required"`                                         //等级工资
 	EmploymentDate *time.Time `json:"employmentDate" form:"employmentDate" gorm:"column:employment_date;comment:入职日期;" binding:"required"`                                     //入职日期
 	FormalDate     *time.Time `json:"formalDate" form:"formalDate" gorm:"column:formal_date;comment:转正日期;" binding:"required"`                                                 //转正日期
+	LeaveDate      *time.Time `json:"leaveDate" form:"leaveDate" gorm:"column:leave_date;comment:离职日期;"`                                                                       //离职日期
 	ExpenseAccount *int       `json:"expenseAccount" form:"expenseAccount" gorm:"column:expense_account;comment:费用科目(1:管理费用 2:研发费用 3:生产费用 4:销售费用);size:1;" binding:"required"` //费用科目(1:管理费用 2:研发费用 3:生产费用 4:销售费用)
 	LeaderId       *int       `json:"leaderId" form:"leaderId" gorm:"column:leader_id;comment:直属领导ID;size:200;"`                                                               //直属领导ID
 }
