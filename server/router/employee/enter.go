@@ -3,7 +3,7 @@ package employee
 type RouterGroup struct {
 	WcStaffEmploymentApplicationRouter
 	WcStaffPassApplicationRouter
-	WcStaffAjustlevelApplicationRouter
+	WcStaffAdjustlevelApplicationRouter
 	WcStaffTransferApplicationRouter
 	WcStaffLeaveApplicationRouter
 }

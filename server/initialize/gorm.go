@@ -63,5 +63,5 @@ func RegisterTables() {
 	}
 	global.GVA_LOG.Info("register table success")
 	local.AutoMigrate(employee.WcStaffEmploymentApplication{})
-	edu.AutoMigrate(employee.WcStaffEmploymentApplication{}, employee.WcStaffPassApplication{}, employee.WcStaffAjustlevelApplication{}, employee.WcStaffTransferApplication{}, employee.WcStaffLeaveApplication{})
+	edu.AutoMigrate(employee.WcStaffEmploymentApplication{}, employee.WcStaffPassApplication{}, employee.WcStaffAdjustlevelApplication{}, employee.WcStaffTransferApplication{}, employee.WcStaffLeaveApplication{})
 }

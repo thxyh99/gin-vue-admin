@@ -3,7 +3,7 @@ package employee
 type ApiGroup struct {
 	WcStaffEmploymentApplicationApi
 	WcStaffPassApplicationApi
-	WcStaffAjustlevelApplicationApi
+	WcStaffAdjustlevelApplicationApi
 	WcStaffTransferApplicationApi
 	WcStaffLeaveApplicationApi
 }

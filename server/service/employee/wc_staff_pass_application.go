@@ -4,6 +4,8 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/employee"
 	employeeReq "github.com/flipped-aurora/gin-vue-admin/server/model/employee/request"
+	"go.uber.org/zap"
+	"gopkg.in/ini.v1"
 	"gorm.io/gorm"
 )
 
@@ -95,4 +97,37 @@ func (wcStaffPassApplicationService *WcStaffPassApplicationService) GetWcStaffPa
 
 	err = db.Find(&wcStaffPassApplications).Error
 	return wcStaffPassApplications, total, err
+}
+
+// 创建OA转正申请流程
+func (wcStaffPassApplicationService *WcStaffPassApplicationService) CreateOAPassApplication(wcStaffPassApplication *employee.WcStaffPassApplication) (err error) {
+	//读取.ini里面的OA配置
+	oaConfig, err := ini.Load("./oa-config.ini")
+	if err != nil {
+		//失败
+		global.GVA_LOG.Error("test", zap.Error(err))
+		return err
+	}
+
+	//oaWeb := oaConfig.Section("oa-web")
+	//oaUrl := oaWeb.Key("base-url").MustString("")
+	//addUrl := oaWeb.Key("addOaUrl").MustString("")
+
+	eaConfig := oaConfig.Section("pass_application")
+
+	// 配置OA提交
+	eaData := make(map[string]interface{})
+	eaData[eaConfig.Key("Title").MustString("")] = wcStaffPassApplication.Title
+	eaData[eaConfig.Key("EmploymentDate").MustString("")] = wcStaffPassApplication.EmploymentDate
+	//eaData[eaConfig.Key("EmploymentDepartmentID").MustString("")] = wcStaffPassApplication.EmploymentDepartmentId
+	eaData[eaConfig.Key("EmploymentDepartmentName").MustString("")] = wcStaffPassApplication.JobDepartment
+	eaData[eaConfig.Key("JobPosition").MustString("")] = wcStaffPassApplication.SourcePosition
+	eaData[eaConfig.Key("JobLevel").MustString("")] = wcStaffPassApplication.SourceLevel
+	eaData[eaConfig.Key("TryPeriod").MustString("")] = wcStaffPassApplication.TryPeriod
+	eaData[eaConfig.Key("Education").MustString("")] = wcStaffPassApplication.Education
+
+	// 提交OA流程
+
+	err = global.GVA_DB.Create(wcStaffPassApplication).Error
+	return err
 }

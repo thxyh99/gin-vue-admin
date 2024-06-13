@@ -1,6 +1,9 @@
 package initialize
 
 import (
+	"net/http"
+	"os"
+
 	"github.com/flipped-aurora/gin-vue-admin/server/docs"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/middleware"
@@ -8,8 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"net/http"
-	"os"
 )
 
 type justFilesFilesystem struct {
@@ -108,7 +109,7 @@ func Routers() *gin.Engine {
 		employeeRouter := router.RouterGroupApp.Employee
 		employeeRouter.InitWcStaffEmploymentApplicationRouter(PrivateGroup, PublicGroup)
 		employeeRouter.InitWcStaffPassApplicationRouter(PrivateGroup, PublicGroup)
-		employeeRouter.InitWcStaffAjustlevelApplicationRouter(PrivateGroup, PublicGroup)
+		employeeRouter.InitWcStaffAdjustlevelApplicationRouter(PrivateGroup, PublicGroup)
 		employeeRouter.InitWcStaffTransferApplicationRouter(PrivateGroup, PublicGroup)
 		employeeRouter.InitWcStaffLeaveApplicationRouter(PrivateGroup, PublicGroup)
 	}

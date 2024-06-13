@@ -95,3 +95,20 @@ export const getWcStaffEmploymentApplicationList = (params) => {
     params
   })
 }
+
+// @Tags WcStaffEmploymentApplication
+// @Summary 创建入职申请
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Param data body model.WcStaffEmploymentApplication true "创建入职申请"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"创建成功"}"
+// @Router /wcStaffEmploymentApplication/createWcStaffEmploymentApplication [post]
+export const CreateOAStaffEmploymentApplication = (data) => {
+  return service({
+    url: '/wcStaffEmploymentApplication/CreateOAStaffEmploymentApplication',
+    method: 'get',
+    data
+  })
+}
+
