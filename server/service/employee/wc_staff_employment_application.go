@@ -4,6 +4,8 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/employee"
 	employeeReq "github.com/flipped-aurora/gin-vue-admin/server/model/employee/request"
+	"go.uber.org/zap"
+	"gopkg.in/ini.v1"
 	"gorm.io/gorm"
 )
 
@@ -100,4 +102,64 @@ func (wcStaffEmploymentApplicationService *WcStaffEmploymentApplicationService) 
 
 	err = db.Find(&wcStaffEmploymentApplications).Error
 	return wcStaffEmploymentApplications, total, err
+}
+
+// 创建OA入职申请流程
+func (wcStaffEmploymentApplicationService *WcStaffEmploymentApplicationService) CreateOAStaffEmploymentApplication(wcStaffEmploymentApplication *employee.WcStaffEmploymentApplication) (err error) {
+	//读取.ini里面的OA配置
+	oaConfig, err := ini.Load("./oa-config.ini")
+	if err != nil {
+		//失败
+		global.GVA_LOG.Error("test", zap.Error(err))
+		return err
+	}
+
+	//oaWeb := oaConfig.Section("oa-web")
+	//oaUrl := oaWeb.Key("base-url").MustString("")
+	//addUrl := oaWeb.Key("addOaUrl").MustString("")
+
+	eaConfig := oaConfig.Section("employment_application")
+
+	// 配置OA提交
+	eaData := make(map[string]interface{})
+	eaData[eaConfig.Key("Title").MustString("")] = wcStaffEmploymentApplication.Title
+	eaData[eaConfig.Key("EmploymentDate").MustString("")] = wcStaffEmploymentApplication.EmploymentDate
+	eaData[eaConfig.Key("EmploymentDepartmentID").MustString("")] = wcStaffEmploymentApplication.EmploymentDepartmentId
+	eaData[eaConfig.Key("EmploymentDepartmentName").MustString("")] = wcStaffEmploymentApplication.EmploymentDepartmentName
+	eaData[eaConfig.Key("JobPosition").MustString("")] = wcStaffEmploymentApplication.JobPosition
+	eaData[eaConfig.Key("Gender").MustString("")] = wcStaffEmploymentApplication.Gender
+	eaData[eaConfig.Key("Birthday").MustString("")] = wcStaffEmploymentApplication.Birthday
+	eaData[eaConfig.Key("NativePlace").MustString("")] = wcStaffEmploymentApplication.NativePlace
+	eaData[eaConfig.Key("Nationality").MustString("")] = wcStaffEmploymentApplication.Nationality
+	eaData[eaConfig.Key("Height").MustString("")] = wcStaffEmploymentApplication.Height
+	eaData[eaConfig.Key("Weight").MustString("")] = wcStaffEmploymentApplication.Weight
+	eaData[eaConfig.Key("Marriage").MustString("")] = wcStaffEmploymentApplication.Marriage
+	eaData[eaConfig.Key("PoliticalOutlook").MustString("")] = wcStaffEmploymentApplication.PoliticalOutlook
+	eaData[eaConfig.Key("Major").MustString("")] = wcStaffEmploymentApplication.Major
+	eaData[eaConfig.Key("School").MustString("")] = wcStaffEmploymentApplication.School
+	eaData[eaConfig.Key("GraduationDate").MustString("")] = wcStaffEmploymentApplication.GraduationDate
+	eaData[eaConfig.Key("Certificate").MustString("")] = wcStaffEmploymentApplication.Certificate
+	eaData[eaConfig.Key("IdNumber").MustString("")] = wcStaffEmploymentApplication.IdNumber
+	eaData[eaConfig.Key("IdAddress").MustString("")] = wcStaffEmploymentApplication.IdAddress
+	eaData[eaConfig.Key("BankAccount").MustString("")] = wcStaffEmploymentApplication.BankAccount
+	eaData[eaConfig.Key("BankName").MustString("")] = wcStaffEmploymentApplication.BankName
+	eaData[eaConfig.Key("ContactWechat").MustString("")] = wcStaffEmploymentApplication.ContactWechat
+	eaData[eaConfig.Key("Mobile").MustString("")] = wcStaffEmploymentApplication.Mobile
+	eaData[eaConfig.Key("HomeAddress").MustString("")] = wcStaffEmploymentApplication.HomeAddress
+	eaData[eaConfig.Key("LicenseAttachment").MustString("")] = wcStaffEmploymentApplication.LicenseAttachment
+	eaData[eaConfig.Key("RelationShip").MustString("")] = wcStaffEmploymentApplication.RelationShip
+	eaData[eaConfig.Key("RelationName").MustString("")] = wcStaffEmploymentApplication.RelationName
+	eaData[eaConfig.Key("RelationMobile").MustString("")] = wcStaffEmploymentApplication.RelationMobile
+	eaData[eaConfig.Key("RelationAddress").MustString("")] = wcStaffEmploymentApplication.RelationAddress
+	eaData[eaConfig.Key("IsCeopass").MustString("")] = wcStaffEmploymentApplication.IsCeopass
+	eaData[eaConfig.Key("IsBodychecknormal").MustString("")] = wcStaffEmploymentApplication.IsBodychecknormal
+	eaData[eaConfig.Key("JobLevel").MustString("")] = wcStaffEmploymentApplication.JobLevel
+	eaData[eaConfig.Key("TryPeriod").MustString("")] = wcStaffEmploymentApplication.TryPeriod
+	eaData[eaConfig.Key("UrgencyNotification").MustString("")] = wcStaffEmploymentApplication.UrgencyNotification
+	eaData[eaConfig.Key("OnboardingOpinion").MustString("")] = wcStaffEmploymentApplication.OnboardingOpinion
+
+	// 提交OA流程
+
+	err = global.GVA_DB.Create(wcStaffEmploymentApplication).Error
+	return err
 }
