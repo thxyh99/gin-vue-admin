@@ -7,7 +7,6 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/example"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 
-	"github.com/flipped-aurora/gin-vue-admin/server/model/employee"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -30,8 +29,8 @@ func Gorm() *gorm.DB {
 }
 
 func RegisterTables() {
-	edu := global.GetGlobalDBByDBName("edu")
-	local := global.GetGlobalDBByDBName("local")
+	//edu := global.GetGlobalDBByDBName("edu")
+	//local := global.GetGlobalDBByDBName("local")
 	db := global.GVA_DB
 	err := db.AutoMigrate(
 
@@ -62,6 +61,6 @@ func RegisterTables() {
 		os.Exit(0)
 	}
 	global.GVA_LOG.Info("register table success")
-	local.AutoMigrate(employee.WcStaffEmploymentApplication{})
-	edu.AutoMigrate(employee.WcStaffEmploymentApplication{}, employee.WcStaffPassApplication{}, employee.WcStaffAdjustlevelApplication{}, employee.WcStaffTransferApplication{}, employee.WcStaffLeaveApplication{})
+	//local.AutoMigrate(employee.WcStaffEmploymentApplication{})
+	//edu.AutoMigrate(employee.WcStaffEmploymentApplication{}, employee.WcStaffPassApplication{}, employee.WcStaffAdjustlevelApplication{}, employee.WcStaffTransferApplication{}, employee.WcStaffLeaveApplication{})
 }
