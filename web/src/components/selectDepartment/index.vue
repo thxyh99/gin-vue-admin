@@ -1,5 +1,5 @@
 <template>
-    <el-select multiple filterable
+    <el-select multiple filterable collapse-tags
     >
       <el-option
         v-for="item in options"
