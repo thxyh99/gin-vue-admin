@@ -378,7 +378,7 @@ import ExportTemplate from '@/components/exportExcel/wechat/exportTemplate.vue'
 import { InfoFilled, QuestionFilled } from '@element-plus/icons-vue'
 import SelectDepartment from '@/components/selectDepartment/index.vue'
 import SelectStaff from '@/components/selectStaff/index.vue'
-import todo from './components/tode.vue'
+import todo from './components/todo.vue'
 
 defineOptions({
 	name: 'WcStaff',
