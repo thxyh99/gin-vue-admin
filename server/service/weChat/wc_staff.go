@@ -199,18 +199,20 @@ WHERE %s `, fields, where)
 				outsourcingCount++
 				break
 			}
-			onJobCount++
 		}
 		if intVal64, ok := table["status"].(int64); ok {
 			switch intVal64 {
 			case 1:
 				toBeEmployedCount++
+				onJobCount++
 				break
 			case 2:
 				probationCount++
+				onJobCount++
 				break
 			case 3:
 				formalCount++
+				onJobCount++
 				break
 			}
 
