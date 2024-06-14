@@ -169,12 +169,10 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 	//统计数据
 	var tableMap []map[string]interface{}
 	var onJobCount, fullTimeCount, partTimeCount, followCount, replaceCount, retireCount, outsourcingCount, toBeEmployedCount, probationCount, formalCount, toBeDepartedCount, toDoCount int
-	fields := `a.id, a.name, a.job_num, b.type, b.status`
-	sql := fmt.Sprintf(`SELECT %s FROM wc_staff AS a 
-LEFT JOIN wc_staff_job AS b ON a.id = b.staff_id AND b.deleted_at IS NULL
-WHERE %s `, fields, where)
-
-	fmt.Println("sql", sql)
+	fields := `a.id, b.type, b.status`
+	sql := fmt.Sprintf(`SELECT %s FROM wc_staff AS a	
+          LEFT JOIN wc_staff_job AS b ON a.id = b.staff_id AND b.deleted_at IS NULL 
+          WHERE %s `, fields, where)
 
 	global.GVA_DB.Debug().Raw(sql).Scan(&tableMap)
 	for _, table := range tableMap {
@@ -218,6 +216,22 @@ WHERE %s `, fields, where)
 
 		}
 	}
+
+	var tableMapTodo []map[string]interface{}
+	fieldsTodo := `a.id`
+	where += " AND b.is_renew = 0 AND DATEDIFF(b.end_day, CURDATE()) <= 60"
+	sqlTodo := fmt.Sprintf(`SELECT %s FROM wc_staff AS a	
+          LEFT JOIN wc_staff_agreement AS b ON a.id = b.staff_id AND b.deleted_at IS NULL 
+          WHERE %s `, fieldsTodo, where)
+
+	global.GVA_DB.Debug().Raw(sqlTodo).Scan(&tableMapTodo)
+	for _, table := range tableMapTodo {
+		fmt.Println(reflect.TypeOf(table["id"]))
+		if _, ok := table["id"].(uint32); ok {
+			toDoCount++
+		}
+	}
+
 	wcStaffStatisticsResponse = weChat2.WcStaffStatisticsResponse{
 		OnJobCount:        onJobCount,
 		FullTimeCount:     fullTimeCount,

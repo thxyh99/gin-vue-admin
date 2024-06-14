@@ -5,7 +5,7 @@
 				<div class="flex justify-around">
 					<div class="flex flex-col items-center">
 						<div class="mb-1">在职</div>
-						<div>{{ statistics.onjobCount }}</div>
+						<div>{{ statistics.onJobCount }}</div>
 					</div>
 					<el-divider class="h-10" direction="vertical"></el-divider>
 					<div class="flex flex-col items-center">
