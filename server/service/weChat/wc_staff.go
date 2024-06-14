@@ -77,20 +77,18 @@ func (wcStaffService *WcStaffService) GetWcStaff(ID string) (wcStaffResponse weC
 }
 
 // GetWcStaffInfoList 分页获取账号信息记录
-func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffSearch) (wcStaffResponse []weChat2.WcStaffResponse, total int64, err error) {
+func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffSearch) (wcStaffStatisticsResponse weChat2.WcStaffStatisticsResponse, wcStaffResponse []weChat2.WcStaffResponse, total int64, err error) {
 
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
 	db := global.GVA_DB.Model(&weChat.WcStaff{})
 	var wcStaffs []weChat.WcStaff
-	// 如果有条件搜索 下方会自动创建搜索语句
-	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
-		db = db.Where("created_at BETWEEN ? AND ?", info.StartCreatedAt, info.EndCreatedAt)
-	}
+	where := `1`
 	//选择员工
-	if info.StaffId != nil {
+	if info.StaffId != nil && *info.StaffId > 0 {
 		db = db.Where("id = ?", *info.StaffId)
+		where += fmt.Sprintf(" AND a.id = %d ", *info.StaffId)
 	}
 	//选择部门
 	if info.DepartmentIds != nil && len(info.DepartmentIds) > 0 {
@@ -99,12 +97,16 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 		fmt.Println("staffDepartments", staffDepartments)
 		if len(staffDepartments) == 0 {
 			db = db.Where("id = -1")
+			where += fmt.Sprintf(" AND a.id = -1 ")
 		} else {
+			where += fmt.Sprintf(" AND a.id IN (")
 			var ids []int
 			for _, staffDepartment := range staffDepartments {
 				ids = append(ids, *staffDepartment.StaffId)
+				where += strconv.Itoa(*staffDepartment.StaffId) + ","
 			}
 			db = db.Where("id IN (?)", ids)
+			where += "0)"
 		}
 	}
 	//入职日期
@@ -113,12 +115,15 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 		global.GVA_DB.Where("employment_date >= ? AND employment_date <= ?", info.EmploymentDateStart, info.EmploymentDateEnd).Find(&staffJobs)
 		if len(staffJobs) == 0 {
 			db = db.Where("id = -1")
+			where += fmt.Sprintf(" AND a.id = -1 ")
 		} else {
 			var ids []int
 			for _, staffJob := range staffJobs {
 				ids = append(ids, *staffJob.StaffId)
+				where += strconv.Itoa(*staffJob.StaffId) + ","
 			}
 			db = db.Where("id IN (?)", ids)
+			where += "0)"
 		}
 	}
 	//历史日期(快照节点):入职日期<=DATE && (离职日期为空 || 离职日期>DATE)
@@ -127,18 +132,22 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 		global.GVA_DB.Debug().Where("employment_date <= ? AND (leave_date > ? OR leave_date IS NULL)", info.HistoryDate, info.HistoryDate).Find(&staffJobs)
 		if len(staffJobs) == 0 {
 			db = db.Where("id = -1")
+			where += fmt.Sprintf(" AND a.id = -1 ")
 		} else {
 			var ids []int
 			for _, staffJob := range staffJobs {
 				ids = append(ids, *staffJob.StaffId)
+				where += strconv.Itoa(*staffJob.StaffId) + ","
 			}
 			db = db.Where("id IN (?)", ids)
+			where += "0)"
 		}
 	}
 	// 添加员工名称、员工工号、手机模糊查询
 	if info.Keyword != "" {
 		keyword := "%" + info.Keyword + "%"
 		db = db.Where("(name LIKE ? OR job_num LIKE ? OR mobile LIKE ?)", keyword, keyword, keyword)
+		where += fmt.Sprintf(" AND (a.name LIKE %s OR a.job_num LIKE %s OR a.mobile LIKE %s)", keyword, keyword, keyword)
 	}
 	err = db.Count(&total).Error
 	if err != nil {
@@ -157,6 +166,70 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 
 	wcStaffResponse, err = wcStaffService.AssembleStaffList(wcStaffs)
 
+	//统计数据
+	var tableMap []map[string]interface{}
+	var onJobCount, fullTimeCount, partTimeCount, followCount, replaceCount, retireCount, outsourcingCount, toBeEmployedCount, probationCount, formalCount, toBeDepartedCount, toDoCount int
+	fields := `a.id, a.name, a.job_num, b.type, b.status`
+	sql := fmt.Sprintf(`SELECT %s FROM wc_staff AS a 
+LEFT JOIN wc_staff_job AS b ON a.id = b.staff_id AND b.deleted_at IS NULL
+WHERE %s `, fields, where)
+
+	fmt.Println("sql", sql)
+
+	global.GVA_DB.Debug().Raw(sql).Scan(&tableMap)
+	for _, table := range tableMap {
+		if intVal64, ok := table["type"].(int64); ok {
+			switch intVal64 {
+			case 1:
+				fullTimeCount++
+				break
+			case 2:
+				partTimeCount++
+				break
+			case 3:
+				followCount++
+				break
+			case 4:
+				replaceCount++
+				break
+			case 5:
+				retireCount++
+				break
+			case 6:
+				outsourcingCount++
+				break
+			}
+			onJobCount++
+		}
+		if intVal64, ok := table["status"].(int64); ok {
+			switch intVal64 {
+			case 1:
+				toBeEmployedCount++
+				break
+			case 2:
+				probationCount++
+				break
+			case 3:
+				formalCount++
+				break
+			}
+
+		}
+	}
+	wcStaffStatisticsResponse = weChat2.WcStaffStatisticsResponse{
+		OnJobCount:        onJobCount,
+		FullTimeCount:     fullTimeCount,
+		PartTimeCount:     partTimeCount,
+		FollowCount:       followCount,
+		ReplaceCount:      replaceCount,
+		RetireCount:       retireCount,
+		OutsourcingCount:  outsourcingCount,
+		ToBeEmployedCount: toBeEmployedCount,
+		ProbationCount:    probationCount,
+		FormalCount:       formalCount,
+		ToBeDepartedCount: toBeDepartedCount,
+		ToDoCount:         toDoCount,
+	}
 	return
 }
 
