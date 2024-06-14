@@ -1,6 +1,7 @@
 package weChat
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,6 +15,8 @@ import (
 	"github.com/xuri/excelize/v2"
 	"gorm.io/gorm"
 	"mime/multipart"
+	"net/url"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -542,6 +545,119 @@ func (wcStaffSocialService *WcStaffSocialService) importDgGjjExcel(db *gorm.DB, 
 		}
 		return nil
 	})
+}
+
+// ExportExcel 导出Excel
+func (wcStaffSocialService *WcStaffSocialService) ExportExcel(templateID string, values url.Values) (file *bytes.Buffer, name string, err error) {
+	var template system.SysExportTemplate
+	err = global.GVA_DB.Preload("Conditions").Preload("JoinTemplate").First(&template, "template_id = ?", templateID).Error
+	if err != nil {
+		return nil, "", err
+	}
+	f := excelize.NewFile()
+	defer func() {
+		if err := f.Close(); err != nil {
+			fmt.Println(err)
+		}
+	}()
+	// Create a new sheet.
+	index, err := f.NewSheet("Sheet1")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	var templateInfoMap = make(map[string]string)
+	columns, err := utils.GetJSONKeys(template.TemplateInfo)
+	if err != nil {
+		return nil, "", err
+	}
+	err = json.Unmarshal([]byte(template.TemplateInfo), &templateInfoMap)
+	if err != nil {
+		return nil, "", err
+	}
+	var tableTitle []string
+	for _, key := range columns {
+		tableTitle = append(tableTitle, templateInfoMap[key])
+	}
+	var tableMap []map[string]interface{}
+	db := global.GVA_DB
+	var fields string
+	socialType := values.Get("type")
+
+	switch socialType {
+	case "1":
+		name = "导出深圳社保"
+		fields = `a.id, a.name, a.job_num,b.account,b.credential_number,b.total_social,b.total_social_self,b.total_social_unit,b.pension_base,b.pension_self,b.pension_unit,b.medical_base,b.medical_self,b.medical_unit,b.injury_insurance_base,b.injury_insurance_unit,b.unemployed_base,b.unemployed_self,b.unemployed_unit,b.birth_base,b.birth_unit `
+		break
+	case "2":
+		name = "导出深圳公积金"
+		fields = `a.id, a.name, a.job_num,b.credential_number,b.account,b.period_start as period,b.housing_base,b.housing_ratio_unit,b.housing_ratio_self,b.total_housing `
+		break
+	case "3":
+		name = "导出东莞社保"
+		fields = `a.id, a.name, a.job_num,b.credential_number,b.credential_type,b.account,b.period_start,b.period_end,b.pension_base,b.pension_unit,b.pension_base AS pension_base1,b.pension_self,b.unemployed_base,b.unemployed_unit,b.unemployed_base AS unemployed_base1,b.unemployed_self,b.medical_base,b.medical_unit,b.medical_base AS medical_base1,b.medical_self,b.injury_insurance_base,b.injury_insurance_unit,b.total_social_unit,b.total_social_self,b.total_social`
+		break
+	case "4":
+		fields = `a.id, a.name, a.job_num,b.account,b.credential_type,b.credential_number,b.housing_base,b.housing_ratio_unit,b.housing_ratio_self,b.total_housing_unit,b.total_housing_self,b.total_housing,b.period_start AS period`
+		name = "导出东莞公积金"
+		break
+	default:
+		return nil, "", errors.New(fmt.Sprintf("社保公积金导出类型异常:%s", socialType))
+	}
+	where := fmt.Sprintf("b.type = %s", socialType)
+	keyword := values.Get("keyword")
+	if keyword != "" {
+		keyword = "%" + keyword + "%"
+		where += fmt.Sprintf(" AND (a.name LIKE %s OR a.job_num LIKE %s OR a.mobile LIKE %s)", keyword, keyword, keyword)
+	}
+	sql := fmt.Sprintf(`SELECT %s FROM wc_staff AS a 
+		LEFT JOIN wc_staff_social AS b ON a.id = b.staff_id AND b.deleted_at IS NULL
+		WHERE %s `, fields, where)
+
+	fmt.Println("sql", sql)
+
+	db.Debug().Raw(sql).Scan(&tableMap)
+
+	configInfo := config.GetConfigInfo()
+
+	var rows [][]string
+	rows = append(rows, tableTitle)
+	for i, table := range tableMap {
+		var row []string
+		for _, column := range columns {
+			if column == "id" {
+				table[column] = i + 1
+			}
+			if column == "credential_type" {
+				fmt.Println(reflect.TypeOf(table["credential_type"]))
+				if intVal64, ok := table["credential_type"].(int64); ok {
+					intVal := int(intVal64)
+					text := configInfo.CredentialType[intVal]
+					table[column] = text
+				} else {
+					table[column] = ""
+				}
+			}
+
+			row = append(row, fmt.Sprintf("%v", table[column]))
+		}
+		rows = append(rows, row)
+	}
+	for i, row := range rows {
+		for j, colCell := range row {
+			err := f.SetCellValue("Sheet1", fmt.Sprintf("%s%d", utils.GetColumnName(j+1), i+1), colCell)
+			if err != nil {
+				return nil, "", err
+			}
+		}
+	}
+	f.SetActiveSheet(index)
+	file, err = f.WriteToBuffer()
+	if err != nil {
+		return nil, "", err
+	}
+
+	return file, name, nil
 }
 
 func (wcStaffSocialService *WcStaffSocialService) AssembleStaffSocialList(staffSocials []weChat.WcStaffSocial) (newStaffSocials []weChat2.WcStaffSocialResponse, err error) {

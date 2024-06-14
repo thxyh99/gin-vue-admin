@@ -30,8 +30,8 @@
 		</div>
 		<div class="gva-table-box">
 			<div class="gva-btn-list">
-<!--				<el-button type="primary" icon="plus" @click="openDialog">新增</el-button>-->
         <ImportExcel template-id="staffSocialSzGjj" type="2" @on-success="getTableData" btnName="导入深圳公积金" />
+        <ExportExcel template-id="staffSocialSzGjj" type="2" :limit="9999" btnName="导出深圳公积金" />
         <el-button icon="delete" style="margin-left: 10px" :disabled="!multipleSelection.length" @click="onDelete"
         >删除</el-button
         >
@@ -278,6 +278,7 @@ import { ref, reactive } from 'vue'
 import { InfoFilled, QuestionFilled } from '@element-plus/icons-vue'
 import SelectStaff from '@/components/selectStaff/index.vue'
 import ImportExcel from '@/components/exportExcel/wechat/importSocialExcel.vue'
+import ExportExcel from "@/components/exportExcel/wechat/exportSocialExcel.vue";
 
 defineOptions({
 	name: 'WcStaffSocial',

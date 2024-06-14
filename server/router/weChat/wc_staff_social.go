@@ -26,6 +26,7 @@ func (s *WcStaffSocialRouter) InitWcStaffSocialRouter(Router *gin.RouterGroup, P
 	{
 		wcStaffSocialRouterWithoutRecord.GET("findWcStaffSocial", wcStaffSocialApi.FindWcStaffSocial)       // 根据ID获取社保公积金管理
 		wcStaffSocialRouterWithoutRecord.GET("getWcStaffSocialList", wcStaffSocialApi.GetWcStaffSocialList) // 获取社保公积金管理列表
+		wcStaffSocialRouterWithoutRecord.GET("exportExcel", wcStaffSocialApi.ExportExcel)                   // 导出表格
 	}
 	{
 		wcStaffSocialRouterWithoutAuth.GET("getWcStaffSocialPublic", wcStaffSocialApi.GetWcStaffSocialPublic) // 获取社保公积金管理列表
