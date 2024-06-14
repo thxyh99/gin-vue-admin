@@ -48,7 +48,6 @@ import regularNumber from './components/regularNumber.vue'
 import transferNumber from './components/transferNumber.vue'
 import resigneNumber from './components/resigneNumber.vue'
 
-
 const searchInfo = ref({})
 
 const staffNumberRef = ref(null)
@@ -57,3 +56,5 @@ const regularNumberRef = ref(null)
 const transferNumberRef = ref(null)
 const resigneNumberRef = ref(null)
 </script>
+
+<style scoped lang="scss"></style>

@@ -1,65 +1,70 @@
 <template>
 	<div>
-		<div class="flex">
+		<div class="flex mb-3">
 			<el-card class="flex-1 mr-1">
 				<div class="flex justify-around">
 					<div class="flex flex-col items-center">
 						<div class="mb-1">在职</div>
-						<div>56</div>
+						<div>{{ statistics.onjobCount }}</div>
 					</div>
-          <el-divider class="h-10" direction="vertical"></el-divider>
+					<el-divider class="h-10" direction="vertical"></el-divider>
 					<div class="flex flex-col items-center">
 						<div class="mb-1">全职</div>
-						<div>56</div>
+						<div>{{ statistics.fullTimeCount }}</div>
 					</div>
-          <el-divider class="h-10" direction="vertical"></el-divider>
+					<el-divider class="h-10" direction="vertical"></el-divider>
 					<div class="flex flex-col items-center">
 						<div class="mb-1">兼职</div>
-						<div>56</div>
+						<div>{{ statistics.partTimeCount }}</div>
 					</div>
-          <el-divider class="h-10" direction="vertical"></el-divider>
+					<el-divider class="h-10" direction="vertical"></el-divider>
 					<div class="flex flex-col items-center">
 						<div class="mb-1">跟岗实习</div>
-						<div>56</div>
+						<div>{{ statistics.followUpJobCount }}</div>
 					</div>
-          <el-divider class="h-10" direction="vertical"></el-divider>
+					<el-divider class="h-10" direction="vertical"></el-divider>
 					<div class="flex flex-col items-center">
 						<div class="mb-1">顶岗实习</div>
-						<div>56</div>
+						<div>{{ statistics.replaceCount }}</div>
 					</div>
-          <el-divider class="h-10" direction="vertical"></el-divider>
+					<el-divider class="h-10" direction="vertical"></el-divider>
 					<div class="flex flex-col items-center">
 						<div class="mb-1">退休返聘</div>
-						<div>56</div>
+						<div>{{ statistics.retireCount }}</div>
 					</div>
-          <el-divider class="h-10" direction="vertical"></el-divider>
+					<el-divider class="h-10" direction="vertical"></el-divider>
 					<div class="flex flex-col items-center">
 						<div class="mb-1">劳务外包</div>
-						<div>56</div>
+						<div>{{ statistics.outsourcingCount }}</div>
 					</div>
 				</div>
 			</el-card>
 			<el-card class="flex-1 mr-1">
 				<div class="flex justify-around">
 					<div class="flex flex-col items-center">
-            <div class="mb-1">待入职</div>
-            <div>56</div>
-          </div>
-          <el-divider direction="vertical"></el-divider>
+						<div class="mb-1">待入职</div>
+						<div>{{ statistics.toBeEmployedCount }}</div>
+					</div>
+					<el-divider class="h-10" direction="vertical"></el-divider>
 					<div class="flex flex-col items-center">
-            <div class="mb-1">试用</div>
-            <div>56</div>
-          </div>
-          <el-divider direction="vertical"></el-divider>
+						<div class="mb-1">试用</div>
+						<div>{{ statistics.probationCount }}</div>
+					</div>
+					<el-divider class="h-10" direction="vertical"></el-divider>
 					<div class="flex flex-col items-center">
-            <div class="mb-1">正式</div>
-            <div>56</div>
-          </div>
-          <el-divider direction="vertical"></el-divider>
+						<div class="mb-1">正式</div>
+						<div>{{ statistics.formalCount }}</div>
+					</div>
+					<el-divider class="h-10" direction="vertical"></el-divider>
 					<div class="flex flex-col items-center">
-            <div class="mb-1">待离职</div>
-            <div>56</div>
-          </div>
+						<div class="mb-1">待离职</div>
+						<div>{{ statistics.toBeDepartedCount }}</div>
+					</div>
+					<el-divider class="h-10" direction="vertical"></el-divider>
+					<div class="flex flex-col items-center" @click="handleTodo">
+						<div class="mb-1 text-blue-600/100">待办事项</div>
+						<div class="text-blue-600/100">{{ statistics.toDoCount }}</div>
+					</div>
 				</div>
 			</el-card>
 		</div>
@@ -76,35 +81,30 @@
 					<el-input v-model="searchInfo.keyword" placeholder="输入名称、员工编码、手机" />
 				</el-form-item>
 
-        <el-form-item label="员工" prop="staffId">
-          <SelectStaff v-model="searchInfo.staffId" :disabled="type === 'update' ? 'disabled' : false"> </SelectStaff>
-        </el-form-item>
+				<el-form-item label="员工" prop="staffId">
+					<SelectStaff v-model="searchInfo.staffId" :disabled="type === 'update' ? 'disabled' : false"> </SelectStaff>
+				</el-form-item>
 
-        <el-form-item label="部门" prop="departmentIds">
-          <SelectDepartment v-model="searchInfo.departmentIds" style="width: 300px;">
-          </SelectDepartment>
-        </el-form-item>
+				<el-form-item label="部门" prop="departmentIds">
+					<SelectDepartment v-model="searchInfo.departmentIds" style="width: 300px"> </SelectDepartment>
+				</el-form-item>
 
-        <el-form-item label="入职日期">
-          <el-date-picker
-              style="width: 220px"
-              type="daterange"
-              range-separator="至"
-              start-placeholder="开始时间"
-              end-placeholder="结束时间"
-              v-model="searchInfo.employmentDateRange"
-              value-format="YYYY-MM-DD"
-              @change="handleDataChange"
-          />
-        </el-form-item>
+				<el-form-item label="入职日期">
+					<el-date-picker
+						style="width: 220px"
+						type="daterange"
+						range-separator="至"
+						start-placeholder="开始时间"
+						end-placeholder="结束时间"
+						v-model="searchInfo.employmentDateRange"
+						value-format="YYYY-MM-DD"
+						@change="handleDataChange"
+					/>
+				</el-form-item>
 
-        <el-form-item label="历史日期">
-          <el-date-picker
-              v-model="searchInfo.historyDate"
-              type="date"
-              value-format="YYYY-MM-DD"
-          />
-        </el-form-item>
+				<el-form-item label="历史日期">
+					<el-date-picker v-model="searchInfo.historyDate" type="date" value-format="YYYY-MM-DD" />
+				</el-form-item>
 
 				<el-form-item>
 					<el-button type="primary" icon="search" @click="onSubmit">查询</el-button>
@@ -352,6 +352,8 @@
 				</el-descriptions-item>
 			</el-descriptions>
 		</el-drawer>
+
+		<todo ref="todoRef" />
 	</div>
 </template>
 
@@ -375,7 +377,8 @@ import ExportExcel from '@/components/exportExcel/wechat/exportExcel.vue'
 import ExportTemplate from '@/components/exportExcel/wechat/exportTemplate.vue'
 import { InfoFilled, QuestionFilled } from '@element-plus/icons-vue'
 import SelectDepartment from '@/components/selectDepartment/index.vue'
-import SelectStaff from "@/components/selectStaff/index.vue";
+import SelectStaff from '@/components/selectStaff/index.vue'
+import todo from './components/tode.vue'
 
 defineOptions({
 	name: 'WcStaff',
@@ -725,15 +728,16 @@ const handleCurrentChange = (val) => {
 }
 
 const handleDataChange = (e) => {
-  if (e && e.length) {
-    searchInfo.value.employmentDateStart = e[0]
-    searchInfo.value.employmentDateEnd = e[1]
-  } else {
-    searchInfo.value.employmentDateStart = ''
-    searchInfo.value.employmentDateEnd = ''
-  }
+	if (e && e.length) {
+		searchInfo.value.employmentDateStart = e[0]
+		searchInfo.value.employmentDateEnd = e[1]
+	} else {
+		searchInfo.value.employmentDateStart = ''
+		searchInfo.value.employmentDateEnd = ''
+	}
 }
 
+const statistics = ref({})
 // 查询
 const getTableData = async () => {
 	const table = await getWcStaffList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
@@ -742,6 +746,7 @@ const getTableData = async () => {
 		total.value = table.data.total
 		page.value = table.data.page
 		pageSize.value = table.data.pageSize
+		statistics.value = table.data.statistics
 	}
 }
 
@@ -954,6 +959,11 @@ const enterDialog = async () => {
 
 const jumpRoute = (row) => {
 	router.push(`/layout/staff/roster?id=${row.ID}`)
+}
+
+const todoRef = ref(null)
+const handleTodo = () => {
+	todoRef.value.todoShow = true
 }
 </script>
 
