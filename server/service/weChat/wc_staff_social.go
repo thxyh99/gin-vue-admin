@@ -575,14 +575,63 @@ func (wcStaffSocialService *WcStaffSocialService) ExportExcel(templateID string,
 	if err != nil {
 		return nil, "", err
 	}
+	socialType := values.Get("type")
 	var tableTitle []string
 	for _, key := range columns {
+		//东莞社保表头字段转换
+		if socialType == "3" {
+			switch key {
+			case "pension_base":
+				templateInfoMap[key] = "企业基本养老保险(单位缴纳)缴费基数"
+				break
+			case "pension_unit":
+				templateInfoMap[key] = "企业基本养老保险(单位缴纳)应缴金额"
+				break
+			case "pension_base1":
+				templateInfoMap[key] = "企业基本养老保险(个人缴纳)缴费基数"
+				break
+			case "pension_self":
+				templateInfoMap[key] = "企业基本养老保险(个人缴纳)应缴金额"
+				break
+			case "unemployed_base":
+				templateInfoMap[key] = "失业保险(单位缴纳)缴费基数"
+				break
+			case "unemployed_unit":
+				templateInfoMap[key] = "失业保险(单位缴纳)应缴金额"
+				break
+			case "unemployed_base1":
+				templateInfoMap[key] = "失业保险(个人缴纳)缴费基数"
+				break
+			case "unemployed_self":
+				templateInfoMap[key] = "失业保险(个人缴纳)应缴金额"
+				break
+			case "medical_base":
+				templateInfoMap[key] = "单建统筹职工医保（含生育）（单位缴纳）缴费基数"
+				break
+			case "medical_unit":
+				templateInfoMap[key] = "单建统筹职工医保（含生育）（单位缴纳）应缴金额"
+				break
+			case "medical_base1":
+				templateInfoMap[key] = "单建统筹职工医保（含生育）（个人缴纳）缴费基数"
+				break
+			case "medical_self":
+				templateInfoMap[key] = "单建统筹职工医保（含生育）（个人缴纳）应缴金额"
+				break
+			case "injury_insurance_base":
+				templateInfoMap[key] = "工伤保险缴费基数"
+				break
+			case "injury_insurance_unit":
+				templateInfoMap[key] = "工伤保险应缴金额"
+				break
+			}
+		}
 		tableTitle = append(tableTitle, templateInfoMap[key])
 	}
+
+	fmt.Println("tableTitle", tableTitle)
 	var tableMap []map[string]interface{}
 	db := global.GVA_DB
 	var fields string
-	socialType := values.Get("type")
 
 	switch socialType {
 	case "1":
