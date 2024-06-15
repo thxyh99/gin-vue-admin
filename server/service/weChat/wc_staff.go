@@ -118,6 +118,7 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 			where += fmt.Sprintf(" AND a.id = -1 ")
 		} else {
 			var ids []int
+			where += " AND a.id IN("
 			for _, staffJob := range staffJobs {
 				ids = append(ids, *staffJob.StaffId)
 				where += strconv.Itoa(*staffJob.StaffId) + ","
@@ -135,6 +136,7 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 			where += fmt.Sprintf(" AND a.id = -1 ")
 		} else {
 			var ids []int
+			where += " AND a.id IN("
 			for _, staffJob := range staffJobs {
 				ids = append(ids, *staffJob.StaffId)
 				where += strconv.Itoa(*staffJob.StaffId) + ","
@@ -147,7 +149,7 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 	if info.Keyword != "" {
 		keyword := "%" + info.Keyword + "%"
 		db = db.Where("(name LIKE ? OR job_num LIKE ? OR mobile LIKE ?)", keyword, keyword, keyword)
-		where += fmt.Sprintf(" AND (a.name LIKE %s OR a.job_num LIKE %s OR a.mobile LIKE %s)", keyword, keyword, keyword)
+		where += fmt.Sprintf(" AND (a.name LIKE '%s' OR a.job_num LIKE '%s' OR a.mobile LIKE '%s')", keyword, keyword, keyword)
 	}
 	err = db.Count(&total).Error
 	if err != nil {
@@ -920,10 +922,69 @@ d.skill_pay, e.name AS contact_name, e.relationship, e.mobile AS contact_mobile,
 f.company, f.type AS agreement_type, f.start_day, f.end_day, f.times `
 	where := `1`
 	keyword := values.Get("keyword")
+	staffId := values.Get("staffId")
+	historyDate := values.Get("historyDate")
+	employmentDateRange := values.Get("employmentDateRange")
+	departmentIds := values.Get("departmentIds")
+	//关键字
 	if keyword != "" {
 		keyword = "%" + keyword + "%"
-		where += fmt.Sprintf(" AND (a.name LIKE %s OR a.job_num LIKE %s OR a.mobile LIKE %s)", keyword, keyword, keyword)
+		where += fmt.Sprintf(" AND (a.name LIKE '%s' OR a.job_num LIKE '%s' OR a.mobile LIKE '%s')", keyword, keyword, keyword)
 	}
+	//选择员工
+	if staffId != "" {
+		where += fmt.Sprintf(" AND a.id = %s", staffId)
+	}
+	//历史日期(快照节点):入职日期<=DATE && (离职日期为空 || 离职日期>DATE)
+	if historyDate != "" {
+		var staffJobs []weChat.WcStaffJob
+		global.GVA_DB.Debug().Where("employment_date <= ? AND (leave_date > ? OR leave_date IS NULL)", historyDate, historyDate).Find(&staffJobs)
+		if len(staffJobs) == 0 {
+			where += fmt.Sprintf(" AND a.id = -1 ")
+		} else {
+			var ids []int
+			where += " AND a.id IN("
+			for _, staffJob := range staffJobs {
+				ids = append(ids, *staffJob.StaffId)
+				where += strconv.Itoa(*staffJob.StaffId) + ","
+			}
+			db = db.Where("id IN (?)", ids)
+			where += "0)"
+		}
+	}
+	//入职日期
+	if employmentDateRange != "" {
+		employmentDateRangeArr := strings.Split(employmentDateRange, ",")
+		if len(employmentDateRangeArr) == 2 {
+			var staffJobs []weChat.WcStaffJob
+			global.GVA_DB.Where("employment_date >= ? AND employment_date <= ?", employmentDateRangeArr[0], employmentDateRangeArr[1]).Find(&staffJobs)
+			if len(staffJobs) == 0 {
+				where += fmt.Sprintf(" AND a.id = -1 ")
+			} else {
+				where += " AND a.id IN("
+				for _, staffJob := range staffJobs {
+					where += strconv.Itoa(*staffJob.StaffId) + ","
+				}
+				where += "0)"
+			}
+		}
+	}
+	//选择部门
+	if departmentIds != "" {
+		var staffDepartments []weChat.WcStaffDepartment
+		global.GVA_DB.Where("department_id IN (?)", departmentIds).Find(&staffDepartments)
+		fmt.Println("staffDepartments", staffDepartments)
+		if len(staffDepartments) == 0 {
+			where += fmt.Sprintf(" AND a.id = -1 ")
+		} else {
+			where += fmt.Sprintf(" AND a.id IN (")
+			for _, staffDepartment := range staffDepartments {
+				where += strconv.Itoa(*staffDepartment.StaffId) + ","
+			}
+			where += "0)"
+		}
+	}
+
 	sql := fmt.Sprintf(`SELECT %s FROM wc_staff AS a 
 LEFT JOIN wc_staff_job AS b ON a.id = b.staff_id AND b.deleted_at IS NULL
 LEFT JOIN wc_staff_bank AS c ON a.id = c.staff_id AND c.deleted_at IS NULL

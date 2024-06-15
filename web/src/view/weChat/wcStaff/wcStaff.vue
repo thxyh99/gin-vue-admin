@@ -114,12 +114,9 @@
 		</div>
 		<div class="gva-table-box">
 			<div class="gva-btn-list">
-				<el-button type="primary" icon="plus" @click="openDialog">新增</el-button>
-				<!--        <el-button icon="delete" style="margin-left: 10px;" :disabled="!multipleSelection.length" @click="onDelete">-->
-				<!--          删除-->
-				<!--        </el-button>-->
-				<ExportTemplate template-id="roster" />
-				<ExportExcel template-id="roster" :limit="9999" />
+<!--				<el-button type="primary" icon="plus" @click="openDialog">新增</el-button>-->
+<!--				<ExportTemplate template-id="roster" />-->
+				<ExportExcel template-id="roster" :limit="9999" :staff-id="searchInfo.staffId" :history-date="searchInfo.historyDate" :employment-date-range="searchInfo.employmentDateRange" :department-ids="searchInfo.departmentIds" :keyword="searchInfo.keyword"/>
 				<ImportExcel template-id="roster" @on-success="getTableData" btn-name="导入花名册" />
 			</div>
 			<el-table

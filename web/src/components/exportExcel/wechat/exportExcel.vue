@@ -3,7 +3,7 @@
     type="primary"
     icon="download"
     @click="exportExcelFunc"
-  >导出</el-button>
+  >导出花名册</el-button>
 </template>
 
 <script setup>
@@ -25,6 +25,26 @@ const props = defineProps({
     default: 0
   },
   order: {
+    type: String,
+    default: ''
+  },
+  staffId: {
+    type: Number,
+    default: ''
+  },
+  historyDate: {
+    type: String,
+    default: ''
+  },
+  employmentDateRange: {
+    type: String,
+    default: ''
+  },
+  departmentIds: {
+    type: String,
+    default: ''
+  },
+  keyword: {
     type: String,
     default: ''
   }
@@ -51,8 +71,8 @@ const exportExcelFunc = async() => {
   const params = Object.entries(paramsCopy)
     .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
     .join('&')
-  const url = `${baseUrl}/wcStaff/exportExcel?templateID=${props.templateId}${params ? '&' + params : ''}`
-
+  const url = `${baseUrl}/wcStaff/exportExcel?templateID=${props.templateId}&staffId=${props.staffId}&historyDate=${props.historyDate}&employmentDateRange=${props.employmentDateRange}&departmentIds=${props.departmentIds}&keyword=${props.keyword}${params ? '&' + params : ''}`
+  // /wcStaff/exportExcel?templateID=roster&staffId=10&historyDate=2024-06-30&employmentDateRange=2024-01-01,2025-07-01&departmentIds=2,3&keyword=RD_SZ&limit=9999
   window.open(url, '_blank')
 }
 </script>
