@@ -44,19 +44,12 @@
 				<el-input-number v-model="formData.skillPay" style="width: 100%" :precision="2" :clearable="true" />
 				<!-- <el-input v-model="formData.skillPay" :clearable="true" placeholder="请输入职称技能津贴" /> -->
 			</el-form-item>
-			<el-form-item label="职称/技能证书:" prop="certificate">
-				<el-input v-model="formData.certificate" :clearable="true" placeholder="请输入职称/技能证书" />
-				<!-- <el-upload
-					v-model:file-list="fileList"
-					action="/api/wcFile/upload"
-					multiple
-					:data="{ staffId: props.id, type: 10 }"
-					:on-preview="handlePreview"
-					:on-success="handleUploadSuccess"
-				>
-					<el-button type="primary">点击上传</el-button>
-				</el-upload> -->
+			<el-form-item label="职称证书:" prop="professionalCertificate">
+				<el-input v-model="formData.professionalCertificate" :clearable="true" placeholder="请输入职称证书" />
 			</el-form-item>
+      <el-form-item label="技能证书:" prop="skillCertificate">
+        <el-input v-model="formData.skillCertificate" :clearable="true" placeholder="请输入技能证书" />
+      </el-form-item>
 		</el-form>
 	</el-drawer>
 </template>

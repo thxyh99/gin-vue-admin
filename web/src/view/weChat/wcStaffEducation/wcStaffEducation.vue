@@ -46,7 +46,8 @@
         <el-table-column align="left" label="专业" prop="major" width="120" />
           <el-table-column align="left" label="学历津贴" prop="educationPay" width="120" />
           <el-table-column align="left" label="职称技能津贴" prop="skillPay" width="120" />
-          <el-table-column align="left" label="职称/技能证书" prop="certificate" width="320" />
+          <el-table-column align="left" label="职称证书" prop="professionalCertificate" width="320" />
+          <el-table-column align="left" label="技能证书" prop="skillCertificate" width="320" />
           <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -106,8 +107,11 @@
             <el-form-item label="职称技能津贴:"  prop="skillPay" >
               <el-input-number v-model="formData.skillPay"  style="width:100%" :precision="0" :clearable="true"  />
             </el-form-item>
-            <el-form-item label="职称/技能证书:"  prop="certificate" >
-              <el-input v-model="formData.certificate" :clearable="true"  placeholder="请输入职称/技能证书" />
+            <el-form-item label="职称证书:"  prop="professionalCertificate" >
+              <el-input v-model="formData.professionalCertificate" :clearable="true"  placeholder="请输入职称证书" />
+            </el-form-item>
+            <el-form-item label="技能证书:"  prop="skillCertificate" >
+              <el-input v-model="formData.skillCertificate" :clearable="true"  placeholder="请输入技能证书" />
             </el-form-item>
           </el-form>
     </el-drawer>
@@ -143,9 +147,12 @@
                 <el-descriptions-item label="职称技能津贴">
                   {{ formData.skillPay }}
                 </el-descriptions-item>
-                <el-descriptions-item label="职称/技能证书">
-                        {{ formData.certificate }}
+                <el-descriptions-item label="职称证书">
+                        {{ formData.professionalCertificate }}
                 </el-descriptions-item>
+          <el-descriptions-item label="技能证书">
+            {{ formData.skillCertificate }}
+          </el-descriptions-item>
         </el-descriptions>
     </el-drawer>
   </div>
@@ -190,7 +197,8 @@ const formData = ref({
           school: '',
           date: new Date(),
           major: '',
-          certificate: '',
+          professionalCertificate: '',
+          skillCertificate: '',
           educationPay:0,
           skillPay:0,
           staffName:'',
@@ -446,7 +454,8 @@ const closeDetailShow = () => {
             school: '',
             date: new Date(),
             major: '',
-            certificate: '',
+            professionalCertificate: '',
+            skillCertificate: '',
             educationPay:0,
             skillPay:0,
             staffName:'',
@@ -471,7 +480,8 @@ const closeDialog = () => {
           school: '',
           date: new Date(),
           major: '',
-          certificate: '',
+          professionalCertificate: '',
+          skillCertificate: '',
           educationPay:0,
           skillPay:0,
           staffName:'',

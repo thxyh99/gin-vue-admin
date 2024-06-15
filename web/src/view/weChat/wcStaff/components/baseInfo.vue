@@ -55,7 +55,8 @@
 			<el-descriptions-item label-align="right" label="毕业院校">{{ rewcStaffEducation.school }}</el-descriptions-item>
 			<el-descriptions-item label-align="right" label="毕业日期">{{ formatDate(rewcStaffEducation.date) }}</el-descriptions-item>
 			<el-descriptions-item label-align="right" label="专业">{{ rewcStaffEducation.major }}</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="职称/技能证书">{{ rewcStaffEducation.certificate }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="职称证书">{{ rewcStaffEducation.professionalCertificate }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="技能证书">{{ rewcStaffEducation.skillCertificate }}</el-descriptions-item>
 			<el-descriptions-item label-align="right" label="职称技能津贴">{{ rewcStaffEducation.skillPay }}</el-descriptions-item>
 		</el-descriptions>
 		<el-divider></el-divider>

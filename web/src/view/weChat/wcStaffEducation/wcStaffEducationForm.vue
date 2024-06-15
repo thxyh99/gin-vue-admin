@@ -20,8 +20,11 @@
         <el-form-item label="专业:" prop="major">
           <el-input v-model="formData.major" :clearable="true"  placeholder="请输入专业" />
        </el-form-item>
-        <el-form-item label="职称/技能证书:" prop="certificate">
-          <el-input v-model="formData.certificate" :clearable="true"  placeholder="请输入职称/技能证书" />
+        <el-form-item label="职称证书:" prop="professionalCertificate">
+          <el-input v-model="formData.professionalCertificate" :clearable="true"  placeholder="请输入职称证书" />
+       </el-form-item>
+        <el-form-item label="技能证书:" prop="skillCertificate">
+          <el-input v-model="formData.skillCertificate" :clearable="true"  placeholder="请输入技能证书" />
        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="save">保存</el-button>
@@ -60,7 +63,8 @@ const formData = ref({
             school: '',
             date: new Date(),
             major: '',
-            certificate: '',
+  professionalCertificate: '',
+  skillCertificate: '',
         })
 // 验证规则
 const rule = reactive({

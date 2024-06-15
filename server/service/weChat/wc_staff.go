@@ -375,7 +375,8 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 					"费用科目",
 					"试用期",
 					"转正日期",
-					"职称/技能证书",
+					"职称证书",
+					"技能证书",
 					"联系人常住地址",
 					"合同公司",
 					"合同类型",
@@ -492,7 +493,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 		staffFields := []string{"name", "job_num", "userid", "mobile", "gender", "height", "weight", "birthday", "native_place", "nation", "marriage", "political_outlook", "id_number", "id_address", "household_type", "address", "social_number", "account_number", "payment_place"}
 		staffJobFields := []string{"job_type", "status", "employment_date", "try_period", "formal_date", "leader" /**"department", "position",**/, "rank_type", "rank", "rank_salary", "expense_account"}
 		staffBankFields := []string{"bank", "card_number"}
-		staffEducationFields := []string{"education", "education_pay", "school", "date", "major", "certificate", "skill_pay"}
+		staffEducationFields := []string{"education", "education_pay", "school", "date", "major", "professional_certificate", "skill_certificate", "skill_pay"}
 		staffContactFields := []string{"contact_name", "relationship", "contact_mobile", "contact_address"}
 		staffAgreementFields := []string{"company", "agreement_type", "start_day", "end_day", "times"}
 
@@ -917,7 +918,7 @@ func (wcStaffService *WcStaffService) ExportExcel(templateID string, values url.
 	fields := `a.id, a.name, a.job_num, a.userid, a.mobile, a.gender, a.height, a.weight, a.birthday, a.native_place, a.nation, marriage, 
 a.political_outlook, a.id_number, a.id_address, a.household_type, a.address, a.social_number, a.account_number, a.payment_place, 
 b.type AS job_type, b.status, b.employment_date, b.try_period, b.formal_date, b.leader_id as leader, b.rank_type, b.rank, 
-b.rank_salary, b.expense_account, c.bank, c.card_number, d.education, d.education_pay, d.school, d.date, d.major, d.certificate, 
+b.rank_salary, b.expense_account, c.bank, c.card_number, d.education, d.education_pay, d.school, d.date, d.major, d.professional_certificate,d.skill_certificate, 
 d.skill_pay, e.name AS contact_name, e.relationship, e.mobile AS contact_mobile, e.address AS contact_address, 
 f.company, f.type AS agreement_type, f.start_day, f.end_day, f.times `
 	where := `1`
