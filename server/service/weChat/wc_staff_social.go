@@ -67,15 +67,11 @@ func (wcStaffSocialService *WcStaffSocialService) GetWcStaffSocialInfoList(info 
 	// 创建db
 	db := global.GVA_DB.Model(&weChat.WcStaffSocial{})
 	var wcStaffSocials []weChat.WcStaffSocial
-	// 如果有条件搜索 下方会自动创建搜索语句
-	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
-		db = db.Where("created_at BETWEEN ? AND ?", info.StartCreatedAt, info.EndCreatedAt)
-	}
 	if info.Type != nil {
-		db = db.Where("type = ?", info.Type)
+		db = db.Where("type = ?", *info.Type)
 	}
 	if info.StaffId != nil {
-		db = db.Where("staff_id = ?", info.StaffId)
+		db = db.Where("staff_id = ?", *info.StaffId)
 	}
 	if info.Keyword != "" {
 		keyword := "%" + info.Keyword + "%"
@@ -576,6 +572,12 @@ func (wcStaffSocialService *WcStaffSocialService) ExportExcel(templateID string,
 		return nil, "", err
 	}
 	socialType := values.Get("type")
+	period := values.Get("period")
+	staffId := values.Get("staffId")
+	keyword := values.Get("keyword")
+
+	fmt.Println("socialType-period-staffId-keyword", socialType, period, staffId, keyword)
+
 	var tableTitle []string
 	for _, key := range columns {
 		//东莞社保表头字段转换
@@ -654,16 +656,21 @@ func (wcStaffSocialService *WcStaffSocialService) ExportExcel(templateID string,
 		return nil, "", errors.New(fmt.Sprintf("社保公积金导出类型异常:%s", socialType))
 	}
 	where := fmt.Sprintf("b.type = %s", socialType)
-	keyword := values.Get("keyword")
 	if keyword != "" {
 		keyword = "%" + keyword + "%"
-		where += fmt.Sprintf(" AND (a.name LIKE %s OR a.job_num LIKE %s OR a.mobile LIKE %s)", keyword, keyword, keyword)
+		where += fmt.Sprintf(" AND (b.account LIKE '%s' OR b.credential_number LIKE '%s' )", keyword, keyword)
+	}
+	if staffId != "" {
+		where += fmt.Sprintf(" AND a.id = %s ", staffId)
+	}
+	if period != "" {
+		where += fmt.Sprintf(" AND b.period_start = %s ", period)
 	}
 	sql := fmt.Sprintf(`SELECT %s FROM wc_staff AS a 
 		LEFT JOIN wc_staff_social AS b ON a.id = b.staff_id AND b.deleted_at IS NULL
 		WHERE %s `, fields, where)
 
-	fmt.Println("sql", sql)
+	fmt.Println("sql", sql, keyword)
 
 	db.Debug().Raw(sql).Scan(&tableMap)
 

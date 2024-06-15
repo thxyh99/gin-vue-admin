@@ -36,7 +36,19 @@ const props = defineProps({
     type: String,
     required: true,
     default: "导出"
-  }
+  },
+  keyword: {
+    type: String,
+    default:''
+  },
+  staffId: {
+    type: Number,
+    default:''
+  },
+  period: {
+    type: String,
+    default:''
+  },
 })
 
 import { ElMessage } from 'element-plus'
@@ -60,7 +72,7 @@ const exportExcelFunc = async() => {
   const params = Object.entries(paramsCopy)
     .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
     .join('&')
-  const url = `${baseUrl}/wcStaffSocial/exportExcel?templateID=${props.templateId}&type=${props.type}${params ? '&' + params : ''}`
+  const url = `${baseUrl}/wcStaffSocial/exportExcel?templateID=${props.templateId}&type=${props.type}&staffId=${props.staffId}&period=${props.period}&keyword=${props.keyword}${params ? '&' + params : ''}`
 
   window.open(url, '_blank')
 }

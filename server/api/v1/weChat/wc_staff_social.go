@@ -200,6 +200,9 @@ func (wcStaffSocialApi *WcStaffSocialApi) ImportExcel(c *gin.Context) {
 func (wcStaffSocialApi *WcStaffSocialApi) ExportExcel(c *gin.Context) {
 	templateID := c.Query("templateID")
 	queryParams := c.Request.URL.Query()
+	fmt.Println("===============================")
+	fmt.Println("queryParams", queryParams)
+	fmt.Println("===============================")
 	if templateID == "" {
 		response.FailWithMessage("模板ID不能为空", c)
 		return

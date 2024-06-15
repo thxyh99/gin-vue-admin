@@ -31,7 +31,7 @@
 		<div class="gva-table-box">
 			<div class="gva-btn-list">
         <ImportExcel template-id="staffSocialDgGjj" type="4" @on-success="getTableData" btnName="导入东莞公积金" />
-        <ExportExcel template-id="staffSocialDgGjj" type="4" :limit="9999" btnName="导出东莞公积金" />
+        <ExportExcel template-id="staffSocialDgGjj" type="4" :limit="9999" btnName="导出东莞公积金" :staff-id="searchInfo.staffId" :period="searchInfo.period" :keyword="searchInfo.keyword"/>
         <el-button icon="delete" style="margin-left: 10px" :disabled="!multipleSelection.length" @click="onDelete"
         >删除</el-button
         >
