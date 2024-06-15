@@ -26,6 +26,7 @@ func (s *WcStaffSalaryRouter) InitWcStaffSalaryRouter(Router *gin.RouterGroup, P
 	{
 		wcStaffSalaryRouterWithoutRecord.GET("findWcStaffSalary", wcStaffSalaryApi.FindWcStaffSalary)       // 根据ID获取工资单
 		wcStaffSalaryRouterWithoutRecord.GET("getWcStaffSalaryList", wcStaffSalaryApi.GetWcStaffSalaryList) // 获取工资单列表
+		wcStaffSalaryRouterWithoutRecord.GET("exportExcel", wcStaffSalaryApi.ExportExcel)                   // 导出表格
 	}
 	{
 		wcStaffSalaryRouterWithoutAuth.GET("getWcStaffSalaryPublic", wcStaffSalaryApi.GetWcStaffSalaryPublic) // 获取工资单列表

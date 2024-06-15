@@ -1,6 +1,7 @@
 package weChat
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,6 +15,7 @@ import (
 	"github.com/xuri/excelize/v2"
 	"gorm.io/gorm"
 	"mime/multipart"
+	"net/url"
 	"time"
 )
 
@@ -62,10 +64,6 @@ func (wcStaffSalaryService *WcStaffSalaryService) GetWcStaffSalaryInfoList(info 
 	// 创建db
 	db := global.GVA_DB.Model(&weChat.WcStaffSalary{})
 	var wcStaffSalaries []weChat.WcStaffSalary
-	// 如果有条件搜索 下方会自动创建搜索语句
-	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
-		db = db.Where("created_at BETWEEN ? AND ?", info.StartCreatedAt, info.EndCreatedAt)
-	}
 	if info.Type != nil && *info.Type > 0 {
 		db = db.Where("type = ?", *info.Type)
 	}
@@ -677,4 +675,122 @@ func (wcStaffSalaryService *WcStaffSalaryService) importExcelF(db *gorm.DB, rows
 		}
 		return nil
 	})
+}
+
+// ExportExcel 导出Excel
+func (wcStaffSalaryService *WcStaffSalaryService) ExportExcel(templateID string, values url.Values) (file *bytes.Buffer, name string, err error) {
+	var template system.SysExportTemplate
+	err = global.GVA_DB.Preload("Conditions").Preload("JoinTemplate").First(&template, "template_id = ?", templateID).Error
+	if err != nil {
+		return nil, "", err
+	}
+	f := excelize.NewFile()
+	defer func() {
+		if err := f.Close(); err != nil {
+			fmt.Println(err)
+		}
+	}()
+	// Create a new sheet.
+	index, err := f.NewSheet("Sheet1")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	var templateInfoMap = make(map[string]string)
+	columns, err := utils.GetJSONKeys(template.TemplateInfo)
+	if err != nil {
+		return nil, "", err
+	}
+	err = json.Unmarshal([]byte(template.TemplateInfo), &templateInfoMap)
+	if err != nil {
+		return nil, "", err
+	}
+	salaryType := values.Get("type")
+	staffId := values.Get("staffId")
+	keyword := values.Get("keyword")
+	month := values.Get("month")
+	var tableTitle []string
+	for _, key := range columns {
+		tableTitle = append(tableTitle, templateInfoMap[key])
+	}
+
+	fmt.Println("tableTitle", tableTitle)
+	var tableMap []map[string]interface{}
+	db := global.GVA_DB
+
+	switch salaryType {
+	case "1":
+		name = "导出工资表"
+		break
+	case "2":
+		name = "导出集团经营绩效奖励"
+		break
+	case "3":
+		name = "导出节日金"
+		break
+	case "4":
+		name = "导出半年奖"
+		break
+	case "5":
+		name = "导出年度奖金"
+		break
+	case "6":
+		name = "导出总部职能体系月度奖金"
+		break
+	case "7":
+		name = "导出总部金纳斯市场体系月度奖金"
+		break
+	case "8":
+		name = "导出总部调理中心体系月度奖金"
+		break
+	default:
+		return nil, "", errors.New(fmt.Sprintf("工资单导出类型异常:%s", salaryType))
+	}
+	where := fmt.Sprintf("b.type = %s", salaryType)
+	if keyword != "" {
+		keyword = "%" + keyword + "%"
+		where += fmt.Sprintf(" AND (b.department_first LIKE '%s' OR b.department_second LIKE '%s' )", keyword, keyword)
+	}
+	if staffId != "" {
+		where += fmt.Sprintf(" AND a.id = %s ", staffId)
+	}
+	if month != "" {
+		where += fmt.Sprintf(" AND b.month = %s ", month)
+	}
+	sql := fmt.Sprintf(`SELECT a.name, a.job_num, b.* FROM wc_staff AS a 
+		LEFT JOIN wc_staff_salary AS b ON a.id = b.staff_id AND b.deleted_at IS NULL
+		WHERE %s `, where)
+
+	fmt.Println("sql", sql)
+
+	db.Debug().Raw(sql).Scan(&tableMap)
+
+	var rows [][]string
+	rows = append(rows, tableTitle)
+	for i, table := range tableMap {
+		var row []string
+		for _, column := range columns {
+			if column == "id" {
+				table[column] = i + 1
+			}
+
+			row = append(row, fmt.Sprintf("%v", table[column]))
+		}
+		rows = append(rows, row)
+	}
+	for i, row := range rows {
+		for j, colCell := range row {
+			err := f.SetCellValue("Sheet1", fmt.Sprintf("%s%d", utils.GetColumnName(j+1), i+1), colCell)
+			if err != nil {
+				return nil, "", err
+			}
+		}
+	}
+	f.SetActiveSheet(index)
+	file, err = f.WriteToBuffer()
+	if err != nil {
+		return nil, "", err
+	}
+
+	return file, name, nil
 }

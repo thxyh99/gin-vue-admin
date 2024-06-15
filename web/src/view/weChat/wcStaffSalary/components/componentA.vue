@@ -29,6 +29,7 @@
 		</div>
 		<div class="gva-table-box">
 			<div class="gva-btn-list">
+        <ExportExcel template-id="staffSalary1" type="1" :limit="9999" btnName="导出工资表" :staff-id="searchInfo.staffId" :month="searchInfo.month" :keyword="searchInfo.keyword"/>
 				<el-button icon="delete" style="margin-left: 10px" :disabled="!multipleSelection.length" @click="onDelete"
 					>删除</el-button
 				>
@@ -329,6 +330,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive, watchEffect, nextTick } from 'vue'
 import { InfoFilled, QuestionFilled } from '@element-plus/icons-vue'
 import SelectStaff from '@/components/selectStaff/index.vue'
+import ExportExcel from "@/components/exportExcel/wechat/exportSalaryExcel.vue";
 
 defineOptions({
 	name: 'WcStaffSalary',
