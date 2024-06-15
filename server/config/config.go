@@ -56,6 +56,9 @@ type CommonConfig struct {
 	CredentialType    []string //证件类型
 	SalaryType        []string //工资类型
 	IsRequired        []string //是否必选款项
+	RenewTimes        []string //续签次数
+	AgreementCompany  []string //合同公司
+	PaymentPlace      []string //社保公积金缴纳地
 }
 
 var config = CommonConfig{
@@ -239,5 +242,26 @@ var config = CommonConfig{
 	IsRequired: []string{
 		0: "否",
 		1: "是",
+	},
+	RenewTimes: []string{
+		0: "其他",
+		1: "1",
+		2: "2",
+		3: "3",
+	},
+	AgreementCompany: []string{
+		1: "深圳市容大生物科技股份有限公司",
+		2: "深圳市容大生物科技股份有限公司东莞分公司",
+		3: "深圳市容大霜道云连锁健康互联有限公司",
+		4: "东莞市容大生物科技有限公司",
+		5: "广东国韵健康科技有限公司",
+		6: "深圳市青春纳斯健康科技有限公司",
+		7: "广东金生缘健康科技有限公司",
+		8: "广东金因康健康科技有限公司",
+		9: "深圳市容大文化传媒有限公司",
+	},
+	PaymentPlace: []string{
+		1: "深圳",
+		2: "东莞",
 	},
 }

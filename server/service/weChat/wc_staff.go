@@ -1227,6 +1227,8 @@ func (wcStaffService *WcStaffService) AssembleStaffList(staffs []weChat.WcStaff)
 		newStaff.MarriageText = marriageText
 		politicalOutlookText, _ := utils.Find(configInfo.PoliticalOutlook, *item.PoliticalOutlook)
 		newStaff.PoliticalOutlookText = politicalOutlookText
+		paymentPlaceText, _ := utils.Find(configInfo.PaymentPlace, *item.PaymentPlace)
+		newStaff.PaymentPlaceText = paymentPlaceText
 
 		newStaffs = append(newStaffs, newStaff)
 	}
@@ -1245,6 +1247,8 @@ func (wcStaffService *WcStaffService) AssembleStaff(staff weChat.WcStaff) (newSt
 	newStaff.MarriageText = marriageText
 	politicalOutlookText, _ := utils.Find(configInfo.PoliticalOutlook, *staff.PoliticalOutlook)
 	newStaff.PoliticalOutlookText = politicalOutlookText
+	paymentPlaceText, _ := utils.Find(configInfo.PaymentPlace, *staff.PaymentPlace)
+	newStaff.PaymentPlaceText = paymentPlaceText
 	newStaff.WcStaff = staff
 
 	return

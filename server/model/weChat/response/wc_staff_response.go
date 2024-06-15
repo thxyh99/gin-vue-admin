@@ -12,6 +12,7 @@ type WcStaffResponse struct {
 	NationText           string `json:"nationText"`            //员工民族
 	MarriageText         string `json:"marriageText"`          //员工婚否
 	PoliticalOutlookText string `json:"politicalOutlookText" ` //员工政治面貌
+	PaymentPlaceText     string `json:"paymentPlaceText" `     //社保公积金缴纳地
 }
 
 type WcStaffStatisticsResponse struct {

@@ -25,7 +25,7 @@
 			<el-descriptions-item label-align="right" label="常住地址">{{ rewcStaff.address }}</el-descriptions-item>
 			<el-descriptions-item label-align="right" label="社保电脑号">{{ rewcStaff.socialNumber }}</el-descriptions-item>
 			<el-descriptions-item label-align="right" label="公积金账号">{{ rewcStaff.accountNumber }}</el-descriptions-item>
-			<el-descriptions-item label-align="right" label="社保公积金缴纳地">{{ rewcStaff.paymentPlace }}</el-descriptions-item>
+			<el-descriptions-item label-align="right" label="社保公积金缴纳地">{{ rewcStaff.paymentPlaceText }}</el-descriptions-item>
 		</el-descriptions>
 		<el-divider></el-divider>
 		<el-descriptions title="工作信息" border>

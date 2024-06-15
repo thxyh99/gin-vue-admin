@@ -90,6 +90,10 @@ func (wcStaffAgreementService *WcStaffAgreementService) AssembleStaffAgreementLi
 		newStaffAgreement.WcStaffAgreement = staffAgreement
 		typeText, _ := utils.Find(configInfo.AgreementType, *staffAgreement.Type)
 		newStaffAgreement.TypeText = typeText
+		companyText, _ := utils.Find(configInfo.AgreementCompany, *staffAgreement.Company)
+		newStaffAgreement.CompanyText = companyText
+		timesText, _ := utils.Find(configInfo.RenewTimes, *staffAgreement.Times)
+		newStaffAgreement.TimesText = timesText
 
 		//获取员工名称工号
 		var staff weChat.WcStaff
@@ -111,6 +115,10 @@ func (wcStaffAgreementService *WcStaffAgreementService) AssembleStaffAgreement(s
 	newStaffAgreement.WcStaffAgreement = staffAgreement
 	typeText, _ := utils.Find(configInfo.AgreementType, *staffAgreement.Type)
 	newStaffAgreement.TypeText = typeText
+	companyText, _ := utils.Find(configInfo.AgreementCompany, *staffAgreement.Company)
+	newStaffAgreement.CompanyText = companyText
+	timesText, _ := utils.Find(configInfo.RenewTimes, *staffAgreement.Times)
+	newStaffAgreement.TimesText = timesText
 
 	//获取员工名称工号
 	var staff weChat.WcStaff

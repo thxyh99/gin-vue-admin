@@ -101,7 +101,15 @@
 				<el-input v-model="formData.accountNumber" :clearable="true" placeholder="请输入公积金账号" />
 			</el-form-item>
 			<el-form-item label="社保公积金缴纳地:" prop="paymentPlace">
-				<el-input v-model="formData.paymentPlace" :clearable="true" placeholder="请输入社保公积金缴纳地" />
+<!--				<el-input v-model="formData.paymentPlace" :clearable="true" placeholder="请输入社保公积金缴纳地" />-->
+        <el-select v-model="formData.paymentPlace" placeholder="请选择社保公积金缴纳地" filterable>
+          <el-option
+              v-for="paymentPlace in paymentPlaces"
+              :key="paymentPlace.value"
+              :label="paymentPlace.label"
+              :value="paymentPlace.value"
+          ></el-option>
+        </el-select>
 			</el-form-item>
 		</el-form>
 	</el-drawer>
@@ -212,6 +220,11 @@ const nations = [
 	{ label: '门巴族', value: 54 },
 	{ label: '珞巴族', value: 55 },
 	{ label: '基诺族', value: 56 },
+]
+
+const paymentPlaces = [
+  { label: '深圳', value: 1 },
+  { label: '东莞', value: 2 },
 ]
 
 const rule = reactive({

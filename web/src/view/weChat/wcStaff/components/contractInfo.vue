@@ -6,7 +6,7 @@
 					<el-button type="primary" size="small" @click="handleEdit(item, index)">编 辑</el-button>
 					<el-button type="primary" size="small" @click="handleDelete(item.ID)">删 除</el-button>
 				</template>
-				<el-descriptions-item label="合同公司" label-align="right">{{ item.company }}</el-descriptions-item>
+				<el-descriptions-item label="合同公司" label-align="right">{{ item.companyText }}</el-descriptions-item>
 				<el-descriptions-item label="合同类型" label-align="right">{{ item.typeText }}</el-descriptions-item>
 				<el-descriptions-item label="合同起始日" label-align="right">{{
 					formatDate(item.startDay)
@@ -14,8 +14,8 @@
 				<el-descriptions-item label="合同到期日" label-align="right">{{
 					formatDate(item.endDay)
 				}}</el-descriptions-item>
-				<el-descriptions-item label="续签次数" label-align="right">{{ item.times }}</el-descriptions-item>
-				<el-descriptions-item label-align="right"></el-descriptions-item>
+				<el-descriptions-item label="续签次数" label-align="right">{{ item.timesText }}</el-descriptions-item>
+				<el-descriptions-item label="合同期限（月）"  label-align="right" >{{ item.period }}</el-descriptions-item>
 				<el-descriptions-item label="合同附件" label-align="right" :span="3">
 					<el-button type="text" @click="handlePreview(item.attachment.privateAccessURL)">{{
 						item.attachment.name
@@ -39,7 +39,10 @@
 
 			<el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
 				<el-form-item label="合同公司:" prop="company">
-					<el-input v-model="formData.company" :clearable="true" placeholder="请输入合同公司" />
+<!--					<el-input v-model="formData.company" :clearable="true" placeholder="请输入合同公司" />-->
+          <el-select v-model="formData.company" placeholder="请选择合同公司">
+            <el-option v-for="agreementCompany in agreementCompanies" :key="agreementCompany.value" :label="agreementCompany.label" :value="agreementCompany.value"></el-option>
+          </el-select>
 				</el-form-item>
 				<el-form-item label="合同类型:" prop="type">
 					<el-select v-model="formData.type" placeholder="选择合同类型">
@@ -65,8 +68,14 @@
 					/>
 				</el-form-item>
 				<el-form-item label="续签次数:" prop="times">
-					<el-input v-model.number="formData.times" :clearable="true" placeholder="请输入续签次数" />
+<!--					<el-input v-model.number="formData.times" :clearable="true" placeholder="请输入续签次数" />-->
+          <el-select v-model="formData.times" placeholder="请选择续签次数">
+            <el-option v-for="time in times" :key="time.value" :label="time.label" :value="time.value"></el-option>
+          </el-select>
 				</el-form-item>
+        <el-form-item label="合同期限（月）:" prop="period">
+          	<el-input v-model.number="formData.period" :clearable="true" placeholder="请输入合同期限" />
+        </el-form-item>
 				<el-form-item label="合同附件:" prop="fileId">
 					<el-upload
 						action="/api/wcFile/upload"
@@ -121,6 +130,25 @@ const types = [
 	{ label: '返聘协议', value: 6 },
 	{ label: '培训协议', value: 7 },
 ]
+
+const agreementCompanies = [
+  {label: "深圳市容大生物科技股份有限公司",value:1},
+  {label: "深圳市容大生物科技股份有限公司东莞分公司",value:2},
+  {label: "深圳市容大霜道云连锁健康互联有限公司",value:3},
+  {label: "东莞市容大生物科技有限公司",value:4},
+  {label: "广东国韵健康科技有限公司",value:5},
+  {label: "深圳市青春纳斯健康科技有限公司",value:6},
+  {label: "广东金生缘健康科技有限公司",value:7},
+  {label: "广东金因康健康科技有限公司",value:8},
+  {label: "深圳市容大文化传媒有限公司",value:9},
+]
+
+const times = [
+  { label: '其他', value: 0 },
+  { label: '1', value: 1 },
+  { label: '2', value: 2 },
+  { label: '3', value: 3 },
+]
 const rule = reactive({
 	staffId: [
 		{
@@ -133,11 +161,6 @@ const rule = reactive({
 		{
 			required: true,
 			message: '',
-			trigger: ['input', 'blur'],
-		},
-		{
-			whitespace: true,
-			message: '不能只输入空格',
 			trigger: ['input', 'blur'],
 		},
 	],

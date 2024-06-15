@@ -28,7 +28,7 @@ type WcStaff struct {
 	Address          string     `json:"address" form:"address" gorm:"column:address;comment:现居住地址;size:255;" binding:"required"`                                                                            //现居住地址
 	SocialNumber     string     `json:"socialNumber" form:"socialNumber" gorm:"column:social_number;comment:社保电脑号;size:200;"`                                                                               //社保电脑号
 	AccountNumber    string     `json:"accountNumber" form:"accountNumber" gorm:"column:account_number;comment:公积金账号;size:200;"`                                                                            //公积金账号
-	PaymentPlace     string     `json:"paymentPlace" form:"paymentPlace" gorm:"column:payment_place;comment:社保公积金缴纳地;size:255;"`
+	PaymentPlace     *int       `json:"paymentPlace" form:"paymentPlace" gorm:"column:payment_place;comment:社保公积金缴纳地;size:1;"`
 }
 
 // TableName 账号信息 WcStaff自定义表名 wc_staff
