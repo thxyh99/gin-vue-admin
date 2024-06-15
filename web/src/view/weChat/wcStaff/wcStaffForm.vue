@@ -14,7 +14,7 @@
         <el-form-item label="员工工号:" prop="jobNum">
           <el-input v-model="formData.jobNum" :clearable="true"  placeholder="请输入成员名称" />
         </el-form-item>
-        <el-form-item label="职务信息ID:" prop="positionId">
+        <el-form-item label="岗位信息ID:" prop="positionId">
           <el-input v-model.number="formData.positionId" :clearable="true" placeholder="请输入" />
        </el-form-item>
         <el-form-item label="性别(0未知1男2女):" prop="gender">

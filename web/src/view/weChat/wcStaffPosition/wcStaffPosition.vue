@@ -42,7 +42,7 @@
         </el-table-column>
         
         <el-table-column align="left" label="员工ID" prop="staffId" width="120" />
-        <el-table-column align="left" label="职务信息ID" prop="positionId" width="120" />
+        <el-table-column align="left" label="岗位信息ID" prop="positionId" width="120" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -81,8 +81,8 @@
             <el-form-item label="员工ID:"  prop="staffId" >
               <el-input v-model.number="formData.staffId" :clearable="true" placeholder="请输入员工ID" />
             </el-form-item>
-            <el-form-item label="职务信息ID:"  prop="positionId" >
-              <el-input v-model.number="formData.positionId" :clearable="true" placeholder="请输入职务信息ID" />
+            <el-form-item label="岗位信息ID:"  prop="positionId" >
+              <el-input v-model.number="formData.positionId" :clearable="true" placeholder="请输入岗位信息ID" />
             </el-form-item>
           </el-form>
     </el-drawer>
@@ -97,7 +97,7 @@
                 <el-descriptions-item label="员工ID">
                         {{ formData.staffId }}
                 </el-descriptions-item>
-                <el-descriptions-item label="职务信息ID">
+                <el-descriptions-item label="岗位信息ID">
                         {{ formData.positionId }}
                 </el-descriptions-item>
         </el-descriptions>

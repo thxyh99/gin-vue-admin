@@ -470,7 +470,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 					}
 				}
 
-				// 更新职务信息
+				// 更新岗位信息
 				if key == "position" && value != "" {
 					positions := strings.Split(value, ";")
 					for _, name := range positions {
@@ -663,7 +663,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 					}
 				}
 
-				// 更新员工职务信息
+				// 更新员工岗位信息
 				if len(positions) > 0 {
 					tx.Where("staff_id=?", staff.ID).Unscoped().Delete(&weChat.WcStaffPosition{})
 					for _, pItem := range positions {

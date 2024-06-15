@@ -29,7 +29,7 @@
 			<el-form-item label="部门信息:" prop="departmentIds">
 				<SelectDepartment v-model="formData.departmentIds"> </SelectDepartment>
 			</el-form-item>
-			<el-form-item label="职务信息:" prop="positionIds">
+			<el-form-item label="岗位信息:" prop="positionIds">
 				<SelectPosition v-model="formData.positionIds"> </SelectPosition>
 			</el-form-item>
 			<el-form-item label="职级类型:" prop="rankType">

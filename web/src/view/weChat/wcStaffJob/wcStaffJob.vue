@@ -41,7 +41,7 @@
         <el-table-column align="left" label="员工类型" prop="typeText" width="90" />
         <el-table-column align="left" label="员工状态" prop="statusText" width="90" />
         <el-table-column align="left" label="部门信息" prop="department" width="200"/>
-        <el-table-column align="left" label="职务信息" prop="position" width="150"/>
+        <el-table-column align="left" label="岗位信息" prop="position" width="150"/>
         <el-table-column align="left" label="职级类型" prop="rankTypeText" width="90" />
         <el-table-column align="left" label="职级" prop="rankText" width="150" />
         <el-table-column align="left" label="等级工资" prop="rankSalary" width="90" />
@@ -106,7 +106,7 @@
               <SelectDepartment v-model="formData.departmentIds">
               </SelectDepartment>
             </el-form-item>
-            <el-form-item label="职务信息:" prop="positionIds">
+            <el-form-item label="岗位信息:" prop="positionIds">
               <SelectPosition v-model="formData.positionIds">
               </SelectPosition>
             </el-form-item>
@@ -162,7 +162,7 @@
                 <el-descriptions-item label="部门信息">
                         {{ formData.department }}
                 </el-descriptions-item>
-                <el-descriptions-item label="职务信息">
+                <el-descriptions-item label="岗位信息">
                         {{ formData.position }}
                 </el-descriptions-item>
                 <el-descriptions-item label="职级类型">

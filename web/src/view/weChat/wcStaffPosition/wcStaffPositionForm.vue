@@ -5,7 +5,7 @@
         <el-form-item label="员工ID:" prop="staffId">
           <el-input v-model.number="formData.staffId" :clearable="true" placeholder="请输入" />
        </el-form-item>
-        <el-form-item label="职务信息ID:" prop="positionId">
+        <el-form-item label="岗位信息ID:" prop="positionId">
           <el-input v-model.number="formData.positionId" :clearable="true" placeholder="请输入" />
        </el-form-item>
         <el-form-item>

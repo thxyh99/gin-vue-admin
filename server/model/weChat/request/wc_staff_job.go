@@ -16,6 +16,6 @@ type WcStaffJobSearch struct {
 // WcStaffJobRequest 工作信息 结构体
 type WcStaffJobRequest struct {
 	weChat.WcStaffJob
-	PositionIds   []int `json:"positionIds"`   //职务信息
+	PositionIds   []int `json:"positionIds"`   //岗位信息
 	DepartmentIds []int `json:"departmentIds"` //部门信息
 }
