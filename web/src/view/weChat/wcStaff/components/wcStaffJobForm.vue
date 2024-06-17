@@ -52,7 +52,7 @@
 					></el-option>
 				</el-select>
 			</el-form-item>
-			<el-form-item label="入职日期:" prop="employmentDate">
+			<el-form-item label="入职容大日期:" prop="employmentDate">
 				<el-date-picker
 					v-model="formData.employmentDate"
 					type="date"

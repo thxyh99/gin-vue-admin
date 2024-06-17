@@ -89,7 +89,7 @@
 					<SelectDepartment v-model="searchInfo.departmentIds" style="width: 300px"> </SelectDepartment>
 				</el-form-item>
 
-				<el-form-item label="入职日期">
+				<el-form-item label="入职容大日期">
 					<el-date-picker
 						style="width: 220px"
 						type="daterange"

@@ -109,7 +109,7 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 			where += "0)"
 		}
 	}
-	//入职日期
+	//入职容大日期
 	if info.EmploymentDateStart != "" && info.EmploymentDateEnd != "" {
 		var staffJobs []weChat.WcStaffJob
 		global.GVA_DB.Where("employment_date >= ? AND employment_date <= ?", info.EmploymentDateStart, info.EmploymentDateEnd).Find(&staffJobs)
@@ -127,7 +127,7 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 			where += "0)"
 		}
 	}
-	//历史日期(快照节点):入职日期<=DATE && (离职日期为空 || 离职日期>DATE)
+	//历史日期(快照节点):入职容大日期<=DATE && (离职日期为空 || 离职日期>DATE)
 	if info.HistoryDate != "" {
 		var staffJobs []weChat.WcStaffJob
 		global.GVA_DB.Debug().Where("employment_date <= ? AND (leave_date > ? OR leave_date IS NULL)", info.HistoryDate, info.HistoryDate).Find(&staffJobs)
@@ -959,7 +959,7 @@ f.company, f.type AS agreement_type, f.start_day, f.end_day, f.times `
 	if staffId != "" {
 		where += fmt.Sprintf(" AND a.id = %s", staffId)
 	}
-	//历史日期(快照节点):入职日期<=DATE && (离职日期为空 || 离职日期>DATE)
+	//历史日期(快照节点):入职容大日期<=DATE && (离职日期为空 || 离职日期>DATE)
 	if historyDate != "" {
 		var staffJobs []weChat.WcStaffJob
 		global.GVA_DB.Debug().Where("employment_date <= ? AND (leave_date > ? OR leave_date IS NULL)", historyDate, historyDate).Find(&staffJobs)
@@ -976,7 +976,7 @@ f.company, f.type AS agreement_type, f.start_day, f.end_day, f.times `
 			where += "0)"
 		}
 	}
-	//入职日期
+	//入职容大日期
 	if employmentDateRange != "" {
 		employmentDateRangeArr := strings.Split(employmentDateRange, ",")
 		if len(employmentDateRangeArr) == 2 {

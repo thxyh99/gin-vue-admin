@@ -18,7 +18,7 @@ type WcStaffJob struct {
 	RankType          *int       `json:"rankType" form:"rankType" gorm:"column:rank_type;comment:员工职级类型;size:2;" binding:"required"`                                              //员工职级类型
 	Rank              *int       `json:"rank" form:"rank" gorm:"column:rank;comment:员工职级;size:2;" binding:"required"`                                                             //员工职级
 	RankSalary        float64    `json:"rankSalary" form:"rankSalary" gorm:"column:rank_salary;comment:等级工资;size:10;" binding:"required"`                                         //等级工资
-	EmploymentDate    *time.Time `json:"employmentDate" form:"employmentDate" gorm:"column:employment_date;comment:入职日期;" binding:"required"`                                     //入职日期
+	EmploymentDate    *time.Time `json:"employmentDate" form:"employmentDate" gorm:"column:employment_date;comment:入职容大日期;" binding:"required"`                                   //入职容大日期
 	FormalDate        *time.Time `json:"formalDate" form:"formalDate" gorm:"column:formal_date;comment:转正日期;" binding:"required"`                                                 //转正日期
 	PresumeFormalDate *time.Time `json:"presumeFormalDate" form:"presumeFormalDate" gorm:"column:presume_formal_date;comment:拟定转正日期;" binding:"required"`                         //拟定转正日期
 	LeaveDate         *time.Time `json:"leaveDate" form:"leaveDate" gorm:"column:leave_date;comment:离职日期;"`                                                                       //离职日期

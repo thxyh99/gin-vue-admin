@@ -46,7 +46,7 @@
         <el-table-column align="left" label="职级" prop="rankText" width="150" />
         <el-table-column align="left" label="等级工资" prop="rankSalary" width="90" />
         <el-table-column align="left" label="费用科目" prop="expenseAccountText" width="90" />
-        <el-table-column align="left" label="入职日期" width="100">
+        <el-table-column align="left" label="入职容大日期" width="100">
           <template #default="scope">{{ formatDate(scope.row.employmentDate) }}</template>
         </el-table-column>
         <el-table-column align="left" label="试用期" prop="tryPeriodText" width="90" />
@@ -126,7 +126,7 @@
                 <el-option v-for="expenseAccount in expenseAccounts" :key="expenseAccount.value" :label="expenseAccount.label" :value="expenseAccount.value"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="入职日期:"  prop="employmentDate" >
+            <el-form-item label="入职容大日期:"  prop="employmentDate" >
               <el-date-picker v-model="formData.employmentDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
             </el-form-item>
             <el-form-item label="试用期:"  prop="tryPeriod" >
@@ -180,7 +180,7 @@
                 <el-descriptions-item label="试用期">
                         {{ formData.tryPeriodText }}
                 </el-descriptions-item>
-                <el-descriptions-item label="入职日期">
+                <el-descriptions-item label="入职容大日期">
                       {{ formatDate(formData.employmentDate) }}
                 </el-descriptions-item>
                 <el-descriptions-item label="转正日期">

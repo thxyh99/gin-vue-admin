@@ -17,7 +17,7 @@
         <el-form-item label="试用期(1:无试用期 2:1个月 3:2个月 4:3个月 5:4个月 6:5个月 7:6个月 0:其他):" prop="tryPeriod">
           <el-input v-model.number="formData.tryPeriod" :clearable="true" placeholder="请输入" />
        </el-form-item>
-        <el-form-item label="入职日期:" prop="employmentDate">
+        <el-form-item label="入职容大日期:" prop="employmentDate">
           <el-date-picker v-model="formData.employmentDate" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
        </el-form-item>
         <el-form-item label="转正日期:" prop="formalDate">
