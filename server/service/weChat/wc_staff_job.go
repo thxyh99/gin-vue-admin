@@ -22,17 +22,18 @@ func (wcStaffJobService *WcStaffJobService) CreateWcStaffJob(wcStaffJobRequest *
 		wcStaffJobRequest.LeaderId = &zero
 	}
 	var wcStaffJob = weChat.WcStaffJob{
-		StaffId:        wcStaffJobRequest.StaffId,
-		Type:           wcStaffJobRequest.Type,
-		Status:         wcStaffJobRequest.Status,
-		TryPeriod:      wcStaffJobRequest.TryPeriod,
-		RankType:       wcStaffJobRequest.RankType,
-		Rank:           wcStaffJobRequest.Rank,
-		RankSalary:     wcStaffJobRequest.RankSalary,
-		EmploymentDate: wcStaffJobRequest.EmploymentDate,
-		FormalDate:     wcStaffJobRequest.FormalDate,
-		ExpenseAccount: wcStaffJobRequest.ExpenseAccount,
-		LeaderId:       wcStaffJobRequest.LeaderId,
+		StaffId:                   wcStaffJobRequest.StaffId,
+		Type:                      wcStaffJobRequest.Type,
+		Status:                    wcStaffJobRequest.Status,
+		TryPeriod:                 wcStaffJobRequest.TryPeriod,
+		RankType:                  wcStaffJobRequest.RankType,
+		Rank:                      wcStaffJobRequest.Rank,
+		RankSalary:                wcStaffJobRequest.RankSalary,
+		EmploymentDate:            wcStaffJobRequest.EmploymentDate,
+		EmploymentHeadquarterDate: wcStaffJobRequest.EmploymentHeadquarterDate,
+		FormalDate:                wcStaffJobRequest.FormalDate,
+		ExpenseAccount:            wcStaffJobRequest.ExpenseAccount,
+		LeaderId:                  wcStaffJobRequest.LeaderId,
 	}
 	err = global.GVA_DB.Create(wcStaffJob).Error
 

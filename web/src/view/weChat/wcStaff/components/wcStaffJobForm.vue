@@ -61,6 +61,15 @@
 					:clearable="true"
 				/>
 			</el-form-item>
+      <el-form-item label="入职总部日期:" prop="employmentHeadquarterDate">
+				<el-date-picker
+					v-model="formData.employmentHeadquarterDate"
+					type="date"
+					style="width: 100%"
+					placeholder="选择日期"
+					:clearable="true"
+				/>
+			</el-form-item>
 			<el-form-item label="试用期:" prop="tryPeriod">
 				<el-select v-model="formData.tryPeriod" placeholder="选择试用期">
 					<el-option
@@ -156,6 +165,13 @@ const rule = reactive({
 		},
 	],
 	employmentDate: [
+		{
+			required: true,
+			message: '',
+			trigger: ['input', 'blur'],
+		},
+	],
+  employmentHeadquarterDate: [
 		{
 			required: true,
 			message: '',

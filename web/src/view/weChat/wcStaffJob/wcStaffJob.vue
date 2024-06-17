@@ -49,6 +49,9 @@
         <el-table-column align="left" label="入职容大日期" width="100">
           <template #default="scope">{{ formatDate(scope.row.employmentDate) }}</template>
         </el-table-column>
+          <el-table-column align="left" label="入职总部日期" width="100">
+          <template #default="scope">{{ formatDate(scope.row.employmentHeadquarterDate) }}</template>
+        </el-table-column>
         <el-table-column align="left" label="试用期" prop="tryPeriodText" width="90" />
         <el-table-column align="left" label="转正日期" width="100">
          <template #default="scope">{{ formatDate(scope.row.formalDate) }}</template>
@@ -129,6 +132,9 @@
             <el-form-item label="入职容大日期:"  prop="employmentDate" >
               <el-date-picker v-model="formData.employmentDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
             </el-form-item>
+            <el-form-item label="入职总部日期:"  prop="employmentHeadquarterDate" >
+              <el-date-picker v-model="formData.employmentHeadquarterDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
+            </el-form-item>
             <el-form-item label="试用期:"  prop="tryPeriod" >
               <el-select v-model="formData.tryPeriod" placeholder="选择试用期">
                 <el-option v-for="tryPeriod in tryPeriods" :key="tryPeriod.value" :label="tryPeriod.label" :value="tryPeriod.value"></el-option>
@@ -182,6 +188,9 @@
                 </el-descriptions-item>
                 <el-descriptions-item label="入职容大日期">
                       {{ formatDate(formData.employmentDate) }}
+                </el-descriptions-item>
+                <el-descriptions-item label="入职总部日期">
+                      {{ formatDate(formData.employmentHeadquarterDate) }}
                 </el-descriptions-item>
                 <el-descriptions-item label="转正日期">
                       {{ formatDate(formData.formalDate) }}
@@ -255,6 +264,7 @@ const formData = ref({
         status: '',
         tryPeriod: '',
         employmentDate: new Date(),
+        employmentHeadquarterDate: new Date(),
         formalDate: new Date(),
         expenseAccount: '',
         staffName:'',
@@ -309,6 +319,12 @@ const rule = reactive({
                },
               ],
                employmentDate : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
+              employmentHeadquarterDate : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -552,6 +568,7 @@ const closeDetailShow = () => {
             status: '',
             tryPeriod: '',
             employmentDate: new Date(),
+            employmentHeadquarterDate: new Date(),
             formalDate: new Date(),
             expenseAccount: '',
             staffName:'',
@@ -589,6 +606,7 @@ const closeDialog = () => {
           status: '',
           tryPeriod: '',
           employmentDate: new Date(),
+          employmentHeadquarterDate: new Date(),
           formalDate: new Date(),
           expenseAccount: '',
           staffName:'',

@@ -20,6 +20,9 @@
         <el-form-item label="入职容大日期:" prop="employmentDate">
           <el-date-picker v-model="formData.employmentDate" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
        </el-form-item>
+        <el-form-item label="入职总部日期:" prop="employmentDate">
+          <el-date-picker v-model="formData.employmentHeadquarterDate" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
+       </el-form-item>
         <el-form-item label="转正日期:" prop="formalDate">
           <el-date-picker v-model="formData.formalDate" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
        </el-form-item>

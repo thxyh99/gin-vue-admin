@@ -40,6 +40,7 @@
       <el-descriptions-item label-align="right" label="等级工资">{{ rewcStaffJob.rankSalary }}</el-descriptions-item>
       <el-descriptions-item label-align="right" label="费用科目">{{ rewcStaffJob.expenseAccountText }}</el-descriptions-item>
       <el-descriptions-item label-align="right" label="入职容大日期">{{ formatDate(rewcStaffJob.employmentDate) }}</el-descriptions-item>
+      <el-descriptions-item label-align="right" label="入职总部日期">{{ formatDate(rewcStaffJob.employmentHeadquarterDate) }}</el-descriptions-item>
       <el-descriptions-item label-align="right" label="试用期">{{ rewcStaffJob.tryPeriodText }}</el-descriptions-item>
       <el-descriptions-item label-align="right" label="转正日期">{{ formatDate(rewcStaffJob.formalDate) }}</el-descriptions-item>
       <el-descriptions-item label-align="right" label="司龄（系统计算）">{{ getDateYearSub(formatDate(rewcStaffJob.employmentDate)) }}年</el-descriptions-item>
