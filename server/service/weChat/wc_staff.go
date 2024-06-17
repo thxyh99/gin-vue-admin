@@ -535,6 +535,9 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 					} else if key == "household_type" {
 						householdType, _ := utils.FindKeyByValue(configInfo.HouseholdType, value)
 						itemBase[key] = householdType
+					} else if key == "payment_place" {
+						paymentPlace, _ := utils.FindKeyByValue(configInfo.PaymentPlace, value)
+						itemBase[key] = paymentPlace
 					} else {
 						itemBase[key] = value
 					}
@@ -601,6 +604,12 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 					if key == "agreement_type" {
 						agreementType, _ := utils.FindKeyByValue(configInfo.AgreementType, value)
 						itemAgreement["type"] = agreementType
+					} else if key == "company" {
+						agreementCompany, _ := utils.FindKeyByValue(configInfo.AgreementCompany, value)
+						itemAgreement[key] = agreementCompany
+					} else if key == "times" {
+						renewTimes, _ := utils.FindKeyByValue(configInfo.RenewTimes, value)
+						itemAgreement[key] = renewTimes
 					} else {
 						itemAgreement[key] = value
 					}
