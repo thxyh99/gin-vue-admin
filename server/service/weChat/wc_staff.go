@@ -287,10 +287,6 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 
 	err = global.GVA_DB.First(&template, "template_id = ?", templateID).Error
 
-	fmt.Println("-----------------------")
-	fmt.Println(template)
-	fmt.Println("-----------------------")
-
 	if err != nil {
 		return err
 	}
@@ -317,8 +313,9 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 		return err
 	}
 
-	var titleKeyMap = make(map[string]string)
+	var titleKeyMap = make(map[string]string, len(templateInfoMap))
 	for key, title := range templateInfoMap {
+		title = utils.FilterBreaksSpaces(title)
 		titleKeyMap[title] = key
 	}
 
@@ -333,7 +330,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 	return db.Transaction(func(tx *gorm.DB) error {
 		excelTitle := rows[0]
 		values := rows[1:]
-
+		fmt.Println(len(excelTitle))
 		//模版校验
 		if len(excelTitle) != 49 {
 			return errors.New("导入花名册Excel模版异常")
@@ -516,6 +513,11 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 			// 更新员工信息
 			for ii, value := range row {
 				key := titleKeyMap[excelTitle[ii]]
+
+				fmt.Println("++++++++++++++++++++++++++++++++++++++++")
+				fmt.Println("key", key)
+				fmt.Println("++++++++++++++++++++++++++++++++++++++++")
+
 				if key == "name" {
 					name = value
 				}
@@ -747,7 +749,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 						return cErr
 					}
 				} else {
-					cErr := tx.Table(staffEducation.TableName()).Omit("created_at").Where("id=?", staffEducation.ID).Updates(itemEducation).Error
+					cErr := tx.Debug().Table(staffEducation.TableName()).Omit("created_at").Where("id=?", staffEducation.ID).Updates(itemEducation).Error
 					if cErr != nil {
 						return cErr
 					}
@@ -843,6 +845,18 @@ func checkImportParam(key, value string, configInfo config.CommonConfig, rankTyp
 
 	if key == "agreement_type" && !utils.InArray(configInfo.AgreementType, value) {
 		return errors.New("合同类型异常:" + value)
+	}
+
+	if key == "times" && !utils.InArray(configInfo.RenewTimes, value) {
+		return errors.New("续签次数异常:" + value)
+	}
+
+	if key == "company" && !utils.InArray(configInfo.AgreementCompany, value) {
+		return errors.New("合同公司异常:" + value)
+	}
+
+	if key == "payment_place" && !utils.InArray(configInfo.PaymentPlace, value) {
+		return errors.New("社保公积金缴纳地异常:" + value)
 	}
 	return nil
 }

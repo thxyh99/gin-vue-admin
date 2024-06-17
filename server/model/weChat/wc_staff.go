@@ -10,7 +10,6 @@ import (
 type WcStaff struct {
 	global.GVA_MODEL
 	UserId           *int       `json:"userId" form:"userId" gorm:"column:user_id;comment:用户ID(SSO);size:11;" binding:"required"`                                                                           //用户ID(SSO)
-	Userid           string     `json:"userid" form:"userid" gorm:"column:userid;comment:企微成员UserID;size:200;" binding:"required"`                                                                          //企微成员UserID
 	Name             string     `json:"name" form:"name" gorm:"column:name;comment:姓名;size:200;" binding:"required"`                                                                                        //姓名
 	JobNum           string     `json:"jobNum" form:"jobNum" gorm:"column:job_num;comment:员工编码;size:100;" binding:"required"`                                                                               //员工编码
 	Mobile           string     `json:"mobile" form:"mobile" gorm:"column:mobile;comment:手机;size:100;" binding:"required"`                                                                                  //手机
