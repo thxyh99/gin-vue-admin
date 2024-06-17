@@ -32,6 +32,26 @@
 			<el-form-item label="岗位信息:" prop="positionIds">
 				<SelectPosition v-model="formData.positionIds"> </SelectPosition>
 			</el-form-item>
+      <el-form-item label="层级:" prop="level">
+        <el-select v-model="formData.level" placeholder="选择层级">
+          <el-option
+              v-for="level in levels"
+              :key="level.value"
+              :label="level.label"
+              :value="level.value"
+          ></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="内外勤:" prop="ioType">
+        <el-select v-model="formData.ioType" placeholder="选择内外勤">
+          <el-option
+              v-for="ioType in ioTypes"
+              :key="ioType.value"
+              :label="ioType.label"
+              :value="ioType.value"
+          ></el-option>
+        </el-select>
+      </el-form-item>
 			<el-form-item label="职级类型:" prop="rankType">
 				<SelectRankType v-model="formData.rankType" placeholder="选择职级类型" @change="handleTypeChange">
 				</SelectRankType>
@@ -89,6 +109,15 @@
 					:clearable="true"
 				/>
 			</el-form-item>
+      <el-form-item label="拟转正日期:" prop="presumeFormalDate">
+        <el-date-picker
+            v-model="formData.presumeFormalDate"
+            type="date"
+            style="width: 100%"
+            placeholder="选择日期"
+            :clearable="true"
+        />
+      </el-form-item>
       <el-form-item label="直属领导:" prop="leaderId">
         <SelectStaff v-model="formData.leaderId">
         </SelectStaff>
@@ -185,6 +214,13 @@ const rule = reactive({
 			trigger: ['input', 'blur'],
 		},
 	],
+	presumeFormalDate: [
+		{
+			required: true,
+			message: '',
+			trigger: ['input', 'blur'],
+		},
+	],
 	rankType: [
 		{
 			required: true,
@@ -263,6 +299,20 @@ const expenseAccounts = [
 	{ label: '研发费用', value: 2 },
 	{ label: '生产费用', value: 3 },
 	{ label: '销售费用', value: 4 },
+]
+
+const levels = [
+	{ label: '基层', value: 1 },
+	{ label: '中层（副经理）', value: 2 },
+	{ label: '中层', value: 3 },
+	{ label: '高层（副总监级）', value: 4 },
+	{ label: '高层（总监级）', value: 5 },
+	{ label: '老总', value: 6 },
+]
+
+const ioTypes = [
+	{ label: '内勤', value: 1 },
+	{ label: '外勤', value: 2 },
 ]
 
 const handleOpen = () => {

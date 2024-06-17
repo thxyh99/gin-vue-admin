@@ -42,6 +42,8 @@
         <el-table-column align="left" label="员工状态" prop="statusText" width="90" />
         <el-table-column align="left" label="部门信息" prop="department" width="200"/>
         <el-table-column align="left" label="岗位信息" prop="position" width="150"/>
+        <el-table-column align="left" label="内外勤" prop="ioTypeText" width="90" />
+        <el-table-column align="left" label="层级" prop="leaveText" width="90" />
         <el-table-column align="left" label="职级类型" prop="rankTypeText" width="90" />
         <el-table-column align="left" label="职级" prop="rankText" width="150" />
         <el-table-column align="left" label="等级工资" prop="rankSalary" width="90" />
@@ -56,6 +58,12 @@
         <el-table-column align="left" label="转正日期" width="100">
          <template #default="scope">{{ formatDate(scope.row.formalDate) }}</template>
          </el-table-column>
+          <el-table-column align="left" label="拟转正日期" width="100">
+            <template #default="scope">{{ formatDate(scope.row.presumeFormalDate) }}</template>
+          </el-table-column>
+          <el-table-column align="left" label="离职日期" width="100">
+            <template #default="scope">{{ formatDate(scope.row.leaveDate) }}</template>
+          </el-table-column>
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -113,6 +121,16 @@
               <SelectPosition v-model="formData.positionIds">
               </SelectPosition>
             </el-form-item>
+            <el-form-item label="内外勤:"  prop="io_type" >
+              <el-select v-model="formData.ioType" placeholder="选择内外勤">
+                <el-option v-for="ioType in ioTypes" :key="ioType.value" :label="ioType.label" :value="ioType.value"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="层级:"  prop="level" >
+              <el-select v-model="formData.level" placeholder="选择层级">
+                <el-option v-for="level in levels" :key="level.value" :label="level.label" :value="level.value"></el-option>
+              </el-select>
+            </el-form-item>
             <el-form-item label="职级类型:"  prop="rankType" >
               <SelectRankType v-model="formData.rankType" placeholder="选择职级类型" @change="handleTypeChange">
               </SelectRankType>
@@ -143,6 +161,12 @@
             <el-form-item label="转正日期:"  prop="formalDate" >
               <el-date-picker v-model="formData.formalDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
             </el-form-item>
+            <el-form-item label="拟转正日期:"  prop="formalDate" >
+              <el-date-picker v-model="formData.presumeFormalDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
+            </el-form-item>
+            <el-form-item label="离职日期:"  prop="leaveDate" >
+              <el-date-picker v-model="formData.leaveDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
+            </el-form-item>
           </el-form>
     </el-drawer>
 
@@ -171,9 +195,15 @@
                 <el-descriptions-item label="岗位信息">
                         {{ formData.position }}
                 </el-descriptions-item>
-                <el-descriptions-item label="职级类型">
-                        {{ formData.rankTypeText }}
+                <el-descriptions-item label="内外勤">
+                        {{ formData.ioTypeText }}
                 </el-descriptions-item>
+          <el-descriptions-item label="层级">
+            {{ formData.levelText }}
+          </el-descriptions-item>
+          <el-descriptions-item label="职级类型">
+            {{ formData.rankTypeText }}
+          </el-descriptions-item>
                 <el-descriptions-item label="职级">
                         {{ formData.rankText }}
                 </el-descriptions-item>
@@ -195,6 +225,12 @@
                 <el-descriptions-item label="转正日期">
                       {{ formatDate(formData.formalDate) }}
                 </el-descriptions-item>
+          <el-descriptions-item label="拟转正日期">
+            {{ formatDate(formData.presumeFormalDate) }}
+          </el-descriptions-item>
+          <el-descriptions-item label="离职日期">
+            {{ formatDate(formData.leaveDate) }}
+          </el-descriptions-item>
         </el-descriptions>
     </el-drawer>
   </div>
@@ -256,6 +292,21 @@ const expenseAccounts = ref([
   { label: '生产费用', value: 3 },
   { label: '销售费用', value: 4 },
 ])
+
+
+const levels = [
+  { label: '基层', value: 1 },
+  { label: '中层（副经理）', value: 2 },
+  { label: '中层', value: 3 },
+  { label: '高层（副总监级）', value: 4 },
+  { label: '高层（总监级）', value: 5 },
+  { label: '老总', value: 6 },
+]
+
+const ioTypes = [
+  { label: '内勤', value: 1 },
+  { label: '外勤', value: 2 },
+]
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({

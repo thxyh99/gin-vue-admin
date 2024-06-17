@@ -36,7 +36,9 @@
 			<el-descriptions-item label-align="right" label="员工类型">{{ rewcStaffJob.typeText }}</el-descriptions-item>
 			<el-descriptions-item label-align="right" label="员工状态">{{ rewcStaffJob.statusText }}</el-descriptions-item>
 			<el-descriptions-item label-align="right" label="部门">{{ rewcStaffJob.department }}</el-descriptions-item>
-      <el-descriptions-item label-align="right" label="职位">{{ rewcStaffJob.position }}</el-descriptions-item>
+      <el-descriptions-item label-align="right" label="岗位">{{ rewcStaffJob.position }}</el-descriptions-item>
+      <el-descriptions-item label-align="right" label="层级">{{ rewcStaffJob.levelText }}</el-descriptions-item>
+      <el-descriptions-item label-align="right" label="内外勤">{{ rewcStaffJob.ioTypeText }}</el-descriptions-item>
       <el-descriptions-item label-align="right" label="职级">{{ rewcStaffJob.rankText }}</el-descriptions-item>
       <el-descriptions-item label-align="right" label="等级工资">{{ rewcStaffJob.rankSalary }}</el-descriptions-item>
       <el-descriptions-item label-align="right" label="费用科目">{{ rewcStaffJob.expenseAccountText }}</el-descriptions-item>
@@ -44,6 +46,8 @@
       <el-descriptions-item label-align="right" label="入职总部日期">{{ formatDate(rewcStaffJob.employmentHeadquarterDate) }}</el-descriptions-item>
       <el-descriptions-item label-align="right" label="试用期">{{ rewcStaffJob.tryPeriodText }}</el-descriptions-item>
       <el-descriptions-item label-align="right" label="转正日期">{{ formatDate(rewcStaffJob.formalDate) }}</el-descriptions-item>
+      <el-descriptions-item label-align="right" label="拟转正日期">{{ formatDate(rewcStaffJob.presumeFormalDate) }}</el-descriptions-item>
+      <el-descriptions-item label-align="right" label="离职日期">{{ formatDate(rewcStaffJob.leaveDate) }}</el-descriptions-item>
       <el-descriptions-item label-align="right" label="司龄（系统计算）">{{ getDateYearSub(formatDate(rewcStaffJob.employmentDate)) }}年</el-descriptions-item>
       <el-descriptions-item label-align="right" label="直属领导">{{ rewcStaffJob.leader }}</el-descriptions-item>
     </el-descriptions>

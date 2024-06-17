@@ -13,6 +13,8 @@ type WcStaffJobResponse struct {
 	StatusText         string `json:"statusText"`         //员工状态
 	TryPeriodText      string `json:"tryPeriodText"`      //试用期
 	ExpenseAccountText string `json:"expenseAccountText"` //费用科目
+	LevelText          string `json:"levelText"`          //层级
+	IoTypeText         string `json:"ioTypeText"`         //内外勤
 	Position           string `json:"position"`           //岗位信息
 	PositionIds        []int  `json:"positionIds"`        //岗位信息编号
 	Department         string `json:"department"`         //部门信息

@@ -204,6 +204,10 @@ func (wcStaffJobService *WcStaffJobService) AssembleStaffJobList(staffInfos []we
 		newStaffJob.TryPeriodText = staffJobTryPeriodText
 		expenseAccountText, _ := utils.Find(configInfo.ExpenseAccount, *staffJob.ExpenseAccount)
 		newStaffJob.ExpenseAccountText = expenseAccountText
+		levelText, _ := utils.Find(configInfo.Level, *staffJob.Level)
+		newStaffJob.LevelText = levelText
+		ioTypeText, _ := utils.Find(configInfo.IoType, *staffJob.IoType)
+		newStaffJob.IoTypeText = ioTypeText
 
 		var wg = sync.WaitGroup{}
 		wg.Add(6)
@@ -350,6 +354,10 @@ func (wcStaffJobService *WcStaffJobService) AssembleStaffJob(staffJob weChat.WcS
 	newStaffJob.TryPeriodText = staffJobTryPeriodText
 	expenseAccountText, _ := utils.Find(configInfo.ExpenseAccount, *staffJob.ExpenseAccount)
 	newStaffJob.ExpenseAccountText = expenseAccountText
+	levelText, _ := utils.Find(configInfo.Level, *staffJob.Level)
+	newStaffJob.LevelText = levelText
+	ioTypeText, _ := utils.Find(configInfo.IoType, *staffJob.IoType)
+	newStaffJob.IoTypeText = ioTypeText
 
 	var wg = sync.WaitGroup{}
 	wg.Add(6)

@@ -59,6 +59,8 @@ type CommonConfig struct {
 	RenewTimes        []string //续签次数
 	AgreementCompany  []string //合同公司
 	PaymentPlace      []string //社保公积金缴纳地
+	IoType            []string //内外勤
+	Level             []string //层级
 }
 
 var config = CommonConfig{
@@ -261,5 +263,17 @@ var config = CommonConfig{
 	PaymentPlace: []string{
 		1: "深圳",
 		2: "东莞",
+	},
+	IoType: []string{
+		1: "内勤",
+		2: "外勤",
+	},
+	Level: []string{
+		1: "基层",
+		2: "中层（副经理）",
+		3: "中层",
+		4: "高层（副总监级）",
+		5: "高层（总监级）",
+		6: "老总",
 	},
 }

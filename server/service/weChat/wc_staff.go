@@ -332,7 +332,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 		values := rows[1:]
 		fmt.Println(len(excelTitle))
 		//模版校验
-		if len(excelTitle) != 50 {
+		if len(excelTitle) != 54 {
 			return errors.New("导入花名册Excel模版异常")
 		}
 
@@ -352,12 +352,12 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 		}
 
 		//参数校验
-		for i, row := range values {
+		for _, row := range values {
 			//每一行最后一列为空要这样判空
-			if len(titleKeyMap) != len(row) && len(titleKeyMap) != len(row)+1 {
-				fmt.Println("length", len(titleKeyMap), len(row))
-				return errors.New(fmt.Sprintf("第%d行有数据缺失", i+2))
-			}
+			//if len(titleKeyMap) != len(row) {
+			//	fmt.Println("length", len(titleKeyMap), len(row))
+			//	return errors.New(fmt.Sprintf("第%d行有数据缺失", i+2))
+			//}
 			var rankTypeValue, rankValue string
 			for ii, value := range row {
 				key := titleKeyMap[excelTitle[ii]]
@@ -372,6 +372,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 					"费用科目",
 					"试用期",
 					"转正日期",
+					"离职日期",
 					"职称证书",
 					"技能证书",
 					"联系人常住地址",
@@ -488,7 +489,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 		}
 
 		staffFields := []string{"name", "job_num", "userid", "mobile", "gender", "height", "weight", "birthday", "native_place", "nation", "marriage", "political_outlook", "id_number", "id_address", "household_type", "address", "social_number", "account_number", "payment_place"}
-		staffJobFields := []string{"job_type", "status", "employment_date", "employment_headquarter_date", "try_period", "formal_date", "leader" /**"department", "position",**/, "rank_type", "rank", "rank_salary", "expense_account"}
+		staffJobFields := []string{"job_type", "status", "employment_date", "employment_headquarter_date", "try_period", "formal_date", "presume_formal_date", "leader" /**"department", "position",**/, "level", "io_type", "rank_type", "rank", "rank_salary", "expense_account"}
 		staffBankFields := []string{"bank", "card_number"}
 		staffEducationFields := []string{"education", "education_pay", "school", "date", "major", "professional_certificate", "skill_certificate", "skill_pay"}
 		staffContactFields := []string{"contact_name", "relationship", "contact_mobile", "contact_address"}
@@ -513,10 +514,6 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 			// 更新员工信息
 			for ii, value := range row {
 				key := titleKeyMap[excelTitle[ii]]
-
-				fmt.Println("++++++++++++++++++++++++++++++++++++++++")
-				fmt.Println("key", key)
-				fmt.Println("++++++++++++++++++++++++++++++++++++++++")
 
 				if key == "name" {
 					name = value
@@ -554,6 +551,12 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 					} else if key == "try_period" {
 						tryPeriod, _ := utils.FindKeyByValue(configInfo.StaffJobTryPeriod, value)
 						itemJob[key] = tryPeriod
+					} else if key == "level" {
+						level, _ := utils.FindKeyByValue(configInfo.Level, value)
+						itemJob[key] = level
+					} else if key == "io_type" {
+						ioType, _ := utils.FindKeyByValue(configInfo.IoType, value)
+						itemJob[key] = ioType
 					} else if key == "leader" {
 						if value != "" {
 							var staffLeader weChat.WcStaff
@@ -857,6 +860,14 @@ func checkImportParam(key, value string, configInfo config.CommonConfig, rankTyp
 
 	if key == "payment_place" && !utils.InArray(configInfo.PaymentPlace, value) {
 		return errors.New("社保公积金缴纳地异常:" + value)
+	}
+
+	if key == "level" && !utils.InArray(configInfo.Level, value) {
+		return errors.New("层级异常:" + value)
+	}
+
+	if key == "io_type" && !utils.InArray(configInfo.IoType, value) {
+		return errors.New("内外勤异常:" + value)
 	}
 	return nil
 }

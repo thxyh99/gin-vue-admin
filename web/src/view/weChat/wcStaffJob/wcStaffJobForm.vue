@@ -26,6 +26,12 @@
         <el-form-item label="转正日期:" prop="formalDate">
           <el-date-picker v-model="formData.formalDate" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
        </el-form-item>
+        <el-form-item label="拟转正日期:" prop="presumeFormalDate">
+          <el-date-picker v-model="formData.presumeFormalDate" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
+        </el-form-item>
+        <el-form-item label="离职日期:" prop="leaveDate">
+          <el-date-picker v-model="formData.leaveDate" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
+        </el-form-item>
         <el-form-item label="职位名称:" prop="name">
           <el-input v-model="formData.name" :clearable="true"  placeholder="请输入职位名称" />
        </el-form-item>
