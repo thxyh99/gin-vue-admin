@@ -386,10 +386,8 @@ const router = useRouter()
 const householdTypes = ref([
 	{ label: '本地城镇', value: 1 },
 	{ label: '本地农村', value: 2 },
-	{ label: '外地城镇（省内）', value: 3 },
-	{ label: '外地农村（省内）', value: 4 },
-	{ label: '外地城镇（省外）', value: 5 },
-	{ label: '外地农村（省外）', value: 6 },
+	{ label: '外地城镇', value: 3 },
+	{ label: '外地农村', value: 4 },
 ])
 
 const marriages = ref([
