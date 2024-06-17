@@ -15,6 +15,7 @@
 			<el-descriptions-item label-align="right" label="出生日期">{{
 				formatDate(rewcStaff.birthday)
 			}}</el-descriptions-item>
+      <el-descriptions-item label-align="right" label="年龄（系统计算）">{{ getDateYearSub(formatDate(rewcStaff.birthday)) }}岁</el-descriptions-item>
 			<el-descriptions-item label-align="right" label="籍贯">{{ rewcStaff.nativePlace }}</el-descriptions-item>
 			<el-descriptions-item label-align="right" label="民族">{{ rewcStaff.nationText }}</el-descriptions-item>
 			<el-descriptions-item label-align="right" label="性别">{{ rewcStaff.genderText }}</el-descriptions-item>

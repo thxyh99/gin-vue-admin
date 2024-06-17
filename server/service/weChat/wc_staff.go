@@ -332,7 +332,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 		values := rows[1:]
 		fmt.Println(len(excelTitle))
 		//模版校验
-		if len(excelTitle) != 49 {
+		if len(excelTitle) != 50 {
 			return errors.New("导入花名册Excel模版异常")
 		}
 
@@ -713,7 +713,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 						return cErr
 					}
 				} else {
-					cErr := tx.Table(staffJob.TableName()).Omit("created_at").Where("id=?", staffJob.ID).Updates(itemJob).Error
+					cErr := tx.Debug().Table(staffJob.TableName()).Omit("created_at").Where("id=?", staffJob.ID).Updates(itemJob).Error
 					if cErr != nil {
 						return cErr
 					}
