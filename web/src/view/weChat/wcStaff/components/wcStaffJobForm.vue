@@ -118,6 +118,33 @@
             :clearable="true"
         />
       </el-form-item>
+      <el-form-item label="离职日期:" prop="leaveDate">
+        <el-date-picker
+            v-model="formData.leaveDate"
+            type="date"
+            style="width: 100%"
+            placeholder="选择日期"
+            :clearable="true"
+        />
+      </el-form-item>
+      <el-form-item label="健康证起始日:" prop="healthStart">
+        <el-date-picker
+            v-model="formData.healthStart"
+            type="date"
+            style="width: 100%"
+            placeholder="选择日期"
+            :clearable="true"
+        />
+      </el-form-item>
+      <el-form-item label="健康证到期日:" prop="healthEnd">
+        <el-date-picker
+            v-model="formData.healthEnd"
+            type="date"
+            style="width: 100%"
+            placeholder="选择日期"
+            :clearable="true"
+        />
+      </el-form-item>
       <el-form-item label="直属领导:" prop="leaderId">
         <SelectStaff v-model="formData.leaderId">
         </SelectStaff>

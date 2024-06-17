@@ -64,6 +64,12 @@
           <el-table-column align="left" label="离职日期" width="100">
             <template #default="scope">{{ formatDate(scope.row.leaveDate) }}</template>
           </el-table-column>
+          <el-table-column align="left" label="健康证起始日" width="100">
+            <template #default="scope">{{ formatDate(scope.row.healthStart) }}</template>
+          </el-table-column>
+          <el-table-column align="left" label="健康证到期日" width="100">
+            <template #default="scope">{{ formatDate(scope.row.healthEnd) }}</template>
+          </el-table-column>
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -167,6 +173,12 @@
             <el-form-item label="离职日期:"  prop="leaveDate" >
               <el-date-picker v-model="formData.leaveDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
             </el-form-item>
+            <el-form-item label="健康证起始日:"  prop="healthStart" >
+              <el-date-picker v-model="formData.healthStart" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
+            </el-form-item>
+            <el-form-item label="健康证到期日:"  prop="healthEnd" >
+              <el-date-picker v-model="formData.healthEnd" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
+            </el-form-item>
           </el-form>
     </el-drawer>
 
@@ -230,6 +242,12 @@
           </el-descriptions-item>
           <el-descriptions-item label="离职日期">
             {{ formatDate(formData.leaveDate) }}
+          </el-descriptions-item>
+          <el-descriptions-item label="健康证起始日">
+            {{ formatDate(formData.healthStart) }}
+          </el-descriptions-item>
+          <el-descriptions-item label="健康证到期日">
+            {{ formatDate(formData.healthEnd) }}
           </el-descriptions-item>
         </el-descriptions>
     </el-drawer>

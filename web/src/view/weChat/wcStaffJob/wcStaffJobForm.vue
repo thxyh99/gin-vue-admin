@@ -32,8 +32,14 @@
         <el-form-item label="离职日期:" prop="leaveDate">
           <el-date-picker v-model="formData.leaveDate" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
         </el-form-item>
-        <el-form-item label="职位名称:" prop="name">
-          <el-input v-model="formData.name" :clearable="true"  placeholder="请输入职位名称" />
+        <el-form-item label="健康证起始日:" prop="healthStart">
+          <el-date-picker v-model="formData.healthStart" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
+        </el-form-item>
+        <el-form-item label="健康证到期日:" prop="healthEnd">
+          <el-date-picker v-model="formData.healthEnd" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
+        </el-form-item>
+        <el-form-item label="岗位名称:" prop="name">
+          <el-input v-model="formData.name" :clearable="true"  placeholder="请输入岗位名称" />
        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="save">保存</el-button>

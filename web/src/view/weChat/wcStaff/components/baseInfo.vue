@@ -48,6 +48,8 @@
       <el-descriptions-item label-align="right" label="转正日期">{{ formatDate(rewcStaffJob.formalDate) }}</el-descriptions-item>
       <el-descriptions-item label-align="right" label="拟转正日期">{{ formatDate(rewcStaffJob.presumeFormalDate) }}</el-descriptions-item>
       <el-descriptions-item label-align="right" label="离职日期">{{ formatDate(rewcStaffJob.leaveDate) }}</el-descriptions-item>
+      <el-descriptions-item label-align="right" label="健康证起始日">{{ formatDate(rewcStaffJob.healthStart) }}</el-descriptions-item>
+      <el-descriptions-item label-align="right" label="健康证到期日">{{ formatDate(rewcStaffJob.healthEnd) }}</el-descriptions-item>
       <el-descriptions-item label-align="right" label="司龄（系统计算）">{{ getDateYearSub(formatDate(rewcStaffJob.employmentDate)) }}年</el-descriptions-item>
       <el-descriptions-item label-align="right" label="直属领导">{{ rewcStaffJob.leader }}</el-descriptions-item>
     </el-descriptions>

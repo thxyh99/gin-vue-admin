@@ -332,7 +332,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 		values := rows[1:]
 		fmt.Println(len(excelTitle))
 		//模版校验
-		if len(excelTitle) != 54 {
+		if len(excelTitle) != 56 {
 			return errors.New("导入花名册Excel模版异常")
 		}
 
@@ -489,7 +489,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 		}
 
 		staffFields := []string{"name", "job_num", "userid", "mobile", "gender", "height", "weight", "birthday", "native_place", "nation", "marriage", "political_outlook", "id_number", "id_address", "household_type", "address", "social_number", "account_number", "payment_place"}
-		staffJobFields := []string{"job_type", "status", "employment_date", "employment_headquarter_date", "try_period", "formal_date", "presume_formal_date", "leader" /**"department", "position",**/, "level", "io_type", "rank_type", "rank", "rank_salary", "expense_account"}
+		staffJobFields := []string{"job_type", "status", "employment_date", "employment_headquarter_date", "try_period", "formal_date", "presume_formal_date", "leave_date", "health_start", "health_end", "leader" /**"department", "position",**/, "level", "io_type", "rank_type", "rank", "rank_salary", "expense_account"}
 		staffBankFields := []string{"bank", "card_number"}
 		staffEducationFields := []string{"education", "education_pay", "school", "date", "major", "professional_certificate", "skill_certificate", "skill_pay"}
 		staffContactFields := []string{"contact_name", "relationship", "contact_mobile", "contact_address"}
@@ -577,7 +577,11 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 						expenseAccount, _ := utils.FindKeyByValue(configInfo.ExpenseAccount, value)
 						itemJob[key] = expenseAccount
 					} else {
-						itemJob[key] = value
+						if value == "" {
+							itemJob[key] = nil
+						} else {
+							itemJob[key] = value
+						}
 					}
 				}
 				if utils.InArray(staffBankFields, key) {
@@ -588,7 +592,11 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 						education, _ := utils.FindKeyByValue(configInfo.Education, value)
 						itemEducation[key] = education
 					} else {
-						itemEducation[key] = value
+						if value == "" {
+							itemEducation[key] = nil
+						} else {
+							itemEducation[key] = value
+						}
 					}
 				}
 				if utils.InArray(staffContactFields, key) {
