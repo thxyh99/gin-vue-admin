@@ -14,7 +14,7 @@ type WcStaffAdjustlevelApplication struct {
 	StaffId          uint       `json:"staffId" form:"staffId" gorm:"column:staff_id;comment:员工ID;size:10;"`                                                      //员工ID
 	EffectiveDate    *time.Time `json:"effectiveDate" form:"effectiveDate" gorm:"column:effective_date;comment:生效日期;" binding:"required"`                         //生效日期
 	SourceDepartment string     `json:"sourceDepartment" form:"sourceDepartment" gorm:"column:source_department;type:enum(10);comment:调动前部门;" binding:"required"` //调动前部门
-	NewDepartment2   string     `json:"newDepartment2" form:"newDepartment2" gorm:"column:new_department2;type:enum(10);comment:调动后部门;" binding:"required"`       //调动后部门
+	NewDepartment    string     `json:"newDepartment" form:"newDepartment" gorm:"column:new_department;type:enum(10);comment:调动后部门;" binding:"required"`          //调动后部门
 	SourcePosition   string     `json:"sourcePosition" form:"sourcePosition" gorm:"column:source_position;type:enum(10);comment:调动前岗位;" binding:"required"`       //调动前岗位
 	NewPosition      string     `json:"newPosition" form:"newPosition" gorm:"column:new_position;type:enum(10);comment:调动前岗位;" binding:"required"`                //调动前岗位
 	SourceJoblevel   string     `json:"sourceJoblevel" form:"sourceJoblevel" gorm:"column:source_joblevel;type:enum(10);comment:调动前职级;" binding:"required"`       //调动前职级

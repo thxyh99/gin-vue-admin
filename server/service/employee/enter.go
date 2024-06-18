@@ -6,4 +6,5 @@ type ServiceGroup struct {
 	WcStaffAdjustlevelApplicationService
 	WcStaffTransferApplicationService
 	WcStaffLeaveApplicationService
+	WcThirdOaPushService
 }

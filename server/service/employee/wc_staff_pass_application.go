@@ -4,6 +4,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/employee"
 	employeeReq "github.com/flipped-aurora/gin-vue-admin/server/model/employee/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	"go.uber.org/zap"
 	"gopkg.in/ini.v1"
 	"gorm.io/gorm"
@@ -25,6 +26,17 @@ func (wcStaffPassApplicationService *WcStaffPassApplicationService) DeleteWcStaf
 			return err
 		}
 		if err = tx.Delete(&employee.WcStaffPassApplication{}, "id = ?", ID).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+	return err
+}
+
+// 更新OA流程状态
+func (wcStaffPassApplicationService *WcStaffPassApplicationService) UpdateWcStaffPassApplicationOaStatus(flowId string, oaStatus uint) (err error) {
+	err = global.GVA_DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(&employee.WcStaffPassApplication{}).Where("oa_id = ?", flowId).Update("oa_status", oaStatus).Error; err != nil {
 			return err
 		}
 		return nil
@@ -56,6 +68,24 @@ func (wcStaffPassApplicationService *WcStaffPassApplicationService) UpdateWcStaf
 func (wcStaffPassApplicationService *WcStaffPassApplicationService) GetWcStaffPassApplication(ID string) (wcStaffPassApplication employee.WcStaffPassApplication, err error) {
 	err = global.GVA_DB.Where("id = ?", ID).First(&wcStaffPassApplication).Error
 	return
+}
+
+// 根据OA ID获取转正申请记录
+func (wcStaffPassApplicationService *WcStaffPassApplicationService) GetWcStaffPassApplicationByOA(ID string) (wcStaffPassApplication employee.WcStaffPassApplication, err error) {
+	err = global.GVA_DB.Where("oa_id = ?", ID).First(&wcStaffPassApplication).Error
+	return
+}
+
+// 根据OA 更新员工转正信息
+func (wcStaffLeaveApplicationService *WcStaffPassApplicationService) UpdateWcStaffPassApplicationByOA(wcStaffPassApplication employee.WcStaffPassApplication) (err error) {
+	updateData := map[string]interface{}{"status": "2", "formal_date": wcStaffPassApplication.PassDate}
+	err = global.GVA_DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(&weChat.WcStaffJob{}).Where("staff_id = ?", wcStaffPassApplication.StaffId).Updates(updateData).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+	return err
 }
 
 // GetWcStaffPassApplicationInfoList 分页获取转正申请记录

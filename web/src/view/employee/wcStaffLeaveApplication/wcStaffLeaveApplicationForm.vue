@@ -1,40 +1,39 @@
+
 <template>
   <div>
     <div class="gva-form-box">
       <el-form :model="formData" ref="elFormRef" label-position="right" :rules="rule" label-width="80px">
+        <el-form-item label="员工ID:" prop="staffId">
+          <SelectStaff v-model.number="formData.staffId" :clearable="true" placeholder="请输入" >
+          </SelectStaff>
+       </el-form-item>
         <el-form-item label="离职标题:" prop="title">
           <el-input v-model="formData.title" :clearable="true"  placeholder="请输入离职标题" />
-       </el-form-item>
-        <el-form-item label="员工ID:" prop="staffId">
-          <el-input v-model.number="formData.staffId" :clearable="true" placeholder="请输入" />
        </el-form-item>
         <el-form-item label="解除日期:" prop="leaveDate">
           <el-date-picker v-model="formData.leaveDate" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
        </el-form-item>
         <el-form-item label="所属部门:" prop="jobDepartment">
-        <el-select v-model="formData.jobDepartment" placeholder="请选择" style="width:100%" :clearable="true">
-          <el-option v-for="item in [10]" :key="item" :label="item" :value="item" />
-        </el-select>
+          <SelectDepartment v-model.number="formData.jobDepartment" :clearable="true" placeholder="请输入" >
+          </SelectDepartment>
        </el-form-item>
-        <el-form-item label="原职位:" prop="leaveType">
-        <el-select v-model="formData.leaveType" placeholder="请选择" style="width:100%" :clearable="true">
-          <el-option v-for="item in []" :key="item" :label="item" :value="item" />
-        </el-select>
+        <el-form-item label="离职类型:" prop="leaveType">
+          <el-switch v-model="formData.leaveType" active-color="#13ce66" inactive-color="#ff4949" active-text="自动" inactive-text="否" clearable ></el-switch>
        </el-form-item>
         <el-form-item label="事由:" prop="leaveResult">
           <el-input v-model="formData.leaveResult" :clearable="true"  placeholder="请输入事由" />
        </el-form-item>
         <el-form-item label="申请表:" prop="attachment">
-          <SelectFile v-model="formData.attachment" />
+          <el-input v-model="formData.attachment" :clearable="true"  placeholder="请输入申请表" />
        </el-form-item>
         <el-form-item label="交接清单:" prop="checkList">
-          <SelectFile v-model="formData.checkList" />
+          <el-input v-model="formData.checkList" :clearable="true"  placeholder="请输入交接清单" />
        </el-form-item>
         <el-form-item label="是否开具离职证明:" prop="isLeave">
           <el-switch v-model="formData.isLeave" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
        </el-form-item>
-        <el-form-item label="是否入住公司宿舍:" prop="isHome">
-          <el-switch v-model="formData.isHome" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
+        <el-form-item label="是否入住公司宿舍:" prop="isHavedorm">
+          <el-switch v-model="formData.isHavedorm" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
        </el-form-item>
         <el-form-item label="宿舍所在地:" prop="dormLocation">
           <el-input v-model="formData.dormLocation" :clearable="true"  placeholder="请输入宿舍所在地" />
@@ -44,12 +43,6 @@
        </el-form-item>
         <el-form-item label="提交意见:" prop="submitOpinion">
           <el-input v-model="formData.submitOpinion" :clearable="true"  placeholder="请输入提交意见" />
-       </el-form-item>
-        <el-form-item label="OAID:" prop="oaId">
-          <el-input v-model="formData.oaId" :clearable="true"  placeholder="请输入OAID" />
-       </el-form-item>
-        <el-form-item label="OA状态:" prop="oaStatus">
-          <el-switch v-model="formData.oaStatus" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="save">保存</el-button>
@@ -66,6 +59,10 @@ import {
   updateWcStaffLeaveApplication,
   findWcStaffLeaveApplication
 } from '@/api/employee/wcStaffLeaveApplication'
+import SelectStaff from "@/components/selectStaff/index.vue";
+import SelectPosition from "@/components/selectPosition/index.vue";
+import SelectDepartment from "@/components/selectDepartment/index.vue";
+import SelectRank from "@/components/selectRank/index.vue";
 
 defineOptions({
     name: 'WcStaffLeaveApplicationForm'
@@ -76,7 +73,6 @@ import { getDictFunc } from '@/utils/format'
 import { useRoute, useRouter } from "vue-router"
 import { ElMessage } from 'element-plus'
 import { ref, reactive } from 'vue'
-import SelectFile from '@/components/selectFile/selectFile.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -86,19 +82,26 @@ const formData = ref({
             title: '',
             staffId: 0,
             leaveDate: new Date(),
+            jobDepartment: 0,
+            leaveType: false,
             leaveResult: '',
-            attachment: [],
-            checkList: [],
+            attachment: '',
+            checkList: '',
             isLeave: false,
-            isHome: false,
+            isHavedorm: false,
             dormLocation: '',
             roomNum: '',
             submitOpinion: '',
             oaId: '',
-            oaStatus: false,
+            oaStatus: 0,
         })
 // 验证规则
 const rule = reactive({
+               title : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
                staffId : [{
                    required: true,
                    message: '',
@@ -120,41 +123,6 @@ const rule = reactive({
                    trigger: ['input','blur'],
                }],
                leaveResult : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               }],
-               attachment : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               }],
-               checkList : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               }],
-               isLeave : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               }],
-               isHome : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               }],
-               dormLocation : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               }],
-               roomNum : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               }],
-               submitOpinion : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],

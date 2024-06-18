@@ -4,6 +4,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/employee"
 	employeeReq "github.com/flipped-aurora/gin-vue-admin/server/model/employee/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	"gorm.io/gorm"
 )
 
@@ -23,6 +24,17 @@ func (wcStaffAdjustlevelApplicationService *WcStaffAdjustlevelApplicationService
 			return err
 		}
 		if err = tx.Delete(&employee.WcStaffAdjustlevelApplication{}, "id = ?", ID).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+	return err
+}
+
+// 更新OA流程状态
+func (wcStaffAdjustlevelApplicationService *WcStaffAdjustlevelApplicationService) UpdateStaffAdjustlevelApplicationOaStatus(flowId string, oaStatus uint) (err error) {
+	err = global.GVA_DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(&employee.WcStaffAdjustlevelApplication{}).Where("oa_id = ?", flowId).Update("oa_status", oaStatus).Error; err != nil {
 			return err
 		}
 		return nil
@@ -54,6 +66,30 @@ func (wcStaffAdjustlevelApplicationService *WcStaffAdjustlevelApplicationService
 func (wcStaffAdjustlevelApplicationService *WcStaffAdjustlevelApplicationService) GetWcStaffAdjustlevelApplication(ID string) (wcStaffAdjustlevelApplication employee.WcStaffAdjustlevelApplication, err error) {
 	err = global.GVA_DB.Where("id = ?", ID).First(&wcStaffAdjustlevelApplication).Error
 	return
+}
+
+// 根据OAID获取调级申请记录
+func (wcStaffAdjustlevelApplicationService *WcStaffAdjustlevelApplicationService) GetWcStaffAdjustlevelApplicationByOA(oaID string) (wcStaffAdjustlevelApplication employee.WcStaffAdjustlevelApplication, err error) {
+	err = global.GVA_DB.Where("oa_id = ?", oaID).First(&wcStaffAdjustlevelApplication).Error
+	return
+}
+
+// 更新员工调级信息
+func (wcStaffAdjustlevelApplicationService *WcStaffAdjustlevelApplicationService) UpdateWcStaffAdjustlevelApplicationByOA(wcStaffAdjustlevelApplication employee.WcStaffAdjustlevelApplication) (err error) {
+	err = global.GVA_DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(&weChat.WcPosition{}).Where("staff_id = ?", wcStaffAdjustlevelApplication.StaffId).Update("position_id", wcStaffAdjustlevelApplication.NewPosition).Error; err != nil {
+			return err
+		}
+		if err := tx.Model(&weChat.WcStaffDepartment{}).Where("staff_id = ?", wcStaffAdjustlevelApplication.StaffId).Update("department_id", wcStaffAdjustlevelApplication.NewDepartment).Error; err != nil {
+			return err
+		}
+		if err := tx.Model(&weChat.WcStaffJob{}).Where("staff_id = ?", wcStaffAdjustlevelApplication.StaffId).Update("rank", wcStaffAdjustlevelApplication.NewJoblevel).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+	return err
 }
 
 // GetWcStaffAdjustlevelApplicationInfoList 分页获取调级申请记录

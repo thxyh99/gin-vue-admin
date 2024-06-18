@@ -6,4 +6,5 @@ type ApiGroup struct {
 	WcStaffAdjustlevelApplicationApi
 	WcStaffTransferApplicationApi
 	WcStaffLeaveApplicationApi
+	WcThirdOaPushApi
 }

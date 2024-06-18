@@ -1,4 +1,3 @@
-
 <template>
   <div>
     <div class="gva-search-box">
@@ -35,7 +34,6 @@
         :data="tableData"
         row-key="ID"
         @selection-change="handleSelectionChange"
-        @sort-change="sortChange"
         >
         <el-table-column type="selection" width="55" />
         
@@ -43,36 +41,21 @@
             <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
         </el-table-column>
         
-        <el-table-column align="left" label="离职标题" prop="title" width="120" />
-        <el-table-column align="left" label="员工ID" prop="staffId" width="120" />
-         <el-table-column sortable align="left" label="解除日期" width="180">
-            <template #default="scope">{{ formatDate(scope.row.leaveDate) }}</template>
-         </el-table-column>
-        <el-table-column sortable align="left" label="所属部门" prop="jobDepartment" width="120" />
-        <el-table-column sortable align="left" label="离职类型" prop="leaveType" width="120">
-            <template #default="scope">{{ formatBoolean(scope.row.leaveType) }}</template>
-        </el-table-column>
-        <el-table-column align="left" label="事由" prop="leaveResult" width="120" />
-        <el-table-column align="left" label="申请表" prop="attachment" width="120" />
-        <el-table-column align="left" label="交接清单" prop="checkList" width="120" />
-        <el-table-column align="left" label="是否开具离职证明" prop="isLeave" width="120">
-            <template #default="scope">{{ formatBoolean(scope.row.isLeave) }}</template>
-        </el-table-column>
-        <el-table-column align="left" label="是否入住公司宿舍" prop="isHavedorm" width="120">
-            <template #default="scope">{{ formatBoolean(scope.row.isHavedorm) }}</template>
-        </el-table-column>
-        <el-table-column align="left" label="宿舍所在地" prop="dormLocation" width="120" />
-        <el-table-column align="left" label="房间门牌号" prop="roomNum" width="120" />
-        <el-table-column align="left" label="提交意见" prop="submitOpinion" width="120" />
-        <el-table-column align="left" label="OAID" prop="oaId" width="120" />
-        <el-table-column align="left" label="OA状态" prop="oaStatus" width="120" />
+        <el-table-column align="left" label="应用ID" prop="appKey" width="120" />
+        <el-table-column align="left" label="流程类型" prop="flowtype" width="120" />
+        <el-table-column align="left" label="流程id" prop="fdId" width="120" />
+        <el-table-column align="left" label="流程标题" prop="subject" width="120" />
+        <el-table-column align="left" label="流程模板id" prop="fdTmplId" width="120" />
+        <el-table-column align="left" label="推送ip" prop="ip" width="120" />
+        <el-table-column align="left" label="流程状态" prop="status" width="120" />
+        <el-table-column align="left" label="日志内容" prop="log" width="120" />
         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
                 <el-icon style="margin-right: 5px"><InfoFilled /></el-icon>
                 查看详情
             </el-button>
-            <el-button type="primary" link icon="edit" class="table-button" @click="updateWcStaffLeaveApplicationFunc(scope.row)">变更</el-button>
+            <el-button type="primary" link icon="edit" class="table-button" @click="updateWcThirdOaPushFunc(scope.row)">变更</el-button>
             <el-button type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>
             </template>
         </el-table-column>
@@ -101,50 +84,29 @@
             </template>
 
           <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
-            <el-form-item label="离职标题:"  prop="title" >
-              <el-input v-model="formData.title" :clearable="true"  placeholder="请输入离职标题" />
+            <el-form-item label="应用ID:"  prop="appKey" >
+              <el-input v-model="formData.appKey" :clearable="true"  placeholder="请输入应用ID" />
             </el-form-item>
-            <el-form-item label="员工ID:"  prop="staffId" >
-              <el-input v-model.number="formData.staffId" :clearable="true" placeholder="请输入员工ID" />
+            <el-form-item label="流程类型:"  prop="flowtype" >
+              <el-input v-model="formData.flowtype" :clearable="true"  placeholder="请输入流程类型" />
             </el-form-item>
-            <el-form-item label="解除日期:"  prop="leaveDate" >
-              <el-date-picker v-model="formData.leaveDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
+            <el-form-item label="流程id:"  prop="fdId" >
+              <el-input v-model="formData.fdId" :clearable="true"  placeholder="请输入流程id" />
             </el-form-item>
-            <el-form-item label="所属部门:"  prop="jobDepartment" >
-              <el-input v-model.number="formData.jobDepartment" :clearable="true" placeholder="请输入所属部门" />
+            <el-form-item label="流程标题:"  prop="subject" >
+              <el-input v-model="formData.subject" :clearable="true"  placeholder="请输入流程标题" />
             </el-form-item>
-            <el-form-item label="离职类型:"  prop="leaveType" >
-              <el-switch v-model="formData.leaveType" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
+            <el-form-item label="流程模板id:"  prop="fdTmplId" >
+              <el-input v-model="formData.fdTmplId" :clearable="true"  placeholder="请输入流程模板id" />
             </el-form-item>
-            <el-form-item label="事由:"  prop="leaveResult" >
-              <el-input v-model="formData.leaveResult" :clearable="true"  placeholder="请输入事由" />
+            <el-form-item label="推送ip:"  prop="ip" >
+              <el-input v-model="formData.ip" :clearable="true"  placeholder="请输入推送ip" />
             </el-form-item>
-            <el-form-item label="申请表:"  prop="attachment" >
-              <el-input v-model="formData.attachment" :clearable="true"  placeholder="请输入申请表" />
+            <el-form-item label="流程状态:"  prop="status" >
+              <el-input v-model="formData.status" :clearable="true"  placeholder="请输入流程状态" />
             </el-form-item>
-            <el-form-item label="交接清单:"  prop="checkList" >
-              <el-input v-model="formData.checkList" :clearable="true"  placeholder="请输入交接清单" />
-            </el-form-item>
-            <el-form-item label="是否开具离职证明:"  prop="isLeave" >
-              <el-switch v-model="formData.isLeave" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
-            </el-form-item>
-            <el-form-item label="是否入住公司宿舍:"  prop="isHavedorm" >
-              <el-switch v-model="formData.isHavedorm" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
-            </el-form-item>
-            <el-form-item label="宿舍所在地:"  prop="dormLocation" >
-              <el-input v-model="formData.dormLocation" :clearable="true"  placeholder="请输入宿舍所在地" />
-            </el-form-item>
-            <el-form-item label="房间门牌号:"  prop="roomNum" >
-              <el-input v-model="formData.roomNum" :clearable="true"  placeholder="请输入房间门牌号" />
-            </el-form-item>
-            <el-form-item label="提交意见:"  prop="submitOpinion" >
-              <el-input v-model="formData.submitOpinion" :clearable="true"  placeholder="请输入提交意见" />
-            </el-form-item>
-            <el-form-item label="OAID:"  prop="oaId" >
-              <el-input v-model="formData.oaId" :clearable="true"  placeholder="请输入OAID" />
-            </el-form-item>
-            <el-form-item label="OA状态:"  prop="oaStatus" >
-              <el-input v-model.number="formData.oaStatus" :clearable="true" placeholder="请输入OA状态" />
+            <el-form-item label="日志内容:"  prop="log" >
+              <el-input v-model="formData.log" :clearable="true"  placeholder="请输入日志内容" />
             </el-form-item>
           </el-form>
     </el-drawer>
@@ -156,50 +118,29 @@
              </div>
          </template>
         <el-descriptions :column="1" border>
-                <el-descriptions-item label="离职标题">
-                        {{ formData.title }}
+                <el-descriptions-item label="应用ID">
+                        {{ formData.appKey }}
                 </el-descriptions-item>
-                <el-descriptions-item label="员工ID">
-                        {{ formData.staffId }}
+                <el-descriptions-item label="流程类型">
+                        {{ formData.flowtype }}
                 </el-descriptions-item>
-                <el-descriptions-item label="解除日期">
-                      {{ formatDate(formData.leaveDate) }}
+                <el-descriptions-item label="流程id">
+                        {{ formData.fdId }}
                 </el-descriptions-item>
-                <el-descriptions-item label="所属部门">
-                        {{ formData.jobDepartment }}
+                <el-descriptions-item label="流程标题">
+                        {{ formData.subject }}
                 </el-descriptions-item>
-                <el-descriptions-item label="离职类型">
-                    {{ formatBoolean(formData.leaveType) }}
+                <el-descriptions-item label="流程模板id">
+                        {{ formData.fdTmplId }}
                 </el-descriptions-item>
-                <el-descriptions-item label="事由">
-                        {{ formData.leaveResult }}
+                <el-descriptions-item label="推送ip">
+                        {{ formData.ip }}
                 </el-descriptions-item>
-                <el-descriptions-item label="申请表">
-                        {{ formData.attachment }}
+                <el-descriptions-item label="流程状态">
+                        {{ formData.status }}
                 </el-descriptions-item>
-                <el-descriptions-item label="交接清单">
-                        {{ formData.checkList }}
-                </el-descriptions-item>
-                <el-descriptions-item label="是否开具离职证明">
-                    {{ formatBoolean(formData.isLeave) }}
-                </el-descriptions-item>
-                <el-descriptions-item label="是否入住公司宿舍">
-                    {{ formatBoolean(formData.isHavedorm) }}
-                </el-descriptions-item>
-                <el-descriptions-item label="宿舍所在地">
-                        {{ formData.dormLocation }}
-                </el-descriptions-item>
-                <el-descriptions-item label="房间门牌号">
-                        {{ formData.roomNum }}
-                </el-descriptions-item>
-                <el-descriptions-item label="提交意见">
-                        {{ formData.submitOpinion }}
-                </el-descriptions-item>
-                <el-descriptions-item label="OAID">
-                        {{ formData.oaId }}
-                </el-descriptions-item>
-                <el-descriptions-item label="OA状态">
-                        {{ formData.oaStatus }}
+                <el-descriptions-item label="日志内容">
+                        {{ formData.log }}
                 </el-descriptions-item>
         </el-descriptions>
     </el-drawer>
@@ -208,13 +149,13 @@
 
 <script setup>
 import {
-  createWcStaffLeaveApplication,
-  deleteWcStaffLeaveApplication,
-  deleteWcStaffLeaveApplicationByIds,
-  updateWcStaffLeaveApplication,
-  findWcStaffLeaveApplication,
-  getWcStaffLeaveApplicationList
-} from '@/api/employee/wcStaffLeaveApplication'
+  createWcThirdOaPush,
+  deleteWcThirdOaPush,
+  deleteWcThirdOaPushByIds,
+  updateWcThirdOaPush,
+  findWcThirdOaPush,
+  getWcThirdOaPushList
+} from '@/api/employee/wcThirdOaPushLog'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
@@ -222,32 +163,25 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
 
 defineOptions({
-    name: 'WcStaffLeaveApplication'
+    name: 'WcThirdOaPush'
 })
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
-        title: '',
-        staffId: 0,
-        leaveDate: new Date(),
-        jobDepartment: 0,
-        leaveType: false,
-        leaveResult: '',
-        attachment: '',
-        checkList: '',
-        isLeave: false,
-        isHavedorm: false,
-        dormLocation: '',
-        roomNum: '',
-        submitOpinion: '',
-        oaId: '',
-        oaStatus: 0,
+        appKey: '',
+        flowtype: '',
+        fdId: '',
+        subject: '',
+        fdTmplId: '',
+        ip: '',
+        status: '',
+        log: '',
         })
 
 
 // 验证规则
 const rule = reactive({
-               title : [{
+               appKey : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -258,31 +192,62 @@ const rule = reactive({
                    trigger: ['input', 'blur'],
               }
               ],
-               staffId : [{
+               flowtype : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
               ],
-               leaveDate : [{
+               fdId : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
               ],
-               jobDepartment : [{
+               subject : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
               ],
-               leaveType : [{
+               fdTmplId : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
               ],
-               leaveResult : [{
+               ip : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
+              ],
+               status : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -320,23 +285,6 @@ const total = ref(0)
 const pageSize = ref(10)
 const tableData = ref([])
 const searchInfo = ref({})
-// 排序
-const sortChange = ({ prop, order }) => {
-  const sortMap = {
-            leaveDate: 'leave_date',
-            jobDepartment: 'job_department',
-            leaveType: 'leave_type',
-  }
-
-  let sort = sortMap[prop]
-  if(!sort){
-   sort = prop.replace(/[A-Z]/g, match => `_${match.toLowerCase()}`)
-  }
-
-  searchInfo.value.sort = sort
-  searchInfo.value.order = order
-  getTableData()
-}
 
 // 重置
 const onReset = () => {
@@ -350,15 +298,6 @@ const onSubmit = () => {
     if (!valid) return
     page.value = 1
     pageSize.value = 10
-    if (searchInfo.value.leaveType === ""){
-        searchInfo.value.leaveType=null
-    }
-    if (searchInfo.value.isLeave === ""){
-        searchInfo.value.isLeave=null
-    }
-    if (searchInfo.value.isHavedorm === ""){
-        searchInfo.value.isHavedorm=null
-    }
     getTableData()
   })
 }
@@ -377,7 +316,7 @@ const handleCurrentChange = (val) => {
 
 // 查询
 const getTableData = async() => {
-  const table = await getWcStaffLeaveApplicationList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
+  const table = await getWcThirdOaPushList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
   if (table.code === 0) {
     tableData.value = table.data.list
     total.value = table.data.total
@@ -412,7 +351,7 @@ const deleteRow = (row) => {
         cancelButtonText: '取消',
         type: 'warning'
     }).then(() => {
-            deleteWcStaffLeaveApplicationFunc(row)
+            deleteWcThirdOaPushFunc(row)
         })
     }
 
@@ -435,7 +374,7 @@ const onDelete = async() => {
         multipleSelection.value.map(item => {
           IDs.push(item.ID)
         })
-      const res = await deleteWcStaffLeaveApplicationByIds({ IDs })
+      const res = await deleteWcThirdOaPushByIds({ IDs })
       if (res.code === 0) {
         ElMessage({
           type: 'success',
@@ -453,19 +392,19 @@ const onDelete = async() => {
 const type = ref('')
 
 // 更新行
-const updateWcStaffLeaveApplicationFunc = async(row) => {
-    const res = await findWcStaffLeaveApplication({ ID: row.ID })
+const updateWcThirdOaPushFunc = async(row) => {
+    const res = await findWcThirdOaPush({ ID: row.ID })
     type.value = 'update'
     if (res.code === 0) {
-        formData.value = res.data.rewcStaffLeaveApplication
+        formData.value = res.data.rewcThirdOaPush
         dialogFormVisible.value = true
     }
 }
 
 
 // 删除行
-const deleteWcStaffLeaveApplicationFunc = async (row) => {
-    const res = await deleteWcStaffLeaveApplication({ ID: row.ID })
+const deleteWcThirdOaPushFunc = async (row) => {
+    const res = await deleteWcThirdOaPush({ ID: row.ID })
     if (res.code === 0) {
         ElMessage({
                 type: 'success',
@@ -495,9 +434,9 @@ const openDetailShow = () => {
 // 打开详情
 const getDetails = async (row) => {
   // 打开弹窗
-  const res = await findWcStaffLeaveApplication({ ID: row.ID })
+  const res = await findWcThirdOaPush({ ID: row.ID })
   if (res.code === 0) {
-    formData.value = res.data.rewcStaffLeaveApplication
+    formData.value = res.data.rewcThirdOaPush
     openDetailShow()
   }
 }
@@ -507,21 +446,14 @@ const getDetails = async (row) => {
 const closeDetailShow = () => {
   detailShow.value = false
   formData.value = {
-          title: '',
-          staffId: 0,
-          leaveDate: new Date(),
-          jobDepartment: 0,
-          leaveType: false,
-          leaveResult: '',
-          attachment: '',
-          checkList: '',
-          isLeave: false,
-          isHavedorm: false,
-          dormLocation: '',
-          roomNum: '',
-          submitOpinion: '',
-          oaId: '',
-          oaStatus: 0,
+          appKey: '',
+          flowtype: '',
+          fdId: '',
+          subject: '',
+          fdTmplId: '',
+          ip: '',
+          status: '',
+          log: '',
           }
 }
 
@@ -536,21 +468,14 @@ const openDialog = () => {
 const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
-        title: '',
-        staffId: 0,
-        leaveDate: new Date(),
-        jobDepartment: 0,
-        leaveType: false,
-        leaveResult: '',
-        attachment: '',
-        checkList: '',
-        isLeave: false,
-        isHavedorm: false,
-        dormLocation: '',
-        roomNum: '',
-        submitOpinion: '',
-        oaId: '',
-        oaStatus: 0,
+        appKey: '',
+        flowtype: '',
+        fdId: '',
+        subject: '',
+        fdTmplId: '',
+        ip: '',
+        status: '',
+        log: '',
         }
 }
 // 弹窗确定
@@ -560,13 +485,13 @@ const enterDialog = async () => {
               let res
               switch (type.value) {
                 case 'create':
-                  res = await createWcStaffLeaveApplication(formData.value)
+                  res = await createWcThirdOaPush(formData.value)
                   break
                 case 'update':
-                  res = await updateWcStaffLeaveApplication(formData.value)
+                  res = await updateWcThirdOaPush(formData.value)
                   break
                 default:
-                  res = await createWcStaffLeaveApplication(formData.value)
+                  res = await createWcThirdOaPush(formData.value)
                   break
               }
               if (res.code === 0) {
@@ -585,4 +510,3 @@ const enterDialog = async () => {
 <style>
 
 </style>
-

@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/employee"
@@ -16,6 +18,16 @@ import (
 )
 
 type LandrayOa struct {
+}
+
+type OAStaffLeaveApplication struct {
+	DocSubject  string     `json:"docSubject"`
+	DocCreator  string     `json:"docCreator"`
+	DocStatus   string     `json:"docStatus"`
+	StaffName   string     `json:"StaffName"`
+	LeaveDate   *time.Time `json:"LeaveDate"`
+	LeaveType   int        `json:"LeaveType"`
+	LeaveResult string     `json:"LeaveResult"`
 }
 
 // LoadConfig 加载配置文件
@@ -202,7 +214,7 @@ func (landrayOa *LandrayOa) CreateOAAdjustlevelApplication(wcStaffAdjustlevelApp
 }
 
 // 创建OA离职申请
-func (landrayOa *LandrayOa) CreateOALeaveApplication(wcStaffLeaveApplication employee.WcStaffLeaveApplication) (string, error) {
+func (landrayOa *LandrayOa) CreateOALeaveApplication(oaStaffLeaveApplication OAStaffLeaveApplication) (string, error) {
 	cfg, err := LoadConfig("./oa-config.ini")
 	if err != nil {
 		return "", err
@@ -211,20 +223,17 @@ func (landrayOa *LandrayOa) CreateOALeaveApplication(wcStaffLeaveApplication emp
 	eaConfig := cfg.Section("leave_application")
 	// 配置OA提交
 	eaData := url.Values{}
-	eaData.Set(eaConfig.Key("StaffName").MustString(""), "刘永波")
-	eaData.Set(eaConfig.Key("LeaveDate").MustString(""), wcStaffLeaveApplication.LeaveDate)
-	//eaData.Set(eaConfig.Key("EmploymentDepartmentID").MustString(""), wcStaffLeaveApplication.JobDepartmentId.String())
-	//eaData.Set(eaConfig.Key("DepartmentName").MustString(""), wcStaffLeaveApplication.JobDepartment)
-	eaData.Set(eaConfig.Key("LeaveType").MustString(""), wcStaffLeaveApplication.LeaveType)
-	eaData.Set(eaConfig.Key("LeaveResult").MustString(""), wcStaffLeaveApplication.LeaveResult)
-	//eaData.Set(eaConfig.Key("JobPositionId").MustString(""), wcStaffLeaveApplication.)
+	eaData.Set(eaConfig.Key("StaffName").MustString(""), oaStaffLeaveApplication.StaffName)
+	eaData.Set(eaConfig.Key("LeaveDate").MustString(""), oaStaffLeaveApplication.LeaveDate.GoString())
+	eaData.Set(eaConfig.Key("LeaveType").MustString(""), strconv.Itoa(oaStaffLeaveApplication.LeaveType))
+	eaData.Set(eaConfig.Key("LeaveResult").MustString(""), oaStaffLeaveApplication.LeaveResult)
 
 	tmplateId := eaConfig.Key("fdTemplateId").MustString("")
 	oaData := url.Values{}
 	oaData.Set("fdTemplateId", tmplateId)
-	oaData.Set("docSubject", wcStaffLeaveApplication.Title)
-	oaData.Set("docStatus", string(wcStaffLeaveApplication.OaStatus))
-	oaData.Set("docCreator", `{"LoginName":"liuyongbo"}`)
+	oaData.Set("docSubject", oaStaffLeaveApplication.DocSubject)
+	oaData.Set("docStatus", oaStaffLeaveApplication.DocStatus)
+	oaData.Set("docCreator", `{"LoginName":"`+oaStaffLeaveApplication.DocCreator+`"}`)
 
 	jsonData, err := json.Marshal(eaData)
 	if err != nil {
@@ -254,13 +263,14 @@ func (landrayOa *LandrayOa) CreateOATransferApplication(wcStaffTransferApplicati
 	eaData.Set(eaConfig.Key("TransferType").MustString(""), wcStaffTransferApplication.TransferType)
 
 	var oaTransferData string = ""
-	oaTransferData += fmt.Sprintf(`"%s"`, eaConfig.Key("TransferName").MustString("")) + ":" + SetIdName("165859c24b5e99309ab2c7349e7bb6ac", "刘永波")
+	oaTransferData += SetNameValueJson(eaConfig.Key("TransferName").MustString(""), SetIdName("165859c24b5e99309ab2c7349e7bb6ac", "刘永波"))
 	oaTransferData += "," + SetNameValue(eaConfig.Key("EmploymentDate").MustString(""), wcStaffTransferApplication.EmploymentDate)
 	oaTransferData += "," + SetNameValue(eaConfig.Key("TransferType").MustString(""), wcStaffTransferApplication.TransferType)
-	oaTransferData += "," + SetNameValue(eaConfig.Key("TransferStaff").MustString(""), SetIdName("165859c24b5e99309ab2c7349e7bb6ac", "刘永波"))
-	oaTransferData += "," + SetNameValue(eaConfig.Key("SourceDepartment").MustString(""), SetIdName("1644f7a70f2503bb7bf923a4c479aff1", "容大集团_集团总部_信息技术部"))
+	oaTransferData += "," + SetNameValue(eaConfig.Key("TransferResult").MustString(""), wcStaffTransferApplication.TransferResult)
+	oaTransferData += "," + SetNameValueJson(eaConfig.Key("TransferStaff").MustString(""), SetIdName("165859c24b5e99309ab2c7349e7bb6ac", "刘永波"))
+	oaTransferData += "," + SetNameValueJson(eaConfig.Key("SourceDepartment").MustString(""), SetIdName("1644f7a70f2503bb7bf923a4c479aff1", "容大集团/集团总部/信息技术部"))
 	oaTransferData += "," + SetNameValue(eaConfig.Key("SourceJobPosition").MustString(""), wcStaffTransferApplication.SourcePosition)
-	oaTransferData += "," + SetNameValue(eaConfig.Key("NewDepartment").MustString(""), SetIdName("1644f7a70a2554c24bcefe44be68c55e", "容大集团_集团总部_综合行政部"))
+	oaTransferData += "," + SetNameValueJson(eaConfig.Key("NewDepartment").MustString(""), SetIdName("1644f7a70a2554c24bcefe44be68c55e", "容大集团/集团总部/综合行政部"))
 	oaTransferData += "," + SetNameValue(eaConfig.Key("NewJobPosition").MustString(""), wcStaffTransferApplication.NewPosition)
 	oaTransferData += "," + SetNameValue(eaConfig.Key("SourceResult").MustString(""), wcStaffTransferApplication.SourceResult)
 	oaTransferData += "," + SetNameValue(eaConfig.Key("ToResult").MustString(""), wcStaffTransferApplication.ToResult)
@@ -290,14 +300,17 @@ func (landrayOa *LandrayOa) CreateOATransferApplication(wcStaffTransferApplicati
 	oaData.Set("docSubject", wcStaffTransferApplication.Title)
 	oaData.Set("docStatus", string(wcStaffTransferApplication.OaStatus))
 	oaData.Set("docCreator", `{"LoginName":"liuyongbo"}`)
-	oaData.Set("attachmentForms.fdKey", "fd_36829ea354aa5e")
-	oaData.Set("attachmentForms.fdFileName", "test.png")
-
-	jsonData, err := json.Marshal(eaData)
-	if err != nil {
-		return "", err
-	}
-	fmt.Println(jsonData)
+	oaData.Set("attachmentForms.fdKey", `"fd_36829ea354aa5e"`)
+	oaData.Set("attachmentForms.fdFileName", `"favicon.ico"`)
+	fileData, err := ReadFileToBase64("/favicon.ico")
+	oaData.Set("attachmentForms.fdAttachment", fileData)
+	/*
+		jsonData, err := json.Marshal(eaData)
+		if err != nil {
+			return "", err
+		}
+	*/
+	fmt.Println(oaData)
 	oaData.Set("formValues", "{"+oaTransferData+"}")
 	fmt.Println(oaTransferData)
 	dsData, err := CreateOAProcess(oaData)
@@ -335,5 +348,11 @@ func SetIdName(id string, name string) string {
 // 设置名称和值Json串
 func SetNameValue(name string, value string) string {
 	retData := fmt.Sprintf(`"%s":"%s"`, name, value)
+	return retData
+}
+
+// 设置名称和值Json串
+func SetNameValueJson(name string, value string) string {
+	retData := fmt.Sprintf(`"%s":%s`, name, value)
 	return retData
 }

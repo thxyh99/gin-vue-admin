@@ -4,6 +4,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/employee"
 	employeeReq "github.com/flipped-aurora/gin-vue-admin/server/model/employee/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	"gorm.io/gorm"
 )
 
@@ -23,6 +24,17 @@ func (wcStaffTransferApplicationService *WcStaffTransferApplicationService) Dele
 			return err
 		}
 		if err = tx.Delete(&employee.WcStaffTransferApplication{}, "id = ?", ID).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+	return err
+}
+
+// 更新OA流程状态
+func (wcStaffTransferApplicationService *WcStaffTransferApplicationService) UpdateWcStaffTransferApplicationOaStatus(flowId string, oaStatus uint) (err error) {
+	err = global.GVA_DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(&employee.WcStaffTransferApplication{}).Where("oa_id = ?", flowId).Update("oa_status", oaStatus).Error; err != nil {
 			return err
 		}
 		return nil
@@ -53,6 +65,27 @@ func (wcStaffTransferApplicationService *WcStaffTransferApplicationService) Upda
 // GetWcStaffTransferApplication 根据ID获取调动申请记录
 func (wcStaffTransferApplicationService *WcStaffTransferApplicationService) GetWcStaffTransferApplication(ID string) (wcStaffTransferApplication employee.WcStaffTransferApplication, err error) {
 	err = global.GVA_DB.Where("id = ?", ID).First(&wcStaffTransferApplication).Error
+	return
+}
+
+// 根据oa id 更新调动申请记录
+func (wcStaffTransferApplicationService *WcStaffTransferApplicationService) UpdateWcStaffTransferApplicationByOA(wcStaffTransferApplication employee.WcStaffTransferApplication) (err error) {
+	err = global.GVA_DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(&weChat.WcPosition{}).Where("staff_id = ?", wcStaffTransferApplication.TransferStaff).Update("position_id", wcStaffTransferApplication.NewPosition).Error; err != nil {
+			return err
+		}
+		if err := tx.Model(&weChat.WcStaffDepartment{}).Where("staff_id = ?", wcStaffTransferApplication.TransferStaff).Update("department_id", wcStaffTransferApplication.NewDepartment).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+	return err
+}
+
+// 根据oa id 获取调动申请信息
+func (wcStaffTransferApplicationService *WcStaffTransferApplicationService) GetWcStaffTransferApplicationByOA(ID string) (wcStaffTransferApplication employee.WcStaffTransferApplication, err error) {
+	err = global.GVA_DB.Where("oa_id = ?", ID).First(&wcStaffTransferApplication).Error
 	return
 }
 

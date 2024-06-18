@@ -23,11 +23,12 @@ func (s *WcStaffLeaveApplicationRouter) InitWcStaffLeaveApplicationRouter(Router
 		wcStaffLeaveApplicationRouter.PUT("updateWcStaffLeaveApplication", wcStaffLeaveApplicationApi.UpdateWcStaffLeaveApplication)              // 更新离职申请
 	}
 	{
-		wcStaffLeaveApplicationRouterWithoutRecord.GET("findWcStaffLeaveApplication", wcStaffLeaveApplicationApi.FindWcStaffLeaveApplication)       // 根据ID获取离职申请
-		wcStaffLeaveApplicationRouterWithoutRecord.GET("getWcStaffLeaveApplicationList", wcStaffLeaveApplicationApi.GetWcStaffLeaveApplicationList) // 获取离职申请列表
+		wcStaffLeaveApplicationRouterWithoutRecord.GET("findWcStaffLeaveApplication", wcStaffLeaveApplicationApi.FindWcStaffLeaveApplication) // 根据ID获取离职申请
+		wcStaffLeaveApplicationRouterWithoutRecord.GET("getWcStaffLeaveApplicationList", wcStaffLeaveApplicationApi.GetWcStaffLeaveApplicationList)
+		// 获取离职申请列表
 	}
 	{
 		wcStaffLeaveApplicationRouterWithoutAuth.GET("getWcStaffLeaveApplicationPublic", wcStaffLeaveApplicationApi.GetWcStaffLeaveApplicationPublic) // 获取离职申请列表
-		wcStaffLeaveApplicationRouterWithoutAuth.GET("createOAStaffLeaveApplication", wcStaffLeaveApplicationApi.CreateOAStaffLeaveApplication)       // 获取离职申请列表
+		wcStaffLeaveApplicationRouterWithoutAuth.POST("createOAStaffLeaveApplication", wcStaffLeaveApplicationApi.CreateOAStaffLeaveApplication)      // 创建OA离职申请
 	}
 }

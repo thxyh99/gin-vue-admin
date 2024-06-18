@@ -112,6 +112,8 @@ func Routers() *gin.Engine {
 		employeeRouter.InitWcStaffAdjustlevelApplicationRouter(PrivateGroup, PublicGroup)
 		employeeRouter.InitWcStaffTransferApplicationRouter(PrivateGroup, PublicGroup)
 		employeeRouter.InitWcStaffLeaveApplicationRouter(PrivateGroup, PublicGroup)
+		employeeRouter.InitWcThirdOaPushRouter(PrivateGroup, PublicGroup)
+
 	}
 
 	global.GVA_LOG.Info("router register success")

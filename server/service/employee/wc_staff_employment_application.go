@@ -4,6 +4,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/employee"
 	employeeReq "github.com/flipped-aurora/gin-vue-admin/server/model/employee/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
 	"go.uber.org/zap"
 	"gopkg.in/ini.v1"
 	"gorm.io/gorm"
@@ -25,6 +26,17 @@ func (wcStaffEmploymentApplicationService *WcStaffEmploymentApplicationService) 
 			return err
 		}
 		if err = tx.Delete(&employee.WcStaffEmploymentApplication{}, "id = ?", ID).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+	return err
+}
+
+// 更新OA流程状态
+func (wcStaffEmploymentApplicationService *WcStaffEmploymentApplicationService) UpdateWcStaffEmploymentApplicationOaStatus(flowId string, oaStatus uint) (err error) {
+	err = global.GVA_DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(&employee.WcStaffEmploymentApplication{}).Where("oa_id = ?", flowId).Update("oa_status", oaStatus).Error; err != nil {
 			return err
 		}
 		return nil
@@ -55,6 +67,11 @@ func (wcStaffEmploymentApplicationService *WcStaffEmploymentApplicationService) 
 // GetWcStaffEmploymentApplication 根据ID获取入职申请记录
 func (wcStaffEmploymentApplicationService *WcStaffEmploymentApplicationService) GetWcStaffEmploymentApplication(ID string) (wcStaffEmploymentApplication employee.WcStaffEmploymentApplication, err error) {
 	err = global.GVA_DB.Where("id = ?", ID).First(&wcStaffEmploymentApplication).Error
+	return
+}
+
+func (wcStaffEmploymentApplicationService *WcStaffEmploymentApplicationService) GetWcStaffEmploymentApplicationByOA(oaID string) (wcStaffEmploymentApplication employee.WcStaffEmploymentApplication, err error) {
+	err = global.GVA_DB.Where("oa_id = ?", oaID).First(&wcStaffEmploymentApplication).Error
 	return
 }
 
@@ -161,5 +178,17 @@ func (wcStaffEmploymentApplicationService *WcStaffEmploymentApplicationService) 
 	// 提交OA流程
 
 	err = global.GVA_DB.Create(wcStaffEmploymentApplication).Error
+	return err
+}
+
+// 更新员工入职状态与入职日期
+func (wcStaffEmploymentApplicationService *WcStaffEmploymentApplicationService) UpdateStaffEmploymentStatus(wcStaffEmploymentApplication employee.WcStaffEmploymentApplication) (err error) {
+	updateData := map[string]interface{}{"status": "1", "employment_date": wcStaffEmploymentApplication.EmploymentDate}
+	err = global.GVA_DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(&weChat.WcStaffJob{}).Where("staff_id = ?", wcStaffEmploymentApplication.StaffId).Updates(updateData).Error; err != nil {
+			return err
+		}
+		return nil
+	})
 	return err
 }

@@ -16,45 +16,48 @@ type WcStaffLeaveApplicationApi struct {
 
 var wcStaffLeaveApplicationService = service.ServiceGroupApp.EmployeeServiceGroup.WcStaffLeaveApplicationService
 
-// CreateWcStaffLeaveApplication 创建离职申请
+// CreateWcStaffLeaveApplication 创建员工离职申请
 // @Tags WcStaffLeaveApplication
-// @Summary 创建离职申请
+// @Summary 创建员工离职申请
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body employee.WcStaffLeaveApplication true "创建离职申请"
+// @Param data body employee.WcStaffLeaveApplication true "创建员工离职申请"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"创建成功"}"
 // @Router /wcStaffLeaveApplication/createWcStaffLeaveApplication [post]
 func (wcStaffLeaveApplicationApi *WcStaffLeaveApplicationApi) CreateWcStaffLeaveApplication(c *gin.Context) {
 	var wcStaffLeaveApplication employee.WcStaffLeaveApplication
-	err := c.ShouldBindJSON(&wcStaffLeaveApplication)
-	if err != nil {
+	// 绑定JSON数据并处理错误
+	if err := c.ShouldBindJSON(wcStaffLeaveApplication); err != nil {
+		global.GVA_LOG.Error("JSON绑定失败", zap.Error(err))
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	wcStaffLeaveApplication.CreatedBy = utils.GetUserID(c)
-
+	if err := wcStaffLeaveApplicationService.CreateOAStaffLeaveApplication(&wcStaffLeaveApplication); err != nil {
+		global.GVA_LOG.Error("创建OA离职申请流程失败!", zap.Error(err))
+		response.FailWithMessage("创建OA离职申请流程失败", c)
+		return
+	}
 	if err := wcStaffLeaveApplicationService.CreateWcStaffLeaveApplication(&wcStaffLeaveApplication); err != nil {
-		global.GVA_LOG.Error("创建失败!", zap.Error(err))
-		response.FailWithMessage("创建失败", c)
+		global.GVA_LOG.Error("创建离职申请失败!", zap.Error(err))
+		response.FailWithMessage("创建离职申请流程失败", c)
 	} else {
 		response.OkWithMessage("创建成功", c)
 	}
 }
 
-// DeleteWcStaffLeaveApplication 删除离职申请
+// DeleteWcStaffLeaveApplication 删除员工离职申请
 // @Tags WcStaffLeaveApplication
-// @Summary 删除离职申请
+// @Summary 删除员工离职申请
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body employee.WcStaffLeaveApplication true "删除离职申请"
+// @Param data body employee.WcStaffLeaveApplication true "删除员工离职申请"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"删除成功"}"
 // @Router /wcStaffLeaveApplication/deleteWcStaffLeaveApplication [delete]
 func (wcStaffLeaveApplicationApi *WcStaffLeaveApplicationApi) DeleteWcStaffLeaveApplication(c *gin.Context) {
 	ID := c.Query("ID")
-	userID := utils.GetUserID(c)
-	if err := wcStaffLeaveApplicationService.DeleteWcStaffLeaveApplication(ID, userID); err != nil {
+	if err := wcStaffLeaveApplicationService.DeleteWcStaffLeaveApplication(ID, utils.GetUserID(c)); err != nil {
 		global.GVA_LOG.Error("删除失败!", zap.Error(err))
 		response.FailWithMessage("删除失败", c)
 	} else {
@@ -62,9 +65,9 @@ func (wcStaffLeaveApplicationApi *WcStaffLeaveApplicationApi) DeleteWcStaffLeave
 	}
 }
 
-// DeleteWcStaffLeaveApplicationByIds 批量删除离职申请
+// DeleteWcStaffLeaveApplicationByIds 批量删除员工离职申请
 // @Tags WcStaffLeaveApplication
-// @Summary 批量删除离职申请
+// @Summary 批量删除员工离职申请
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
@@ -72,8 +75,7 @@ func (wcStaffLeaveApplicationApi *WcStaffLeaveApplicationApi) DeleteWcStaffLeave
 // @Router /wcStaffLeaveApplication/deleteWcStaffLeaveApplicationByIds [delete]
 func (wcStaffLeaveApplicationApi *WcStaffLeaveApplicationApi) DeleteWcStaffLeaveApplicationByIds(c *gin.Context) {
 	IDs := c.QueryArray("IDs[]")
-	userID := utils.GetUserID(c)
-	if err := wcStaffLeaveApplicationService.DeleteWcStaffLeaveApplicationByIds(IDs, userID); err != nil {
+	if err := wcStaffLeaveApplicationService.DeleteWcStaffLeaveApplicationByIds(IDs, utils.GetUserID(c)); err != nil {
 		global.GVA_LOG.Error("批量删除失败!", zap.Error(err))
 		response.FailWithMessage("批量删除失败", c)
 	} else {
@@ -81,13 +83,13 @@ func (wcStaffLeaveApplicationApi *WcStaffLeaveApplicationApi) DeleteWcStaffLeave
 	}
 }
 
-// UpdateWcStaffLeaveApplication 更新离职申请
+// UpdateWcStaffLeaveApplication 更新员工离职申请
 // @Tags WcStaffLeaveApplication
-// @Summary 更新离职申请
+// @Summary 更新员工离职申请
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data body employee.WcStaffLeaveApplication true "更新离职申请"
+// @Param data body employee.WcStaffLeaveApplication true "更新员工离职申请"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"更新成功"}"
 // @Router /wcStaffLeaveApplication/updateWcStaffLeaveApplication [put]
 func (wcStaffLeaveApplicationApi *WcStaffLeaveApplicationApi) UpdateWcStaffLeaveApplication(c *gin.Context) {
@@ -97,7 +99,6 @@ func (wcStaffLeaveApplicationApi *WcStaffLeaveApplicationApi) UpdateWcStaffLeave
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	wcStaffLeaveApplication.UpdatedBy = utils.GetUserID(c)
 
 	if err := wcStaffLeaveApplicationService.UpdateWcStaffLeaveApplication(wcStaffLeaveApplication); err != nil {
 		global.GVA_LOG.Error("更新失败!", zap.Error(err))
@@ -107,13 +108,13 @@ func (wcStaffLeaveApplicationApi *WcStaffLeaveApplicationApi) UpdateWcStaffLeave
 	}
 }
 
-// FindWcStaffLeaveApplication 用id查询离职申请
+// FindWcStaffLeaveApplication 用id查询员工离职申请
 // @Tags WcStaffLeaveApplication
-// @Summary 用id查询离职申请
+// @Summary 用id查询员工离职申请
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data query employee.WcStaffLeaveApplication true "用id查询离职申请"
+// @Param data query employee.WcStaffLeaveApplication true "用id查询员工离职申请"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"查询成功"}"
 // @Router /wcStaffLeaveApplication/findWcStaffLeaveApplication [get]
 func (wcStaffLeaveApplicationApi *WcStaffLeaveApplicationApi) FindWcStaffLeaveApplication(c *gin.Context) {
@@ -126,13 +127,13 @@ func (wcStaffLeaveApplicationApi *WcStaffLeaveApplicationApi) FindWcStaffLeaveAp
 	}
 }
 
-// GetWcStaffLeaveApplicationList 分页获取离职申请列表
+// GetWcStaffLeaveApplicationList 分页获取员工离职申请列表
 // @Tags WcStaffLeaveApplication
-// @Summary 分页获取离职申请列表
+// @Summary 分页获取员工离职申请列表
 // @Security ApiKeyAuth
 // @accept application/json
 // @Produce application/json
-// @Param data query employeeReq.WcStaffLeaveApplicationSearch true "分页获取离职申请列表"
+// @Param data query employeeReq.WcStaffLeaveApplicationSearch true "分页获取员工离职申请列表"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /wcStaffLeaveApplication/getWcStaffLeaveApplicationList [get]
 func (wcStaffLeaveApplicationApi *WcStaffLeaveApplicationApi) GetWcStaffLeaveApplicationList(c *gin.Context) {
@@ -155,19 +156,19 @@ func (wcStaffLeaveApplicationApi *WcStaffLeaveApplicationApi) GetWcStaffLeaveApp
 	}
 }
 
-// GetWcStaffLeaveApplicationPublic 不需要鉴权的离职申请接口
+// GetWcStaffLeaveApplicationPublic 不需要鉴权的员工离职申请接口
 // @Tags WcStaffLeaveApplication
-// @Summary 不需要鉴权的离职申请接口
+// @Summary 不需要鉴权的员工离职申请接口
 // @accept application/json
 // @Produce application/json
-// @Param data query employeeReq.WcStaffLeaveApplicationSearch true "分页获取离职申请列表"
+// @Param data query employeeReq.WcStaffLeaveApplicationSearch true "分页获取员工离职申请列表"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /wcStaffLeaveApplication/getWcStaffLeaveApplicationList [get]
 func (wcStaffLeaveApplicationApi *WcStaffLeaveApplicationApi) GetWcStaffLeaveApplicationPublic(c *gin.Context) {
 	// 此接口不需要鉴权
 	// 示例为返回了一个固定的消息接口，一般本接口用于C端服务，需要自己实现业务逻辑
 	response.OkWithDetailed(gin.H{
-		"info": "不需要鉴权的离职申请接口信息",
+		"info": "不需要鉴权的员工离职申请接口信息",
 	}, "获取成功", c)
 }
 
@@ -182,44 +183,20 @@ func (wcStaffLeaveApplicationApi *WcStaffLeaveApplicationApi) GetWcStaffLeaveApp
 // @Router /wcStaffEmploymentApplication/createOAStaffEmploymentApplication [get]
 func (wcStaffLeaveApplicationApi *WcStaffLeaveApplicationApi) CreateOAStaffLeaveApplication(c *gin.Context) {
 	var wcStaffLeaveApplication employee.WcStaffLeaveApplication
-
-	wcStaffLeaveApplication.StaffId = 12
-	wcStaffLeaveApplication.Title = "离职审批" + "-" + "刘永波"
-	wcStaffLeaveApplication.LeaveDate = "2024-06-05"
-	//wcStaffLeaveApplication.JobDepartment = "1644f7a70f2503bb7bf923a4c479aff1"
-	wcStaffLeaveApplication.JobDepartment = "容大集团_集团总部_信息技术部"
-	wcStaffLeaveApplication.LeaveType = "协商解除"
-	wcStaffLeaveApplication.LeaveResult = "离职测试"
-
-	// 调用外部服务或库之前添加错误处理
-	landrayOa := utils.LandrayOa{}
-	oaId, err := landrayOa.CreateOALeaveApplication(wcStaffLeaveApplication)
-	if err != nil {
-		global.GVA_LOG.Error("创建员工离职申请失败", zap.Error(err))
-		response.FailWithMessage("创建员工离职申请失败", c)
+	// 绑定JSON数据并处理错误
+	if err := c.ShouldBindJSON(wcStaffLeaveApplication); err != nil {
+		global.GVA_LOG.Error("JSON绑定失败", zap.Error(err))
+		response.FailWithMessage(err.Error(), c)
 		return
 	}
-
-	wcStaffLeaveApplication.OaId = oaId
-	wcStaffLeaveApplication.OaStatus = 10
-	/*
-		// 增加数据验证逻辑
-		if err := validateApplication(&wcStaffPassApplication); err != nil {
-			global.GVA_LOG.Error("数据验证失败", zap.Error(err))
-			response.FailWithMessage("数据验证失败", c)
-			return
-		}
-			// 绑定JSON数据并处理错误
-			if err := c.ShouldBindJSON(wcStaffEmploymentApplication); err != nil {
-				global.GVA_LOG.Error("JSON绑定失败", zap.Error(err))
-				response.FailWithMessage(err.Error(), c)
-				return
-			}
-	*/
-	wcStaffLeaveApplication.CreatedBy = utils.GetUserID(c)
+	if err := wcStaffLeaveApplicationService.CreateOAStaffLeaveApplication(&wcStaffLeaveApplication); err != nil {
+		global.GVA_LOG.Error("创建OA离职申请流程失败!", zap.Error(err))
+		response.FailWithMessage("创建OA离职申请流程失败", c)
+		return
+	}
 	if err := wcStaffLeaveApplicationService.CreateWcStaffLeaveApplication(&wcStaffLeaveApplication); err != nil {
-		global.GVA_LOG.Error("创建失败!", zap.Error(err))
-		response.FailWithMessage("创建失败", c)
+		global.GVA_LOG.Error("创建OA离职申请失败!", zap.Error(err))
+		response.FailWithMessage("创建OA离职申请流程失败", c)
 	} else {
 		response.OkWithMessage("创建成功", c)
 	}

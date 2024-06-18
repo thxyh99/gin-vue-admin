@@ -188,45 +188,11 @@ func validateApplication(app *employee.WcStaffEmploymentApplication) error {
 // @Router /wcStaffEmploymentApplication/createOAStaffEmploymentApplication [get]
 func (wcStaffEmploymentApplicationApi *WcStaffEmploymentApplicationApi) CreateOAStaffEmploymentApplication(c *gin.Context) {
 	var wcStaffEmploymentApplication employee.WcStaffEmploymentApplication
-
-	wcStaffEmploymentApplication.StaffName = "刘永波"
-	wcStaffEmploymentApplication.Title = "入职申请" + "-" + wcStaffEmploymentApplication.StaffName
-	wcStaffEmploymentApplication.EmploymentDate = "2024-05-05"
-	wcStaffEmploymentApplication.EmploymentDepartmentId = "1644f7a70f2503bb7bf923a4c479aff1"
-	wcStaffEmploymentApplication.EmploymentDepartmentName = "容大集团_集团总部_信息技术部"
-	wcStaffEmploymentApplication.JobPosition = "软件工程师"
-	wcStaffEmploymentApplication.Gender = "男"
-	wcStaffEmploymentApplication.Birthday = "1970-2-12"
-	wcStaffEmploymentApplication.NativePlace = "湖南"
-	wcStaffEmploymentApplication.Nationality = "汉族"
-	wcStaffEmploymentApplication.Height = "176cm"
-	wcStaffEmploymentApplication.Weight = "73kg"
-	wcStaffEmploymentApplication.Marriage = "已婚"
-	wcStaffEmploymentApplication.PoliticalOutlook = "群众"
-	wcStaffEmploymentApplication.Major = "计算机"
-	wcStaffEmploymentApplication.Education = "大专"
-	wcStaffEmploymentApplication.School = "大学"
-	wcStaffEmploymentApplication.GraduationDate = "2001-07-01"
-	wcStaffEmploymentApplication.Certificate = "无"
-	wcStaffEmploymentApplication.IdNumber = "430423"
-	wcStaffEmploymentApplication.IdAddress = "广东深圳"
-	wcStaffEmploymentApplication.BankAccount = "6225"
-	wcStaffEmploymentApplication.BankName = "招商银行"
-	wcStaffEmploymentApplication.ContactWechat = "wechat"
-	wcStaffEmploymentApplication.Mobile = "189"
-	wcStaffEmploymentApplication.HomeAddress = "深圳龙华"
-	wcStaffEmploymentApplication.LicenseAttachment = ""
-	wcStaffEmploymentApplication.RelationShip = "夫妻"
-	wcStaffEmploymentApplication.RelationName = "吴"
-	wcStaffEmploymentApplication.RelationMobile = "135"
-	wcStaffEmploymentApplication.RelationAddress = "深圳"
-	//wcStaffEmploymentApplication.IsCeopass =
-	//wcStaffEmploymentApplication.IsBodychecknormal =
-	wcStaffEmploymentApplication.JobLevel = "职级"
-	wcStaffEmploymentApplication.TryPeriod = "1"
-	wcStaffEmploymentApplication.UrgencyNotification = ""
-	wcStaffEmploymentApplication.OnboardingOpinion = "同意"
-
+	if err := c.ShouldBindJSON(&wcStaffEmploymentApplication); err != nil {
+		global.GVA_LOG.Error("JSON绑定失败", zap.Error(err))
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
 	// 调用外部服务或库之前添加错误处理
 	landrayOa := utils.LandrayOa{}
 	oaId, err := landrayOa.CreateOAEmploymentApplication(wcStaffEmploymentApplication)
