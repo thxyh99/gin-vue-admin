@@ -10,4 +10,5 @@ type WcStaffMaterialsResponse struct {
 	TrialProvide           []*WcFileResponse `json:"trialProvide"`           //试用期管理规定
 	PersonalResume         []*WcFileResponse `json:"personalResume"`         //个人简历
 	SkillCertificate       []*WcFileResponse `json:"skillCertificate"`       //职称/技能证书
+	Health                 []*WcFileResponse `json:"health"`                 //健康证
 }

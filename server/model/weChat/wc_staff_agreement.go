@@ -16,7 +16,7 @@ type WcStaffAgreement struct {
 	EndDay   *time.Time `json:"endDay" form:"endDay" gorm:"column:end_day;comment:合同到期日;" binding:"required"`           //合同到期日
 	Times    *int       `json:"times" form:"times" gorm:"column:times;comment:续签次数;size:2;"`                            //续签次数
 	FileId   *int       `json:"fileId" form:"fileId" gorm:"column:file_id;comment:合同附件ID;size:10;"`                     //合同附件ID
-	Period   *int       `json:"period" form:"period" gorm:"column:period;comment:合同期限（月）;size:10;"`                     //合同期限（月）
+	Remark   string     `json:"remark" form:"remark" gorm:"column:remark;comment:特殊备注;size:200;" `                      //特殊备注
 }
 
 // TableName 合同信息 WcStaffAgreement自定义表名 wc_staff_agreement

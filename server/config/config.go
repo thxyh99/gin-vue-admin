@@ -217,6 +217,7 @@ var config = CommonConfig{
 		8:  "试用期管理规定",
 		9:  "个人简历",
 		10: "职称/技能证书",
+		11: "健康证",
 	},
 	SocialType: []string{
 		1: "深圳社保",

@@ -164,6 +164,8 @@ func (wcFileService *WcFileService) UploadFile(header *multipart.FileHeader, fil
 		Type:    &fileType,
 	}
 
+	fmt.Println("f", f)
+
 	newF, err := wcFileService.Upload(f)
 	newFile, err = wcFileService.AssembleFile(newF)
 	return newFile, err

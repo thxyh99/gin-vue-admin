@@ -220,6 +220,9 @@ func (wcStaffApi *WcStaffApi) ObtainEmployeeRoster(c *gin.Context) {
 		if *item.Type == 10 {
 			rewcStaffMaterials.SkillCertificate = append(rewcStaffMaterials.SkillCertificate, &clonedItem)
 		}
+		if *item.Type == 11 {
+			rewcStaffMaterials.Health = append(rewcStaffMaterials.Health, &clonedItem)
+		}
 	}
 
 	response.OkWithData(gin.H{
