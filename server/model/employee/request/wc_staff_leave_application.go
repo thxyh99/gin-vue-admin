@@ -8,6 +8,7 @@ import (
 type WcStaffLeaveApplicationSearch struct {
 	StartCreatedAt *time.Time `json:"startCreatedAt" form:"startCreatedAt"`
 	EndCreatedAt   *time.Time `json:"endCreatedAt" form:"endCreatedAt"`
+	DepartmentIds  []int      `json:"departmentIds[]" form:"departmentIds[]"`
 
 	request.PageInfo
 	Sort  string `json:"sort" form:"sort"`

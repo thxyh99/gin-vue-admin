@@ -28,6 +28,6 @@ func (s *WcThirdOaPushRouter) InitWcThirdOaPushRouter(Router *gin.RouterGroup, P
 	}
 	{
 		wcThirdOaPushRouterWithoutAuth.GET("getWcThirdOaPushPublic", wcThirdOaPushApi.GetWcThirdOaPushPublic) // 获取OA回调日志列表
-		wcThirdOaPushRouterWithoutAuth.GET("oaPush", wcThirdOaPushApi.CreateWcThirdOaPush)                    // 新建OA回调日志
+		wcThirdOaPushRouterWithoutAuth.POST("oaPush", wcThirdOaPushApi.CreateWcThirdOaPush)                   // 新建OA回调日志
 	}
 }

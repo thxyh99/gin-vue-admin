@@ -2,6 +2,7 @@ package employee
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
@@ -41,7 +42,7 @@ func (wcThirdOaPushApi *WcThirdOaPushApi) CreateWcThirdOaPush(c *gin.Context) {
 		wcStaffEmploymentApplicationService.UpdateWcStaffEmploymentApplicationOaStatus(wcThirdOaPush.FdId, wcThirdOaPush.Status)
 		if wcThirdOaPush.Status == 30 {
 			wcStaffEmploymentApplication, err := wcStaffEmploymentApplicationService.GetWcStaffEmploymentApplicationByOA(wcThirdOaPush.FdId)
-			if err != nil {
+			if err == nil {
 
 				wcStaffEmploymentApplicationService.UpdateStaffEmploymentStatus(wcStaffEmploymentApplication)
 			}
@@ -50,35 +51,36 @@ func (wcThirdOaPushApi *WcThirdOaPushApi) CreateWcThirdOaPush(c *gin.Context) {
 	case "transfer":
 		wcStaffTransferApplicationService.UpdateWcStaffTransferApplicationOaStatus(wcThirdOaPush.FdId, wcThirdOaPush.Status)
 		wcStaffTransferApplication, err := wcStaffTransferApplicationService.GetWcStaffTransferApplicationByOA(wcThirdOaPush.FdId)
-		if err != nil {
+		if err == nil {
 			wcStaffTransferApplicationService.UpdateWcStaffTransferApplicationByOA(wcStaffTransferApplication)
 		}
 		break
 	case "leave":
 		wcStaffLeaveApplicationService.UpdateWcStaffLeaveApplicationOaStatus(wcThirdOaPush.FdId, wcThirdOaPush.Status)
 		wcStaffLeaveApplication, err := wcStaffLeaveApplicationService.GetWcStaffLeaveApplicationByOA(wcThirdOaPush.FdId)
-		if err != nil {
+		if err == nil {
 			wcStaffLeaveApplicationService.UpdateWcStaffLeaveApplicationByOa(wcStaffLeaveApplication)
 		}
 		break
 	case "adjustlevel":
 		wcStaffAdjustlevelApplicationService.UpdateStaffAdjustlevelApplicationOaStatus(wcThirdOaPush.FdId, wcThirdOaPush.Status)
 		wcStaffAdjustlevelApplication, err := wcStaffAdjustlevelApplicationService.GetWcStaffAdjustlevelApplicationByOA(wcThirdOaPush.FdId)
-		if err != nil {
+		if err == nil {
 			wcStaffAdjustlevelApplicationService.UpdateWcStaffAdjustlevelApplicationByOA(wcStaffAdjustlevelApplication)
 		}
 		break
 	case "pass":
 		wcStaffPassApplicationService.UpdateWcStaffPassApplicationOaStatus(wcThirdOaPush.FdId, wcThirdOaPush.Status)
 		wcStaffPassApplication, err := wcStaffPassApplicationService.GetWcStaffPassApplicationByOA(wcThirdOaPush.FdId)
-		if err != nil {
+		if err == nil {
 			wcStaffPassApplicationService.UpdateWcStaffPassApplicationByOA(wcStaffPassApplication)
 		}
 		break
 	default:
 		response.FailWithMessage("未知的流程类型", c)
 	}
-	wcThirdOaPush.Flowtype = flowType
+
+	wcThirdOaPush.CreateTime = time.Now()
 	if err := wcThirdOaPushService.CreateWcThirdOaPush(&wcThirdOaPush); err != nil {
 		global.GVA_LOG.Error("创建失败!", zap.Error(err))
 		response.FailWithMessage("创建失败", c)

@@ -8,6 +8,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/employee"
 	employeeReq "github.com/flipped-aurora/gin-vue-admin/server/model/employee/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/weChat"
+	"github.com/flipped-aurora/gin-vue-admin/server/service/system"
 	wcChatService "github.com/flipped-aurora/gin-vue-admin/server/service/weChat"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"go.uber.org/zap"
@@ -18,7 +19,18 @@ type WcStaffLeaveApplicationService struct {
 }
 
 // CreateWcStaffLeaveApplication 创建离职申请记录
-func (wcStaffLeaveApplicationService *WcStaffLeaveApplicationService) CreateWcStaffLeaveApplication(wcStaffLeaveApplication *employee.WcStaffLeaveApplication) (err error) {
+func (wcStaffLeaveApplicationService *WcStaffLeaveApplicationService) CreateWcStaffLeaveApplication(wcStaffLeaveApplication *employee.WcStaffLeaveApplication, enabledOa ...bool) (err error) {
+	if len(enabledOa) > 0 && enabledOa[0] {
+		var leaveAppService WcStaffLeaveApplicationService
+		oa_id, err := leaveAppService.CreateOAStaffLeaveApplication(wcStaffLeaveApplication)
+		if err != nil {
+			global.GVA_LOG.Error("创建OA离职申请流程失败!", zap.Error(err))
+			return err
+		}
+
+		wcStaffLeaveApplication.OaId = oa_id
+		wcStaffLeaveApplication.OaStatus = 10
+	}
 	err = global.GVA_DB.Create(wcStaffLeaveApplication).Error
 	return err
 }
@@ -52,7 +64,7 @@ func (wcStaffLeaveApplicationService *WcStaffLeaveApplicationService) UpdateWcSt
 func (wcStaffLeaveApplicationService *WcStaffLeaveApplicationService) UpdateWcStaffLeaveApplicationByOa(wcStaffLeaveApplication employee.WcStaffLeaveApplication) (err error) {
 	updateData := map[string]interface{}{"status": "3", "leave_date": wcStaffLeaveApplication.LeaveDate}
 	err = global.GVA_DB.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Model(&weChat.WcStaffJob{}).Where("staff_id = ?", wcStaffLeaveApplication).Updates(updateData).Error; err != nil {
+		if err := tx.Model(&weChat.WcStaffJob{}).Where("staff_id = ?", wcStaffLeaveApplication.StaffId).Updates(updateData).Error; err != nil {
 			return err
 		}
 		return nil
@@ -103,6 +115,7 @@ func (wcStaffLeaveApplicationService *WcStaffLeaveApplicationService) GetWcStaff
 	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
 		db = db.Where("created_at BETWEEN ? AND ?", info.StartCreatedAt, info.EndCreatedAt)
 	}
+
 	err = db.Count(&total).Error
 	if err != nil {
 		return
@@ -129,15 +142,18 @@ func (wcStaffLeaveApplicationService *WcStaffLeaveApplicationService) GetWcStaff
 }
 
 // 创建OA离职申请流程
-func (wcStaffLeaveApplicationService *WcStaffLeaveApplicationService) CreateOAStaffLeaveApplication(wcStaffLeaveApplication *employee.WcStaffLeaveApplication) (err error) {
+func (wcStaffLeaveApplicationService *WcStaffLeaveApplicationService) CreateOAStaffLeaveApplication(wcStaffLeaveApplication *employee.WcStaffLeaveApplication) (oaid string, err error) {
 	oaStaffLeaveApplication := utils.OAStaffLeaveApplication{}
 	var staffServer wcChatService.WcStaffService
 	wcStaff, err := staffServer.GetWcStaff(strconv.Itoa(wcStaffLeaveApplication.StaffId))
-
-	oaStaffLeaveApplication.DocSubject = "离职申请-" + wcStaff.Name
-	oaStaffLeaveApplication.DocCreator = "liuyongbo"
-	oaStaffLeaveApplication.DocStatus = "10"
-
+	// 获取创建单据人员
+	var userService system.UserService
+	userInfo, err := userService.FindUserById(wcStaffLeaveApplication.CreatedBy)
+	// 创建OA流程信息，基本信息
+	oaStaffLeaveApplication.DocSubject = wcStaffLeaveApplication.Title
+	oaStaffLeaveApplication.DocCreator = userInfo.Username
+	oaStaffLeaveApplication.DocStatus = strconv.Itoa(wcStaffLeaveApplication.OaStatus)
+	// 创建OA流程信息，流程内容
 	oaStaffLeaveApplication.StaffName = wcStaff.Name
 	oaStaffLeaveApplication.LeaveDate = wcStaffLeaveApplication.LeaveDate
 	oaStaffLeaveApplication.LeaveType = wcStaffLeaveApplication.LeaveType
@@ -147,7 +163,7 @@ func (wcStaffLeaveApplicationService *WcStaffLeaveApplicationService) CreateOASt
 	oaId, err := landrayOa.CreateOALeaveApplication(oaStaffLeaveApplication)
 	if err != nil || strings.Index("code", oaId) > 0 {
 		global.GVA_LOG.Error("创建员工OA离职申请失败", zap.Error(err))
-		return err
+		return "", err
 	}
-	return nil
+	return oaId, nil
 }

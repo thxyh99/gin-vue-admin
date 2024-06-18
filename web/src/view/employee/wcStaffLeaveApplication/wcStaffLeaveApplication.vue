@@ -1,6 +1,7 @@
 
 <template>
   <div>
+    
     <div class="gva-search-box">
       <el-form ref="elSearchFormRef" :inline="true" :model="searchInfo" class="demo-form-inline" :rules="searchRule" @keyup.enter="onSubmit">
       <el-form-item label="创建日期" prop="createdAt">
@@ -49,6 +50,7 @@
             <template #default="scope">{{ formatDate(scope.row.leaveDate) }}</template>
          </el-table-column>
         <el-table-column sortable align="left" label="所属部门" prop="jobDepartment" width="120" />
+        <el-table-column sortable align="left" label="职务" prop="jobPosition" width="120" />
         <el-table-column sortable align="left" label="离职类型" prop="leaveType" width="120">
             <template #default="scope">{{ formatBoolean(scope.row.leaveType) }}</template>
         </el-table-column>
@@ -64,9 +66,7 @@
         <el-table-column align="left" label="宿舍所在地" prop="dormLocation" width="120" />
         <el-table-column align="left" label="房间门牌号" prop="roomNum" width="120" />
         <el-table-column align="left" label="提交意见" prop="submitOpinion" width="120" />
-        <el-table-column align="left" label="OAID" prop="oaId" width="120" />
-        <el-table-column align="left" label="OA状态" prop="oaStatus" width="120" />
-        <el-table-column align="left" label="操作" fixed="right" min-width="240">
+         <el-table-column align="left" label="操作" fixed="right" min-width="240">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
                 <el-icon style="margin-right: 5px"><InfoFilled /></el-icon>
@@ -101,20 +101,28 @@
             </template>
 
           <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
+            <el-form-item label="员工ID:"  prop="staffId" >
+              <SelectStaff v-model="formData.staffId" :disabled="type==='update'?'disabled':false" @changeSuccess="changeSuccess">
+              </SelectStaff>
+            </el-form-item>
             <el-form-item label="离职标题:"  prop="title" >
               <el-input v-model="formData.title" :clearable="true"  placeholder="请输入离职标题" />
-            </el-form-item>
-            <el-form-item label="员工ID:"  prop="staffId" >
-              <el-input v-model.number="formData.staffId" :clearable="true" placeholder="请输入员工ID" />
             </el-form-item>
             <el-form-item label="解除日期:"  prop="leaveDate" >
               <el-date-picker v-model="formData.leaveDate" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
             </el-form-item>
             <el-form-item label="所属部门:"  prop="jobDepartment" >
-              <el-input v-model.number="formData.jobDepartment" :clearable="true" placeholder="请输入所属部门" />
+              <SelectDepartment v-model="formData.jobDepartment">
+              </SelectDepartment>
+            </el-form-item>
+            <el-form-item label="职务:"  prop="jobPosition" >
+              <SelectPosition v-model="formData.jobPosition">
+              </SelectPosition>
             </el-form-item>
             <el-form-item label="离职类型:"  prop="leaveType" >
-              <el-switch v-model="formData.leaveType" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
+              <el-select v-model="formData.leaveType" placeholder="请选择离职类型" clearable>
+                <el-option v-for="item in leaveTypes" :key="item.value" :label="item.label" :value="item.value"></el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="事由:"  prop="leaveResult" >
               <el-input v-model="formData.leaveResult" :clearable="true"  placeholder="请输入事由" />
@@ -140,12 +148,6 @@
             <el-form-item label="提交意见:"  prop="submitOpinion" >
               <el-input v-model="formData.submitOpinion" :clearable="true"  placeholder="请输入提交意见" />
             </el-form-item>
-            <el-form-item label="OAID:"  prop="oaId" >
-              <el-input v-model="formData.oaId" :clearable="true"  placeholder="请输入OAID" />
-            </el-form-item>
-            <el-form-item label="OA状态:"  prop="oaStatus" >
-              <el-input v-model.number="formData.oaStatus" :clearable="true" placeholder="请输入OA状态" />
-            </el-form-item>
           </el-form>
     </el-drawer>
 
@@ -168,8 +170,11 @@
                 <el-descriptions-item label="所属部门">
                         {{ formData.jobDepartment }}
                 </el-descriptions-item>
+                <el-descriptions-item label="职务">
+                        {{ formData.jobPosition }}
+                </el-descriptions-item>
                 <el-descriptions-item label="离职类型">
-                    {{ formatBoolean(formData.leaveType) }}
+                    {{ formatData.leaveType }}
                 </el-descriptions-item>
                 <el-descriptions-item label="事由">
                         {{ formData.leaveResult }}
@@ -221,9 +226,22 @@ import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDow
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
 
+import SelectStaff from "@/components/selectStaff/index.vue";
+import SelectDepartment from "@/components/selectDepartment/index.vue";
+import SelectPosition from "@/components/selectPosition/index.vue";
+
 defineOptions({
     name: 'WcStaffLeaveApplication'
 })
+
+const leaveTypes = ref([
+  { label: '自离', value: '自离' },
+  { label: '辞退', value: '辞退' },
+  { label: '协商解除', value: '协商解除' },
+  { label: '退休', value: '退休' },
+  { label: '其他', value: '其他' },
+])
+
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
@@ -231,7 +249,8 @@ const formData = ref({
         staffId: 0,
         leaveDate: new Date(),
         jobDepartment: 0,
-        leaveType: false,
+        jobPosition: 0,
+        leaveType: '',
         leaveResult: '',
         attachment: '',
         checkList: '',
@@ -244,6 +263,9 @@ const formData = ref({
         oaStatus: 0,
         })
 
+const changeSuccess = e => {
+  formData.value.title = '离职申请-' + e.label
+}
 
 // 验证规则
 const rule = reactive({
@@ -511,7 +533,8 @@ const closeDetailShow = () => {
           staffId: 0,
           leaveDate: new Date(),
           jobDepartment: 0,
-          leaveType: false,
+          jobPosition: 0,
+          leaveType: '',
           leaveResult: '',
           attachment: '',
           checkList: '',
@@ -531,7 +554,6 @@ const openDialog = () => {
     type.value = 'create'
     dialogFormVisible.value = true
 }
-
 // 关闭弹窗
 const closeDialog = () => {
     dialogFormVisible.value = false
@@ -540,7 +562,8 @@ const closeDialog = () => {
         staffId: 0,
         leaveDate: new Date(),
         jobDepartment: 0,
-        leaveType: false,
+        jobPosition: 0,
+        leaveType: '',
         leaveResult: '',
         attachment: '',
         checkList: '',
@@ -579,7 +602,6 @@ const enterDialog = async () => {
               }
       })
 }
-
 </script>
 
 <style>

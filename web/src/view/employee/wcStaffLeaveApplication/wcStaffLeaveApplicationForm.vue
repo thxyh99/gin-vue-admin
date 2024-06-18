@@ -3,22 +3,20 @@
   <div>
     <div class="gva-form-box">
       <el-form :model="formData" ref="elFormRef" label-position="right" :rules="rule" label-width="80px">
-        <el-form-item label="员工ID:" prop="staffId">
-          <SelectStaff v-model.number="formData.staffId" :clearable="true" placeholder="请输入" >
-          </SelectStaff>
-       </el-form-item>
         <el-form-item label="离职标题:" prop="title">
           <el-input v-model="formData.title" :clearable="true"  placeholder="请输入离职标题" />
+       </el-form-item>
+        <el-form-item label="员工ID:" prop="staffId">
+          <el-input v-model.number="formData.staffId" :clearable="true" placeholder="请输入" />
        </el-form-item>
         <el-form-item label="解除日期:" prop="leaveDate">
           <el-date-picker v-model="formData.leaveDate" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
        </el-form-item>
         <el-form-item label="所属部门:" prop="jobDepartment">
-          <SelectDepartment v-model.number="formData.jobDepartment" :clearable="true" placeholder="请输入" >
-          </SelectDepartment>
+          <el-input v-model.number="formData.jobDepartment" :clearable="true" placeholder="请输入" />
        </el-form-item>
         <el-form-item label="离职类型:" prop="leaveType">
-          <el-switch v-model="formData.leaveType" active-color="#13ce66" inactive-color="#ff4949" active-text="自动" inactive-text="否" clearable ></el-switch>
+          <el-switch v-model="formData.leaveType" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
        </el-form-item>
         <el-form-item label="事由:" prop="leaveResult">
           <el-input v-model="formData.leaveResult" :clearable="true"  placeholder="请输入事由" />
@@ -44,6 +42,12 @@
         <el-form-item label="提交意见:" prop="submitOpinion">
           <el-input v-model="formData.submitOpinion" :clearable="true"  placeholder="请输入提交意见" />
        </el-form-item>
+        <el-form-item label="OAID:" prop="oaId">
+          <el-input v-model="formData.oaId" :clearable="true"  placeholder="请输入OAID" />
+       </el-form-item>
+        <el-form-item label="OA状态:" prop="oaStatus">
+          <el-input v-model.number="formData.oaStatus" :clearable="true" placeholder="请输入" />
+       </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="save">保存</el-button>
           <el-button type="primary" @click="back">返回</el-button>
@@ -59,10 +63,6 @@ import {
   updateWcStaffLeaveApplication,
   findWcStaffLeaveApplication
 } from '@/api/employee/wcStaffLeaveApplication'
-import SelectStaff from "@/components/selectStaff/index.vue";
-import SelectPosition from "@/components/selectPosition/index.vue";
-import SelectDepartment from "@/components/selectDepartment/index.vue";
-import SelectRank from "@/components/selectRank/index.vue";
 
 defineOptions({
     name: 'WcStaffLeaveApplicationForm'

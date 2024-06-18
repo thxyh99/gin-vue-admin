@@ -62,3 +62,20 @@ func (wcThirdOaPushService *WcThirdOaPushService) GetWcThirdOaPushInfoList(info 
 	err = db.Find(&wcThirdOaPushs).Error
 	return wcThirdOaPushs, total, err
 }
+
+type OaBaseInfo struct {
+	Id    string `json:"id"`
+	Lunid string `json:"lunid" form:"lunid" gorm:"column:lunid;comment:;size:50;"` //lunid字段
+	Name  string `json:"name" form:"name" gorm:"column:name;comment:;size:100;"`   //name字段
+	Type  string `json:"type" form:"type" gorm:"column:type;comment:;size:10;"`    //type字段
+}
+
+// 根据数据类型，数据名称获取oa数据id
+func GetOaDataId(dataType string, dataName string) (oaUserId string, err error) {
+	var baseInfo OaBaseInfo
+	err = global.GVA_DB.Table("wc_staff_byoa").Where("type = ? and name = ?", dataType, dataName).Order("id desc").First(&baseInfo).Error
+	if err != nil {
+		return "", err
+	}
+	return baseInfo.Id, nil
+}

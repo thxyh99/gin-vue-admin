@@ -14,7 +14,8 @@ type WcStaffLeaveApplication struct {
 	StaffId       int        `json:"staffId" form:"staffId" gorm:"column:staff_id;comment:员工ID;size:10;" binding:"required"`                   //员工ID
 	LeaveDate     *time.Time `json:"leaveDate" form:"leaveDate" gorm:"column:leave_date;comment:解除日期;" binding:"required"`                     //解除日期
 	JobDepartment int        `json:"jobDepartment" form:"jobDepartment" gorm:"column:job_department;comment:所属部门;size:10;" binding:"required"` //所属部门
-	LeaveType     int        `json:"leaveType" form:"leaveType" gorm:"column:leave_type;comment:离职类型;" binding:"required"`                     //离职类型
+	JobPosition   int        `json:"jobPosition" form:"jobPosition" gorm:"column:job_position;comment:职务;size:10;" binding:"required"`         //职务
+	LeaveType     string     `json:"leaveType" form:"leaveType" gorm:"column:leave_type;comment:离职类型;" binding:"required"`                     //离职类型
 	LeaveResult   string     `json:"leaveResult" form:"leaveResult" gorm:"column:leave_result;comment:事由;size:255;" binding:"required"`        //事由
 	Attachment    string     `json:"attachment" form:"attachment" gorm:"column:attachment;comment:申请表;"`                                       //申请表
 	CheckList     string     `json:"checkList" form:"checkList" gorm:"column:check_list;comment:交接清单;"`                                        //交接清单

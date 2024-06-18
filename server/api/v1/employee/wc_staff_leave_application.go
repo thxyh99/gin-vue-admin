@@ -28,17 +28,15 @@ var wcStaffLeaveApplicationService = service.ServiceGroupApp.EmployeeServiceGrou
 func (wcStaffLeaveApplicationApi *WcStaffLeaveApplicationApi) CreateWcStaffLeaveApplication(c *gin.Context) {
 	var wcStaffLeaveApplication employee.WcStaffLeaveApplication
 	// 绑定JSON数据并处理错误
-	if err := c.ShouldBindJSON(wcStaffLeaveApplication); err != nil {
+	if err := c.ShouldBindJSON(&wcStaffLeaveApplication); err != nil {
 		global.GVA_LOG.Error("JSON绑定失败", zap.Error(err))
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err := wcStaffLeaveApplicationService.CreateOAStaffLeaveApplication(&wcStaffLeaveApplication); err != nil {
-		global.GVA_LOG.Error("创建OA离职申请流程失败!", zap.Error(err))
-		response.FailWithMessage("创建OA离职申请流程失败", c)
-		return
-	}
-	if err := wcStaffLeaveApplicationService.CreateWcStaffLeaveApplication(&wcStaffLeaveApplication); err != nil {
+
+	wcStaffLeaveApplication.CreatedBy = int(utils.GetUserID(c))
+
+	if err := wcStaffLeaveApplicationService.CreateWcStaffLeaveApplication(&wcStaffLeaveApplication, true); err != nil {
 		global.GVA_LOG.Error("创建离职申请失败!", zap.Error(err))
 		response.FailWithMessage("创建离职申请流程失败", c)
 	} else {
@@ -189,11 +187,16 @@ func (wcStaffLeaveApplicationApi *WcStaffLeaveApplicationApi) CreateOAStaffLeave
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err := wcStaffLeaveApplicationService.CreateOAStaffLeaveApplication(&wcStaffLeaveApplication); err != nil {
+
+	oaId, err := wcStaffLeaveApplicationService.CreateOAStaffLeaveApplication(&wcStaffLeaveApplication)
+	if err != nil {
 		global.GVA_LOG.Error("创建OA离职申请流程失败!", zap.Error(err))
 		response.FailWithMessage("创建OA离职申请流程失败", c)
 		return
 	}
+
+	wcStaffLeaveApplication.OaId = oaId
+	wcStaffLeaveApplication.OaStatus = 10
 	if err := wcStaffLeaveApplicationService.CreateWcStaffLeaveApplication(&wcStaffLeaveApplication); err != nil {
 		global.GVA_LOG.Error("创建OA离职申请失败!", zap.Error(err))
 		response.FailWithMessage("创建OA离职申请流程失败", c)

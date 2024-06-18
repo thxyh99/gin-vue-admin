@@ -21,13 +21,17 @@ type LandrayOa struct {
 }
 
 type OAStaffLeaveApplication struct {
-	DocSubject  string     `json:"docSubject"`
-	DocCreator  string     `json:"docCreator"`
-	DocStatus   string     `json:"docStatus"`
-	StaffName   string     `json:"StaffName"`
-	LeaveDate   *time.Time `json:"LeaveDate"`
-	LeaveType   int        `json:"LeaveType"`
-	LeaveResult string     `json:"LeaveResult"`
+	DocSubject        string     `json:"docSubject"`
+	DocCreator        string     `json:"docCreator"`
+	DocStatus         string     `json:"docStatus"`
+	StaffName         string     `json:"StaffName"`
+	JobDepartmentId   string     `json:"JobDepartmentId"`
+	JobDepartmentName string     `json:"JobDepartmentName"`
+	JobPositionId     string     `json:"JobPositionId"`
+	JobPositionName   string     `json:"JobPositionName"`
+	LeaveDate         *time.Time `json:"LeaveDate"`
+	LeaveType         string     `json:"LeaveType"`
+	LeaveResult       string     `json:"LeaveResult"`
 }
 
 // LoadConfig 加载配置文件
@@ -224,15 +228,17 @@ func (landrayOa *LandrayOa) CreateOALeaveApplication(oaStaffLeaveApplication OAS
 	// 配置OA提交
 	eaData := url.Values{}
 	eaData.Set(eaConfig.Key("StaffName").MustString(""), oaStaffLeaveApplication.StaffName)
-	eaData.Set(eaConfig.Key("LeaveDate").MustString(""), oaStaffLeaveApplication.LeaveDate.GoString())
-	eaData.Set(eaConfig.Key("LeaveType").MustString(""), strconv.Itoa(oaStaffLeaveApplication.LeaveType))
+	//eaData.Set(eaConfig.Key("JobDepartmen").MustString(""), SetIdName(oaStaffLeaveApplication.JobDepartmentId, oaStaffLeaveApplication.JobDepartmentName))
+	//eaData.Set(eaConfig.Key("JobPosition").MustString(""), SetIdName(oaStaffLeaveApplication.JobPositionId, oaStaffLeaveApplication.JobPositionName))
+	eaData.Set(eaConfig.Key("LeaveDate").MustString(""), oaStaffLeaveApplication.LeaveDate.Format("2006-01-02"))
+	eaData.Set(eaConfig.Key("LeaveType").MustString(""), oaStaffLeaveApplication.LeaveType)
 	eaData.Set(eaConfig.Key("LeaveResult").MustString(""), oaStaffLeaveApplication.LeaveResult)
 
 	tmplateId := eaConfig.Key("fdTemplateId").MustString("")
 	oaData := url.Values{}
 	oaData.Set("fdTemplateId", tmplateId)
 	oaData.Set("docSubject", oaStaffLeaveApplication.DocSubject)
-	oaData.Set("docStatus", oaStaffLeaveApplication.DocStatus)
+	oaData.Set("docStatus", "10")
 	oaData.Set("docCreator", `{"LoginName":"`+oaStaffLeaveApplication.DocCreator+`"}`)
 
 	jsonData, err := json.Marshal(eaData)
@@ -240,7 +246,7 @@ func (landrayOa *LandrayOa) CreateOALeaveApplication(oaStaffLeaveApplication OAS
 		return "", err
 	}
 	oaData.Set("formValues", string(jsonData))
-	fmt.Printf(string(jsonData))
+	fmt.Println(oaData)
 	dsData, err := CreateOAProcess(oaData)
 	if err != nil {
 		return "", err
@@ -355,4 +361,23 @@ func SetNameValue(name string, value string) string {
 func SetNameValueJson(name string, value string) string {
 	retData := fmt.Sprintf(`"%s":%s`, name, value)
 	return retData
+}
+
+// 获取OA基础信息
+func (landrayOa LandrayOa) GetOABaseInfo(datatype string, cnt int) {
+	cfg, err := LoadConfig("./oa-config.ini")
+	if err != nil {
+		return
+	}
+	// 读取OA接口配置
+	oaWeb := cfg.Section("oa-web")
+	oaUrl := oaWeb.Key("base-url").MustString("")
+	basedataUrl := oaWeb.Key("getBaseDataUrl").MustString("")
+
+	data := url.Values{}
+	data.Set("returnOrgType", `["type":"`+datatype+`"]`)
+	data.Set("count", strconv.Itoa(cnt))
+
+	SendPostOaRequest(oaUrl+basedataUrl, data)
+
 }
