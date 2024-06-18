@@ -16,6 +16,7 @@
 				}}</el-descriptions-item>
 				<el-descriptions-item label="续签次数" label-align="right">{{ item.timesText }}</el-descriptions-item>
 				<el-descriptions-item label="合同期限（月）"  label-align="right" >{{ item.period }}</el-descriptions-item>
+				<el-descriptions-item label="特殊备注"  label-align="right" >{{ item.remark }}</el-descriptions-item>
 				<el-descriptions-item label="合同附件" label-align="right" :span="3">
 					<el-button type="text" @click="handlePreview(item.attachment.privateAccessURL)">{{
 						item.attachment.name
@@ -39,7 +40,6 @@
 
 			<el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
 				<el-form-item label="合同公司:" prop="company">
-<!--					<el-input v-model="formData.company" :clearable="true" placeholder="请输入合同公司" />-->
           <el-select v-model="formData.company" placeholder="请选择合同公司">
             <el-option v-for="agreementCompany in agreementCompanies" :key="agreementCompany.value" :label="agreementCompany.label" :value="agreementCompany.value"></el-option>
           </el-select>
@@ -68,13 +68,12 @@
 					/>
 				</el-form-item>
 				<el-form-item label="续签次数:" prop="times">
-<!--					<el-input v-model.number="formData.times" :clearable="true" placeholder="请输入续签次数" />-->
           <el-select v-model="formData.times" placeholder="请选择续签次数">
             <el-option v-for="time in times" :key="time.value" :label="time.label" :value="time.value"></el-option>
           </el-select>
 				</el-form-item>
-        <el-form-item label="合同期限（月）:" prop="period">
-          	<el-input v-model.number="formData.period" :clearable="true" placeholder="请输入合同期限" />
+        <el-form-item label="特殊备注:" prop="remark">
+          <el-input v-model="formData.remark" :clearable="true" placeholder="请输入特殊备注" />
         </el-form-item>
 				<el-form-item label="合同附件:" prop="fileId">
 					<el-upload
@@ -144,10 +143,11 @@ const agreementCompanies = [
 ]
 
 const times = [
-  { label: '其他', value: 0 },
+  { label: null, value: 0 },
   { label: '1', value: 1 },
   { label: '2', value: 2 },
   { label: '3', value: 3 },
+  { label: '其他', value: 4 },
 ]
 const rule = reactive({
 	staffId: [

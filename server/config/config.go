@@ -245,10 +245,11 @@ var config = CommonConfig{
 		1: "是",
 	},
 	RenewTimes: []string{
-		0: "其他",
+		0: "",
 		1: "1",
 		2: "2",
 		3: "3",
+		4: "其他",
 	},
 	AgreementCompany: []string{
 		1: "深圳市容大生物科技股份有限公司",

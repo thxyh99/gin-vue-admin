@@ -8,6 +8,7 @@ import (
 	weChatReq "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/request"
 	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
+	"strconv"
 )
 
 type WcStaffAgreementService struct {
@@ -15,6 +16,10 @@ type WcStaffAgreementService struct {
 
 // CreateWcStaffAgreement 创建合同信息记录
 func (wcStaffAgreementService *WcStaffAgreementService) CreateWcStaffAgreement(wcStaffAgreement *weChat.WcStaffAgreement) (err error) {
+	if wcStaffAgreement.Times == nil {
+		zero := 0
+		wcStaffAgreement.Times = &zero
+	}
 	err = global.GVA_DB.Create(wcStaffAgreement).Error
 	return err
 }
@@ -33,6 +38,10 @@ func (wcStaffAgreementService *WcStaffAgreementService) DeleteWcStaffAgreementBy
 
 // UpdateWcStaffAgreement 更新合同信息记录
 func (wcStaffAgreementService *WcStaffAgreementService) UpdateWcStaffAgreement(wcStaffAgreement weChat.WcStaffAgreement) (err error) {
+	if wcStaffAgreement.Times == nil {
+		zero := 0
+		wcStaffAgreement.Times = &zero
+	}
 	err = global.GVA_DB.Save(&wcStaffAgreement).Error
 	return err
 }
@@ -95,6 +104,12 @@ func (wcStaffAgreementService *WcStaffAgreementService) AssembleStaffAgreementLi
 		timesText, _ := utils.Find(configInfo.RenewTimes, *staffAgreement.Times)
 		newStaffAgreement.TimesText = timesText
 
+		//获取合同期限（月）
+		if staffAgreement.StartDay != nil && staffAgreement.EndDay != nil {
+			period := utils.CalculateMonthDifference(*staffAgreement.StartDay, *staffAgreement.EndDay)
+			newStaffAgreement.Period = strconv.Itoa(period)
+		}
+
 		//获取员工名称工号
 		var staff weChat.WcStaff
 		err = global.GVA_DB.Table(staff.TableName()).Where("id=?", staffAgreement.StaffId).First(&staff).Error
@@ -119,6 +134,12 @@ func (wcStaffAgreementService *WcStaffAgreementService) AssembleStaffAgreement(s
 	newStaffAgreement.CompanyText = companyText
 	timesText, _ := utils.Find(configInfo.RenewTimes, *staffAgreement.Times)
 	newStaffAgreement.TimesText = timesText
+
+	//获取合同期限（月）
+	if staffAgreement.StartDay != nil && staffAgreement.EndDay != nil {
+		period := utils.CalculateMonthDifference(*staffAgreement.StartDay, *staffAgreement.EndDay)
+		newStaffAgreement.Period = strconv.Itoa(period)
+	}
 
 	//获取员工名称工号
 	var staff weChat.WcStaff

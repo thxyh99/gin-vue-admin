@@ -1,6 +1,9 @@
 package utils
 
-import "strings"
+import (
+	"strings"
+	"time"
+)
 
 // GetKeyByValue 通过value获取key
 func GetKeyByValue(m map[int]string, value string) int {
@@ -105,4 +108,12 @@ func GetColumnName(n int) string {
 		n /= 26
 	}
 	return columnName
+}
+
+// CalculateMonthDifference 计算两个日期月份差
+func CalculateMonthDifference(startDate, endDate time.Time) int {
+	yearDiff := endDate.Year() - startDate.Year()
+	monthDiff := int(endDate.Month()) - int(startDate.Month())
+
+	return yearDiff*12 + monthDiff
 }

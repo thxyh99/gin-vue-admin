@@ -12,5 +12,6 @@ type WcStaffAgreementResponse struct {
 	TypeText    string          `json:"typeText"`    //合同类型
 	CompanyText string          `json:"companyText"` //合同公司
 	TimesText   string          `json:"timesText"`   //续签次数
+	Period      string          `json:"period"`      //合同期限（月）
 	Attachment  *WcFileResponse `json:"attachment"`  //合同附件下载链接
 }
