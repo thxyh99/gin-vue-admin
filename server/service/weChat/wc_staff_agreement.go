@@ -9,6 +9,7 @@ import (
 	weChat2 "github.com/flipped-aurora/gin-vue-admin/server/model/weChat/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"strconv"
+	"time"
 )
 
 type WcStaffAgreementService struct {
@@ -42,7 +43,28 @@ func (wcStaffAgreementService *WcStaffAgreementService) UpdateWcStaffAgreement(w
 		zero := 0
 		wcStaffAgreement.Times = &zero
 	}
+
+	fmt.Println(wcStaffAgreement.ID)
+	staffAgreementId := wcStaffAgreement.ID
+
 	err = global.GVA_DB.Save(&wcStaffAgreement).Error
+	if err != nil {
+		return
+	}
+
+	fmt.Println(wcStaffAgreement.ID)
+
+	// 新增固定续签合同需要把之前的续签合同更新为已续签
+	if staffAgreementId == 0 && *wcStaffAgreement.Type == 1 {
+		var staffAgreement weChat.WcStaffAgreement
+		cErr := global.GVA_DB.Debug().Table(staffAgreement.TableName()).Where("staff_id=? AND type=? AND start_day<?", wcStaffAgreement.StaffId, 1, wcStaffAgreement.StartDay).Updates(map[string]interface{}{
+			"is_renew":   1,
+			"updated_at": time.Now().Format("2006-01-02 15:04:05"),
+		}).Error
+		if cErr != nil {
+			return cErr
+		}
+	}
 	return err
 }
 

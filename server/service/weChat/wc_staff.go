@@ -332,7 +332,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 		values := rows[1:]
 		fmt.Println(len(excelTitle))
 		//模版校验
-		if len(excelTitle) != 56 {
+		if len(excelTitle) != 57 {
 			return errors.New("导入花名册Excel模版异常")
 		}
 
@@ -493,7 +493,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 		staffBankFields := []string{"bank", "card_number"}
 		staffEducationFields := []string{"education", "education_pay", "school", "date", "major", "professional_certificate", "skill_certificate", "skill_pay"}
 		staffContactFields := []string{"contact_name", "relationship", "contact_mobile", "contact_address"}
-		staffAgreementFields := []string{"company", "agreement_type", "start_day", "end_day", "times"}
+		staffAgreementFields := []string{"company", "agreement_type", "start_day", "end_day", "times", "remark"}
 
 		for _, row := range values {
 			var itemBase = make(map[string]interface{})
@@ -645,16 +645,16 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 				itemBase["created_at"] = now
 				itemBase["updated_at"] = now
 
-				tx.Table(staff.TableName()).Where("name=?", name).First(&staffExist)
+				tx.Table(staffExist.TableName()).Where("name=?", name).First(&staffExist)
 				if staffExist.ID == 0 {
 					// 新增员工
-					cErr := tx.Table(staff.TableName()).Create(&itemBase).Error
+					cErr := tx.Table(staffExist.TableName()).Create(&itemBase).Error
 					if cErr != nil {
 						return cErr
 					}
 				} else {
 					// 更新员工
-					cErr := tx.Table(staff.TableName()).Omit("name,created_at").Where("id=?", staffExist.ID).Updates(itemBase).Error
+					cErr := tx.Table(staffExist.TableName()).Omit("name,created_at").Where("id=?", staffExist.ID).Updates(itemBase).Error
 					if cErr != nil {
 						return cErr
 					}
@@ -709,6 +709,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 			{
 				itemJob["created_at"] = now
 				itemJob["updated_at"] = now
+				itemJob["staff_id"] = staff.ID
 
 				rankType, rank, err := checkAndReturnRank(rankTypeValue, rankValue, rankTypeMap)
 				if err != nil {
@@ -734,6 +735,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 			{
 				itemBank["created_at"] = now
 				itemBank["updated_at"] = now
+				itemBank["staff_id"] = staff.ID
 
 				tx.Table(staffBank.TableName()).Where("staff_id=?", staff.ID).First(&staffBank)
 				if staffBank.ID == 0 {
@@ -752,6 +754,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 			{
 				itemEducation["created_at"] = now
 				itemEducation["updated_at"] = now
+				itemEducation["staff_id"] = staff.ID
 
 				tx.Table(staffEducation.TableName()).Where("staff_id=?", staff.ID).First(&staffEducation)
 				if staffEducation.ID == 0 {
@@ -770,6 +773,7 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 			{
 				itemContact["created_at"] = now
 				itemContact["updated_at"] = now
+				itemContact["staff_id"] = staff.ID
 
 				tx.Table(staffContact.TableName()).Where("staff_id=?", staff.ID).First(&staffContact)
 				if staffContact.ID == 0 {
@@ -788,15 +792,26 @@ func (wcStaffService *WcStaffService) ImportExcel(templateID string, file *multi
 			{
 				itemAgreement["created_at"] = now
 				itemAgreement["updated_at"] = now
+				itemAgreement["staff_id"] = staff.ID
 
-				tx.Table(staffAgreement.TableName()).Where("staff_id=? AND start_day =? AND end_day =?", staff.ID, itemAgreement["start_day"], itemAgreement["end_day"]).First(&staffAgreement)
+				tx.Debug().Table(staffAgreement.TableName()).Where("staff_id=? AND type =? AND start_day =? AND end_day =?", staff.ID, itemAgreement["type"], itemAgreement["start_day"], itemAgreement["end_day"]).First(&staffAgreement)
 				if staffAgreement.ID == 0 {
-					cErr := tx.Table(staffAgreement.TableName()).Create(&itemAgreement).Error
+					cErr := tx.Debug().Table(staffAgreement.TableName()).Create(&itemAgreement).Error
 					if cErr != nil {
 						return cErr
 					}
+					// 新增固定续签合同需要把之前的续签合同更新为已续签
+					if itemAgreement["type"] == 1 {
+						cErr := tx.Debug().Table(staffAgreement.TableName()).Where("staff_id=? AND type=? AND start_day<?", staff.ID, 1, itemAgreement["start_day"]).Updates(map[string]interface{}{
+							"is_renew":   1,
+							"updated_at": now,
+						}).Error
+						if cErr != nil {
+							return cErr
+						}
+					}
 				} else {
-					cErr := tx.Table(staffAgreement.TableName()).Omit("start_day,end_day,created_at").Where("id=?", staffAgreement.ID).Updates(itemAgreement).Error
+					cErr := tx.Debug().Table(staffAgreement.TableName()).Omit("start_day,end_day,created_at").Where("id=?", staffAgreement.ID).Updates(itemAgreement).Error
 					if cErr != nil {
 						return cErr
 					}
