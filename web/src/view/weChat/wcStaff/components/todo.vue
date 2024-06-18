@@ -5,7 +5,7 @@
 				<span class="text-lg">待办事项</span>
 			</div>
 		</template>
-		<el-tabs>
+		<el-tabs v-model="activeName">
 			<el-tab-pane>
 				<template #label>
 					<div>全部（9）</div>
