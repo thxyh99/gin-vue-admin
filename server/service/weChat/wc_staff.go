@@ -232,7 +232,7 @@ func getStaffStatistics(where string) (wcStaffStatisticsResponse weChat2.WcStaff
 	//试用期到期前30天(拟转正日期)
 	var resultFormal []map[string]interface{}
 	fieldsTodoFormal := `a.id,a.name,b.presume_formal_date,CURDATE() AS today`
-	whereTodoFormal := where + " AND b.presume_formal_date IS NOT NULL AND DATEDIFF(b.presume_formal_date, CURDATE()) <= 30"
+	whereTodoFormal := where + " AND b.status=1 AND b.presume_formal_date IS NOT NULL AND DATEDIFF(b.presume_formal_date, CURDATE()) <= 30"
 	sqlTodoFormal := fmt.Sprintf(`SELECT %s FROM wc_staff AS a
           LEFT JOIN wc_staff_job AS b ON a.id = b.staff_id AND b.deleted_at IS NULL 
           WHERE %s `, fieldsTodoFormal, whereTodoFormal)
