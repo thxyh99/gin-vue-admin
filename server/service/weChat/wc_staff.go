@@ -225,8 +225,11 @@ func getStaffStatistics(where string) (wcStaffStatisticsResponse weChat2.WcStaff
 	}
 
 	//统计代办事项个数
-	var todoList []weChat2.TodoList
-	var todoListAll, todoListAfter, todoListNow, todoListBefore []weChat2.TodoItem
+	todoList := make([]weChat2.TodoList, 0)
+	todoListAll := make([]weChat2.TodoItem, 0)
+	todoListAfter := make([]weChat2.TodoItem, 0)
+	todoListNow := make([]weChat2.TodoItem, 0)
+	todoListBefore := make([]weChat2.TodoItem, 0)
 	var numAfter, numNow, numBefore int
 
 	//试用期到期前30天(拟转正日期)
