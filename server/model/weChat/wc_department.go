@@ -14,7 +14,6 @@ type WcDepartment struct {
 	Name             string `json:"name" form:"name" gorm:"column:name;comment:部门名称;size:200;" binding:"required"`                    //部门名称
 	DepartmentLeader string `json:"departmentLeader" form:"departmentLeader" gorm:"column:department_leader;comment:部门负责人;size:200;"` //部门负责人
 	Parentid         *int   `json:"parentid" form:"parentid" gorm:"column:parentid;comment:父部门ID;size:6;" binding:"required"`         //父部门ID
-	Order            *int   `json:"order" form:"order" gorm:"column:order;comment:排序;size:6;" binding:"required"`                     //排序
 }
 
 // TableName wcDepartment表 WcDepartment自定义表名 wc_department
