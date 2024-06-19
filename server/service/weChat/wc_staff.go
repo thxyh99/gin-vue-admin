@@ -167,10 +167,15 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
 	wcStaffResponse, err = wcStaffService.AssembleStaffList(wcStaffs)
+	wcStaffStatisticsResponse = getStaffStatistics(where)
 
-	//统计数据
+	return
+}
+
+// getStaffStatistics 统计数据
+func getStaffStatistics(where string) (wcStaffStatisticsResponse weChat2.WcStaffStatisticsResponse) {
 	var tableMap []map[string]interface{}
-	var onJobCount, fullTimeCount, partTimeCount, followCount, replaceCount, retireCount, outsourcingCount, toBeEmployedCount, probationCount, formalCount, toBeDepartedCount, toDoCount int
+	var onJobCount, fullTimeCount, partTimeCount, followCount, replaceCount, retireCount, outsourcingCount, toBeEmployedCount, probationCount, formalCount, toBeDepartedCount, todoCount int
 	fields := `a.id, b.type, b.status`
 	sql := fmt.Sprintf(`SELECT %s FROM wc_staff AS a	
           LEFT JOIN wc_staff_job AS b ON a.id = b.staff_id AND b.deleted_at IS NULL 
@@ -219,20 +224,268 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 		}
 	}
 
-	var tableMapTodo []map[string]interface{}
-	fieldsTodo := `a.id`
-	where += " AND b.is_renew = 0 AND DATEDIFF(b.end_day, CURDATE()) <= 60"
-	sqlTodo := fmt.Sprintf(`SELECT %s FROM wc_staff AS a	
-          LEFT JOIN wc_staff_agreement AS b ON a.id = b.staff_id AND b.deleted_at IS NULL 
-          WHERE %s `, fieldsTodo, where)
+	//统计代办事项个数
+	var todoList []weChat2.TodoList
+	var todoListAll, todoListAfter, todoListNow, todoListBefore []weChat2.TodoItem
+	var numAfter, numNow, numBefore int
 
-	global.GVA_DB.Debug().Raw(sqlTodo).Scan(&tableMapTodo)
-	for _, table := range tableMapTodo {
-		fmt.Println(reflect.TypeOf(table["id"]))
-		if _, ok := table["id"].(uint32); ok {
-			toDoCount++
+	//试用期到期前30天(拟转正日期)
+	var resultFormal []map[string]interface{}
+	fieldsTodoFormal := `a.id,a.name,b.presume_formal_date,CURDATE() AS today`
+	whereTodoFormal := where + " AND b.presume_formal_date IS NOT NULL AND DATEDIFF(b.presume_formal_date, CURDATE()) <= 30"
+	sqlTodoFormal := fmt.Sprintf(`SELECT %s FROM wc_staff AS a
+          LEFT JOIN wc_staff_job AS b ON a.id = b.staff_id AND b.deleted_at IS NULL 
+          WHERE %s `, fieldsTodoFormal, whereTodoFormal)
+	global.GVA_DB.Debug().Raw(sqlTodoFormal).Scan(&resultFormal)
+
+	for _, row := range resultFormal {
+		todoCount++
+		var staffId int
+		var staffName, value, now string
+		if id, ok := row["id"].(uint32); ok {
+			staffId = int(id)
 		}
+		if name, ok := row["name"].(string); ok {
+			staffName = name
+		}
+		if presumeFormalDate, ok := row["presume_formal_date"].(time.Time); ok {
+			value = presumeFormalDate.Format("2006-01-02")
+		}
+		if today, ok := row["today"].(time.Time); ok {
+			now = today.Format("2006-01-02")
+		}
+		if value == now {
+			numNow++
+			todoListNow = append(todoListNow, weChat2.TodoItem{
+				Title:   staffName + "试用期到期",
+				Label:   "转正日期",
+				Value:   value,
+				StaffId: staffId,
+			})
+		} else if value < now {
+			numAfter++
+			todoListAfter = append(todoListAfter, weChat2.TodoItem{
+				Title:   staffName + "试用期到期",
+				Label:   "转正日期",
+				Value:   value,
+				StaffId: staffId,
+			})
+		} else {
+			numBefore++
+			todoListBefore = append(todoListBefore, weChat2.TodoItem{
+				Title:   staffName + "试用期到期",
+				Label:   "转正日期",
+				Value:   value,
+				StaffId: staffId,
+			})
+		}
+		todoListAll = append(todoListAll, weChat2.TodoItem{
+			Title:   staffName + "试用期到期",
+			Label:   "转正日期",
+			Value:   value,
+			StaffId: staffId,
+		})
+
 	}
+
+	//劳动合同到期前60天
+	var resultAgreement []map[string]interface{}
+	fieldsTodoAgreement := `a.id,a.name,b.end_day,CURDATE() AS today`
+	whereTodoAgreement := where + " AND b.type=1 AND b.is_renew = 0 AND b.end_day IS NOT NULL AND DATEDIFF(b.end_day, CURDATE()) <= 60"
+	sqlTodoAgreement := fmt.Sprintf(`SELECT %s FROM wc_staff AS a
+          LEFT JOIN wc_staff_agreement AS b ON a.id = b.staff_id AND b.deleted_at IS NULL 
+          WHERE %s `, fieldsTodoAgreement, whereTodoAgreement)
+	global.GVA_DB.Debug().Raw(sqlTodoAgreement).Scan(&resultAgreement)
+	for _, row := range resultAgreement {
+		todoCount++
+		var staffId int
+		var staffName, value, now string
+		if id, ok := row["id"].(uint32); ok {
+			staffId = int(id)
+		}
+		if name, ok := row["name"].(string); ok {
+			staffName = name
+		}
+		if endDay, ok := row["end_day"].(time.Time); ok {
+			value = endDay.Format("2006-01-02")
+		}
+		if today, ok := row["today"].(time.Time); ok {
+			now = today.Format("2006-01-02")
+		}
+		if value == now {
+			numNow++
+			todoListNow = append(todoListNow, weChat2.TodoItem{
+				Title:   staffName + "合同到期",
+				Label:   "合同到期日",
+				Value:   value,
+				StaffId: staffId,
+			})
+		} else if value < now {
+			numAfter++
+			todoListAfter = append(todoListAfter, weChat2.TodoItem{
+				Title:   staffName + "合同到期",
+				Label:   "合同到期日",
+				Value:   value,
+				StaffId: staffId,
+			})
+		} else {
+			numBefore++
+			todoListBefore = append(todoListBefore, weChat2.TodoItem{
+				Title:   staffName + "合同到期",
+				Label:   "合同到期日",
+				Value:   value,
+				StaffId: staffId,
+			})
+		}
+		todoListAll = append(todoListAll, weChat2.TodoItem{
+			Title:   staffName + "合同到期",
+			Label:   "合同到期日",
+			Value:   value,
+			StaffId: staffId,
+		})
+
+	}
+
+	//健康证到期前30天
+	var resultHealth []map[string]interface{}
+	fieldsTodoHealth := `a.id,a.name,b.health_end,CURDATE() AS today`
+	whereTodoHealth := where + " AND b.health_end IS NOT NULL AND DATEDIFF(b.health_end, CURDATE()) <= 30"
+	sqlTodoHealth := fmt.Sprintf(`SELECT %s FROM wc_staff AS a
+          LEFT JOIN wc_staff_job AS b ON a.id = b.staff_id AND b.deleted_at IS NULL 
+          WHERE %s `, fieldsTodoHealth, whereTodoHealth)
+	global.GVA_DB.Debug().Raw(sqlTodoHealth).Scan(&resultHealth)
+	for _, row := range resultHealth {
+		todoCount++
+		var staffId int
+		var staffName, value, now string
+		if id, ok := row["id"].(uint32); ok {
+			staffId = int(id)
+		}
+		if name, ok := row["name"].(string); ok {
+			staffName = name
+		}
+		if healthEnd, ok := row["health_end"].(time.Time); ok {
+			value = healthEnd.Format("2006-01-02")
+		}
+		if today, ok := row["today"].(time.Time); ok {
+			now = today.Format("2006-01-02")
+		}
+		if value == now {
+			numNow++
+			todoListNow = append(todoListNow, weChat2.TodoItem{
+				Title:   staffName + "健康证到期",
+				Label:   "健康证到期日",
+				Value:   value,
+				StaffId: staffId,
+			})
+		} else if value < now {
+			numAfter++
+			todoListAfter = append(todoListAfter, weChat2.TodoItem{
+				Title:   staffName + "健康证到期",
+				Label:   "健康证到期日",
+				Value:   value,
+				StaffId: staffId,
+			})
+		} else {
+			numBefore++
+			todoListBefore = append(todoListBefore, weChat2.TodoItem{
+				Title:   staffName + "健康证到期",
+				Label:   "健康证到期日",
+				Value:   value,
+				StaffId: staffId,
+			})
+		}
+		todoListAll = append(todoListAll, weChat2.TodoItem{
+			Title:   staffName + "健康证到期",
+			Label:   "健康证到期日",
+			Value:   value,
+			StaffId: staffId,
+		})
+
+	}
+
+	//离职日当天
+	var resultLeave []map[string]interface{}
+	fieldsTodoLeave := `a.id,a.name,b.leave_date,CURDATE() AS today`
+	whereTodoLeave := where + " AND b.leave_date IS NOT NULL AND DATEDIFF(b.leave_date, CURDATE()) = 0"
+	sqlTodoLeave := fmt.Sprintf(`SELECT %s FROM wc_staff AS a
+          LEFT JOIN wc_staff_job AS b ON a.id = b.staff_id AND b.deleted_at IS NULL 
+          WHERE %s `, fieldsTodoLeave, whereTodoLeave)
+	global.GVA_DB.Debug().Raw(sqlTodoLeave).Scan(&resultLeave)
+	for _, row := range resultLeave {
+		todoCount++
+		var staffId int
+		var staffName, value, now string
+		if id, ok := row["id"].(uint32); ok {
+			staffId = int(id)
+		}
+		if name, ok := row["name"].(string); ok {
+			staffName = name
+		}
+		if leaveDate, ok := row["leave_date"].(time.Time); ok {
+			value = leaveDate.Format("2006-01-02")
+		}
+		if today, ok := row["today"].(time.Time); ok {
+			now = today.Format("2006-01-02")
+		}
+		if value == now {
+			numNow++
+			todoListNow = append(todoListNow, weChat2.TodoItem{
+				Title:   staffName + "离职到期",
+				Label:   "离职到期日",
+				Value:   value,
+				StaffId: staffId,
+			})
+		} else if value < now {
+			numAfter++
+			todoListAfter = append(todoListAfter, weChat2.TodoItem{
+				Title:   staffName + "离职到期",
+				Label:   "离职到期日",
+				Value:   value,
+				StaffId: staffId,
+			})
+		} else {
+			numBefore++
+			todoListBefore = append(todoListBefore, weChat2.TodoItem{
+				Title:   staffName + "离职到期",
+				Label:   "离职到期日",
+				Value:   value,
+				StaffId: staffId,
+			})
+		}
+		todoListAll = append(todoListAll, weChat2.TodoItem{
+			Title:   staffName + "离职到期",
+			Label:   "离职到期日",
+			Value:   value,
+			StaffId: staffId,
+		})
+
+	}
+
+	todoList = append(todoList, weChat2.TodoList{
+		Type:  0,
+		Total: len(todoListAll),
+		Label: "全部",
+		List:  todoListAll,
+	})
+	todoList = append(todoList, weChat2.TodoList{
+		Type:  1,
+		Total: len(todoListAfter),
+		Label: "超期未处理",
+		List:  todoListAfter,
+	})
+	todoList = append(todoList, weChat2.TodoList{
+		Type:  2,
+		Total: len(todoListNow),
+		Label: "今日到期",
+		List:  todoListNow,
+	})
+	todoList = append(todoList, weChat2.TodoList{
+		Type:  3,
+		Total: len(todoListBefore),
+		Label: "提前提醒",
+		List:  todoListBefore,
+	})
 
 	wcStaffStatisticsResponse = weChat2.WcStaffStatisticsResponse{
 		OnJobCount:        onJobCount,
@@ -246,7 +499,8 @@ func (wcStaffService *WcStaffService) GetWcStaffInfoList(info weChatReq.WcStaffS
 		ProbationCount:    probationCount,
 		FormalCount:       formalCount,
 		ToBeDepartedCount: toBeDepartedCount,
-		ToDoCount:         toDoCount,
+		TodoCount:         todoCount,
+		TodoList:          todoList,
 	}
 	return
 }

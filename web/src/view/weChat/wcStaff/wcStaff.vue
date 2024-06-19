@@ -63,7 +63,7 @@
 					<el-divider class="h-10" direction="vertical"></el-divider>
 					<div class="flex flex-col items-center" @click="handleTodo">
 						<div class="mb-1 text-blue-600/100">待办事项</div>
-						<div class="text-blue-600/100">{{ statistics.toDoCount }}</div>
+						<div class="text-blue-600/100">{{ statistics.todoCount }}</div>
 					</div>
 				</div>
 			</el-card>
