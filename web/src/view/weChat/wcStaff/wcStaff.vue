@@ -350,7 +350,7 @@
 			</el-descriptions>
 		</el-drawer>
 
-		<todo ref="todoRef" />
+		<todo ref="todoRef" :todoList="statistics.todoList" />
 	</div>
 </template>
 

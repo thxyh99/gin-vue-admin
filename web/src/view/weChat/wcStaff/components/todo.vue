@@ -6,42 +6,34 @@
 			</div>
 		</template>
 		<el-tabs v-model="activeName">
-			<el-tab-pane>
+			<el-tab-pane v-for="(item, index) in props.todoList" :key="index">
 				<template #label>
-					<div>全部（9）</div>
+					<div>{{ item.label }}（{{ item.list.length }}）</div>
 				</template>
-			</el-tab-pane>
-			<el-tab-pane>
-				<template #label>
-					<div>超期未处理（3）</div>
-				</template>
-			</el-tab-pane>
-			<el-tab-pane>
-				<template #label>
-					<div>今日到期（3）</div>
-				</template>
-			</el-tab-pane>
-			<el-tab-pane>
-				<template #label>
-					<div>提前提醒（3）</div>
-				</template>
+				<div class="todo-container">
+					<template v-for="(itm, ind) in item.list" :key="ind">
+						<div class="item p-2">
+							<div class="font-bold mb-2">{{ itm.title }}</div>
+							<div class="mb-4">{{ itm.label }}：{{ itm.value }}</div>
+							<!-- <el-button type="primary">前往处理</el-button> -->
+						</div>
+						<el-divider></el-divider>
+					</template>
+				</div>
 			</el-tab-pane>
 		</el-tabs>
-		<div class="todo-container">
-			<template v-for="item in 4" :key="item">
-				<div class="item p-2">
-					<div class="font-bold mb-2">武则天合同到期</div>
-					<div class="mb-4">合同到期日：2024-06-18</div>
-					<el-button type="primary">前往处理</el-button>
-				</div>
-				<el-divider></el-divider>
-			</template>
-		</div>
 	</el-drawer>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+
+const props = defineProps({
+	todoList: {
+		type: Array,
+		default: () => [],
+	},
+})
 
 const todoShow = ref(false)
 
